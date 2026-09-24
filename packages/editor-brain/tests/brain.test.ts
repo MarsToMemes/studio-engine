@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { compileShotPlan, getShotStartFrames, resolveNarration, validateShotPlan, type ShotPlan } from '@studio-engine/scene-engine';
-import { alignSentences, analyzeScript, directEpisode, emphasisWords, findNumbers, findPlaces, runBrainCli, splitSentences, type BrainInput } from '../src/index';
+import { alignSentences, analyzeScript, directEpisode, emphasisWords, findNumbers, findPlaces, RecordedModel, runBrainCli, splitSentences, type BrainCliOptions, type BrainInput } from '../src/index';
+import { goodAnswer } from './fixtures/llm-answers';
 import { mcdonaldsExample as mcdonaldsInput, transcript } from '../src/examples/mcdonalds';
 
 const run = (overrides: Partial<BrainInput> = {}) => directEpisode(mcdonaldsInput(overrides));
@@ -214,21 +215,31 @@ describe('robustness of the rules', () => {
 });
 
 describe('CLI (for montage.py)', () => {
-  const cli = (args: string[], input: string) => {
+  const cli = async (args: string[], input: string, options: BrainCliOptions = {}) => {
     const out: string[] = [];
     const err: string[] = [];
-    const code = runBrainCli(args, { readInput: () => input, stdout: (t) => out.push(t), stderr: (t) => err.push(t) });
+    const code = await runBrainCli(args, { readInput: () => input, stdout: (t) => out.push(t), stderr: (t) => err.push(t) }, options);
     return { code, out: out.join('\n'), err: err.join('\n') };
   };
-  it('direct → full result or plan only; explains decisions on stderr', () => {
+  it('--llm: model story when a model is available, heuristic brain (said so) without a key', async () => {
     const input = JSON.stringify(mcdonaldsInput());
-    const full = cli(['direct', '-'], input);
+    const withModel = await cli(['direct', '-', '--llm'], input, { model: new RecordedModel([goodAnswer]) });
+    expect(withModel.code).toBe(0);
+    expect(withModel.err).toContain('llm: recorded, full, 1 call(s)');
+    expect(JSON.parse(withModel.out).llm.accepted).toBe('full');
+    const noKey = await cli(['direct', '-', '--llm'], input, { env: {} });
+    expect(noKey.code).toBe(0);
+    expect(noKey.err).toContain('ANTHROPIC_API_KEY is not set: the heuristic brain directs this episode');
+  });
+  it('direct → full result or plan only; explains decisions on stderr', async () => {
+    const input = JSON.stringify(mcdonaldsInput());
+    const full = await cli(['direct', '-'], input);
     expect(full.code).toBe(0);
     expect(JSON.parse(full.out)).toHaveProperty('plan.version', 2);
     expect(full.err).toContain('decision: u3: J-cut');
-    const plan = cli(['direct', 'input.json', '--plan'], input);
+    const plan = await cli(['direct', 'input.json', '--plan'], input);
     expect(JSON.parse(plan.out)).toHaveProperty('shots');
-    expect(cli(['direct', '-'], '{"script": 1}').code).toBe(2);
-    expect(cli(['render', '-'], input).code).toBe(2);
+    expect((await cli(['direct', '-'], '{"script": 1}')).code).toBe(2);
+    expect((await cli(['render', '-'], input)).code).toBe(2);
   });
 });

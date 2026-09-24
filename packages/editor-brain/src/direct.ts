@@ -25,7 +25,7 @@ import { architectStory } from './architect.js';
 import { intensityOf, MotionDirector } from './motion.js';
 import { planRhythm } from './rhythm.js';
 import { designSfx, musicStates, pickSilences, SILENCE_SECONDS } from './sound.js';
-import type { BrainInput, BrainResult, EditorialUnit } from './types.js';
+import type { BrainInput, BrainResult, EditorialUnit, StoryStructure } from './types.js';
 import { VisualDirector, type Visual } from './visual.js';
 
 export const BRAIN_VERSION = 1;
@@ -52,20 +52,39 @@ interface Draft {
 const level = (n: number): EditorialLevel => Math.max(1, Math.min(5, n)) as EditorialLevel;
 const firstWords = (s: string, n: number) => s.split(/\s+/).slice(0, n).join(' ');
 
-export function directEpisode(input: BrainInput): BrainResult {
-  const fps = input.fps ?? 30;
-  const skills = input.skills ?? defaultMotionSkillRegistry;
-  const decisions: string[] = [];
+/** What the analyzer and the architect decided: the editorial understanding of the script. */
+export interface Story {
+  units: EditorialUnit[];
+  structure: StoryStructure;
+  decisions: string[];
+}
 
-  // 1. EDITORIAL ANALYZER
+/** 1–2. EDITORIAL ANALYZER + STORY ARCHITECT, heuristic version (offline, deterministic). */
+export function heuristicStory(input: BrainInput): Story {
+  const decisions: string[] = [];
   const { chapters } = scriptSentences(input);
   const units = analyzeScript(input);
   if (!units.length) throw new Error('the script contains no narration');
-  if (!input.narration) decisions.push('no narration transcript: timing estimated at 156 words per minute');
-  else if (units.some((u) => u.estimatedTiming)) decisions.push(`timing estimated for ${units.filter((u) => u.estimatedTiming).map((u) => u.id).join(', ')}: the transcript does not match the script there`);
-
-  // 2. STORY ARCHITECT
   const structure = architectStory(units, chapters, decisions);
+  return { units, structure, decisions };
+}
+
+/** Heuristic brain, end to end. */
+export function directEpisode(input: BrainInput): BrainResult {
+  return directFromStory(input, heuristicStory(input));
+}
+
+/**
+ * 3–9. Everything after the editorial understanding: rhythm, visuals, motion,
+ * sound, QC. Shared by the heuristic and the LLM brains.
+ */
+export function directFromStory(input: BrainInput, story: Story): BrainResult {
+  const fps = input.fps ?? 30;
+  const skills = input.skills ?? defaultMotionSkillRegistry;
+  const { units, structure } = story;
+  const decisions = [...story.decisions];
+  if (!input.narration) decisions.unshift('no narration transcript: timing estimated at 156 words per minute');
+  else if (units.some((u) => u.estimatedTiming)) decisions.unshift(`timing estimated for ${units.filter((u) => u.estimatedTiming).map((u) => u.id).join(', ')}: the transcript does not match the script there`);
   const unitById = new Map(units.map((u) => [u.id, u]));
 
   // 3. RHYTHM EDITOR

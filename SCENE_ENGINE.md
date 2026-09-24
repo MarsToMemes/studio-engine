@@ -791,6 +791,33 @@ directEpisode(input) ─► EDITORIAL ANALYZER   one unit per sentence: intent, 
   ```
 - **Example**: `mcdonaldsExample()` (input format reference), rendered by the `BrainDemo` Remotion composition.
 
+### 20.1 LLM layer (`directEpisodeWithLlm`)
+
+The model writes the **editorial story**:
+- per sentence: intent, 1–5 levels, emotion, whether proof is required, ≤ 2 emphasised words, the *why*, a catalogue media when one truly fits, and place names;
+- scenes: sentences, beats and purpose, plus missing chapter questions.
+
+It never provides timing, figures, data or documents. Everything after the story is the deterministic chain above.
+
+```
+heuristicStory ─► prompt (bible rules + grammar + script + facts + catalogue) ─► model calls the tool `submit_editorial_story`
+               ─► checkStory: ids in order, enums, integer levels, emphasis ∈ sentence, media ∈ catalogue,
+                  scenes contiguous / one chapter / ≥ 2 sentences / setup + resolving beat / no revelation first
+               ─► invalid? one repair turn: the exact errors as a tool_result error ─► still invalid: keep the valid
+                  sentences, heuristic analysis for the rest, heuristic architect rebuilt on the model's intents
+               ─► mergeStory (author hints always win) ─► directFromStory ─► plan (decidedBy: "ai")
+```
+
+- **Single source.** The system prompt is generated from `BIBLE_RULES` (DIR, STORY, SCENE, GRAM, REV, ESC, CHAP, TYPO, CALL) and `EDITORIAL_GRAMMAR`: the model reads the rules the validation enforces. It is about 2 400 tokens, marked `cache_control: ephemeral` so it is cached across episodes. The user message costs about 25 tokens per sentence, the answer about 150 tokens per sentence (`max_tokens` = 2 000 + 150 × sentences, capped at 64 000).
+- **Model.** `AnthropicModel`, through the official SDK `@anthropic-ai/sdk` 0.128.0 with the tool forced. It defaults to `claude-sonnet-5`, reads `ANTHROPIC_API_KEY`, and accepts an injected client. The `EditorModel` interface lets any model plug in.
+- **Never breaks.** An API error, a truncated answer (`max_tokens`) or a missing tool call all fall back to the heuristic brain, and the fallback is recorded in `decisions`. `llm` reports the model, the attempts, `full` / `partial` / `none`, the remaining errors and token usage.
+- **Reproducible.** `llm.answer` replays with `RecordedModel` to the same plan, without a second API call.
+- **CLI:** `editor-brain direct input.json --llm [--model=<id>]`. Without a key it says so and the heuristic brain directs.
+- **Limits.**
+  - One call per episode: an episode of about 400 sentences reaches the output cap and would need one call per chapter (not implemented).
+  - The tests use recorded answers written as fixtures, which prove the contract, not the model's quality.
+  - The editorial critic pass over the rendered plan (REVUE rules) is a later phase.
+
 ---
 
 ## 21. Craft rules checked on every plan
@@ -832,7 +859,7 @@ The rules below keep a video from feeling algorithmic. They apply to every plan 
 ## 23. Testing
 
 ```
-npm test          # 281 engine + 21 editor-brain + 25 studio tests (Vitest)
+npm test          # 281 engine + 33 editor-brain + 25 studio tests (Vitest)
 npm run e2e -w @studio-engine/studio   # browser smoke test (after npm run build -w @studio-engine/studio)
 npm run check     # typecheck + build + tests, all workspaces
 ```

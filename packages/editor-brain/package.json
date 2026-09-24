@@ -2,7 +2,7 @@
   "name": "@studio-engine/editor-brain",
   "version": "0.1.0",
   "private": true,
-  "description": "AI editor brain: script + voice + assets \u2192 editorial analysis \u2192 story structure \u2192 ShotPlan v2, following VIDEO_EDITING_BIBLE.md. Deterministic core; the LLM layer plugs into its analysis.",
+  "description": "AI editor brain: script + voice + assets → editorial analysis → story structure → ShotPlan v2, following VIDEO_EDITING_BIBLE.md. Deterministic core; the LLM layer plugs into its analysis.",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -23,6 +23,7 @@
     "test": "vitest run"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "0.128.0",
     "@studio-engine/scene-engine": "*"
   },
   "devDependencies": {

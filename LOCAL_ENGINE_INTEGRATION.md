@@ -80,6 +80,8 @@ Validation :
    # stderr : décisions et demandes d'assets (document manquant, données de graphique, sons…)
    ```
 
+   Avec `--llm`, c'est Claude qui écrit l'analyse éditoriale et les scènes (clé `ANTHROPIC_API_KEY` dans l'environnement), vérifiées par les règles de la bible. Sans clé, ou si l'API échoue, le cerveau heuristique prend le relais et l'indique.
+
    Exemple de format : `packages/editor-brain/src/examples/mcdonalds.ts`. Le cerveau **n'invente rien** : un graphique sans données, un document absent ou un lieu inconnu donnent une demande d'asset, jamais un faux.
 
 ## Points d'entrée disponibles aujourd'hui
