@@ -181,15 +181,25 @@ describe('ShotPlan → VideoProject', () => {
   });
 
   it('does not repeat full-screen typography as captions by default', () => {
-    expect(project.scenes.filter((s) => s.captions).map((s) => s.id)).toEqual(['counter', 'kitchen', 'report', 'rent', 'world']);
+    // "counter" shows "Behind every counter" while it is spoken: captions would repeat it (CAP-03).
+    expect(project.scenes.filter((s) => s.captions).map((s) => s.id)).toEqual(['kitchen', 'report', 'rent', 'world']);
   });
 
   it('slices word-timed captions per shot, with no word lost or duplicated', () => {
     const everywhere = compileShotPlan({ ...plan, captions: { ...plan.captions!, showOn: ['image', 'video', 'text', 'number', 'document', 'chart', 'map', 'revelation', 'chapter'] } });
     if (!everywhere.ok) throw new Error('compile failed');
     const words = everywhere.project.scenes.flatMap((s) => s.captions?.cues.flatMap((c) => c.words!.map((w) => w.text)) ?? []);
-    const spoken = plan.narration!.words!.filter((w) => (w.startMs / 1000) * 30 < toTimeline(plan).durationInFrames).map((w) => w.text);
-    expect(words).toEqual(spoken);
+    // Shots whose on-screen text already says it get no captions (CAP-03): their words are skipped, nothing else.
+    const skipped = new Set(everywhere.notes.filter((n) => n.includes('[CAP-03]')).map((n) => n.split(':')[0]));
+    expect(skipped.size).toBeGreaterThan(0);
+    const t = toTimeline(plan);
+    const windows = t.shots.map((s, i) => ({ id: s.id, start: s.startFrame, end: t.shots[i + 1]?.startFrame ?? s.startFrame + s.durationInFrames }));
+    const spoken = plan.narration!.words!.filter((w) => {
+      const f = Math.round((w.startMs / 1000) * 30);
+      const shot = windows.find((x) => f >= x.start && f < x.end);
+      return shot !== undefined && !skipped.has(shot.id);
+    });
+    expect(words).toEqual(spoken.map((w) => w.text));
     for (const s of project.scenes) {
       if (!s.captions) continue;
       expect(s.layers.some((l) => l.type === 'caption' && l.trackId === s.captions!.id)).toBe(true);
@@ -228,10 +238,11 @@ describe('@remotion/captions interop', () => {
   it('converts scene captions to Remotion Caption[] and back', () => {
     const r = compileShotPlan(buildEpisodePlan());
     if (!r.ok) throw new Error('compile failed');
-    const s = r.project.scenes[1]!;
-    const captions = toRemotionCaptions(s.captions!, 30, 60);
+    const s = r.project.scenes.find((x) => x.id === 'kitchen')!;
+    const start = toTimeline(buildEpisodePlan()).shots.find((x) => x.id === 'kitchen')!.startFrame;
+    const captions = toRemotionCaptions(s.captions!, 30, start);
     expect(captions[0]).toMatchObject({ text: expect.stringMatching(/^ \S/), timestampMs: null });
-    expect(captions[0]!.startMs).toBeGreaterThanOrEqual(2000);
+    expect(captions[0]!.startMs).toBeGreaterThanOrEqual((start / 30) * 1000);
     const words = fromRemotionCaptions(captions);
     expect(words.map((w) => w.text)).toEqual(s.captions!.cues.flatMap((c) => c.words!.map((w) => w.text)));
   });

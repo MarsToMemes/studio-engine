@@ -1,0 +1,13 @@
+export * from './types.js';
+export { analyzeScript, scriptSentences } from './analyzer.js';
+export { alignSentences, estimateTimings, ESTIMATED_MS_PER_WORD, type SentenceTiming } from './align.js';
+export { architectStory, MAX_SCENE_MS } from './architect.js';
+export { planRhythm, PAUSE_CAP_MS, type Chunk, type UnitTiming } from './rhythm.js';
+export { VisualDirector, type Visual } from './visual.js';
+export { MotionDirector, intensityOf } from './motion.js';
+export { designSfx, musicStates, pickSilences, SILENCE_SECONDS } from './sound.js';
+export { findPlaces, lookupPlace } from './gazetteer.js';
+export { findNumbers, emphasisWords, splitSentences, CUES } from './text.js';
+export { directEpisode, BRAIN_VERSION } from './direct.js';
+export { runBrainCli, BRAIN_CLI_USAGE, type BrainCliIo } from './cli.js';
+export { mcdonaldsExample } from './examples/mcdonalds.js';

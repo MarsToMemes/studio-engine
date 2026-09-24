@@ -8,3 +8,4 @@ export * from './cli.js';
 export * from './vocabulary.js';
 export * from './editorial.js';
 export * from './validate-editorial.js';
+export * from './grammar.js';

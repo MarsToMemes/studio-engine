@@ -64,6 +64,24 @@ Validation :
 - `shotplan validate plan.json` : mode brouillon ;
 - `shotplan validate plan.json --stage=final` : avant le rendu final, les règles bloquantes deviennent des erreurs.
 
+## Deux façons de brancher le moteur local
+
+1. **Le moteur local écrit le plan** (`plan.json`, ShotPlan v1 ou v2) : `studio-engine` le valide, le compile et le rend.
+2. **Le moteur local fournit la matière, le cerveau éditorial décide** (recommandé). Le moteur local écrit une entrée `BrainInput` avec :
+   - le script (et ses chapitres) ;
+   - la transcription mot à mot ;
+   - les assets avec leurs droits et un catalogue (description, tags, zones de texte des documents) ;
+   - la musique et la bibliothèque de sons par catégorie.
+
+   `editor-brain` produit alors le plan v2 complet, justifié et validé :
+
+   ```bash
+   node packages/editor-brain/bin/editor-brain.mjs direct input.json --plan > plan.json
+   # stderr : décisions et demandes d'assets (document manquant, données de graphique, sons…)
+   ```
+
+   Exemple de format : `packages/editor-brain/src/examples/mcdonalds.ts`. Le cerveau **n'invente rien** : un graphique sans données, un document absent ou un lieu inconnu donnent une demande d'asset, jamais un faux.
+
 ## Points d'entrée disponibles aujourd'hui
 
 ```bash

@@ -44,11 +44,13 @@ describe('VIDEO_EDITING_BIBLE.md', () => {
 });
 
 describe('issues cite the rule they enforce', () => {
-  it('every mapped code points to an existing AUTO rule', () => {
+  it('every mapped code points to an existing automatic rule (AUTO or HEUR, never REVUE)', () => {
     for (const [code, id] of Object.entries(ISSUE_CODE_RULES)) {
       const rule = getBibleRule(id);
       expect(rule, `${code} → ${id}`).toBeDefined();
-      expect(rule!.enforcement, `${code} → ${id}`).toBe('auto');
+      expect(['auto', 'heuristic'], `${code} → ${id}`).toContain(rule!.enforcement);
+      // A heuristic check never blocks (bible §0).
+      if (rule!.enforcement === 'heuristic') expect(rule!.severity, id).not.toBe('blocking');
     }
     expect(enforcedRuleIds()).toContain('TECH-02');
   });

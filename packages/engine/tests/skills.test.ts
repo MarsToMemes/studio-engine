@@ -104,7 +104,7 @@ describe('Motion Skill Registry: fallbacks (render never fails)', () => {
     // keyword_pop needs highlighted words; this image overlay has none → scale_text.
     const r = compiled(planWith('counter', { motionSkill: 'keyword_pop' }));
     expect(scene(r, 'counter').metadata!.extra!.appliedSkill).toBe('scale_text');
-    expect(r.notes.find((n) => n.startsWith('counter:'))).toMatch(/nothing to animate.*fell back to "scale_text"/);
+    expect(r.notes.find((n) => n.startsWith('counter:') && n.includes('fell back'))).toMatch(/nothing to animate.*fell back to "scale_text"/);
   });
 
   it('falls back when the renderer lacks the component', () => {

@@ -4,6 +4,7 @@
   "description": "AI-first documentary video engine: scene engine + Remotion composition.",
   "workspaces": [
     "packages/engine",
+    "packages/editor-brain",
     "packages/remotion",
     "packages/studio"
   ],
@@ -11,9 +12,9 @@
     "node": ">=20"
   },
   "scripts": {
-    "build": "npm run build -w @studio-engine/scene-engine",
-    "test": "npm test -w @studio-engine/scene-engine && npm test -w @studio-engine/studio",
-    "typecheck": "npm run typecheck -w @studio-engine/scene-engine && npm run build && npm run typecheck -w @studio-engine/remotion && npm run typecheck -w @studio-engine/studio",
+    "build": "npm run build -w @studio-engine/scene-engine && npm run build -w @studio-engine/editor-brain",
+    "test": "npm test -w @studio-engine/scene-engine && npm test -w @studio-engine/editor-brain && npm test -w @studio-engine/studio",
+    "typecheck": "npm run typecheck -w @studio-engine/scene-engine && npm run build && npm run typecheck -w @studio-engine/editor-brain && npm run typecheck -w @studio-engine/remotion && npm run typecheck -w @studio-engine/studio",
     "check": "npm run typecheck && npm test",
     "studio": "npm run dev -w @studio-engine/studio"
   }

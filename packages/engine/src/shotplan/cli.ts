@@ -15,6 +15,7 @@ import { compileShotPlan } from './compile.js';
 import { toTimeline } from './timeline.js';
 import type { ShotPlan } from './types.js';
 import { validateShotPlan } from './validate.js';
+import { defaultMotionSkillRegistry } from '../skills/index.js';
 
 export interface CliIo {
   readInput: (pathOrDash: string) => string;
@@ -40,7 +41,7 @@ export function runShotPlanCli(args: readonly string[], io: CliIo): number {
     return 2;
   }
   const stage = stageArg === 'final' ? 'final' : 'draft';
-  const validation = validateShotPlan(plan, { stage });
+  const validation = validateShotPlan(plan, { stage, skillIds: defaultMotionSkillRegistry.availableIds(), skillCatalog: defaultMotionSkillRegistry });
   if (command === 'validate') {
     io.stdout(JSON.stringify({ valid: validation.valid, errors: validation.errors, warnings: validation.warnings }, null, 2));
     return validation.valid ? 0 : 1;

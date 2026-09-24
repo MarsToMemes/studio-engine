@@ -12,7 +12,7 @@ import { ruleForIssue } from '../bible/index.js';
 import { defaultTransitionRegistry, type TransitionRegistry } from '../transitions/registry.js';
 import { getEditorialTransition } from './transitions.js';
 import { resolveShotTransitions } from './timeline.js';
-import { validateEditorialLayer, type ValidationStage } from './validate-editorial.js';
+import { validateEditorialLayer, type SkillCatalog, type ValidationStage } from './validate-editorial.js';
 import type { Shot, ShotPlan, ShotType } from './types.js';
 
 export const SHOT_TYPES: readonly ShotType[] = ['image', 'video', 'text', 'number', 'document', 'chart', 'map', 'revelation', 'chapter'];
@@ -51,6 +51,8 @@ export interface ShotPlanValidationOptions {
    * `final`: they are errors (before the final render, or for the AI's output).
    */
   stage?: ValidationStage;
+  /** Installed skills (categories), for the restraint rule MOT-03. `compileShotPlan` passes its registry. */
+  skillCatalog?: SkillCatalog;
 }
 
 /** Words of a text, normalised for highlight matching. */
@@ -234,7 +236,7 @@ function collectShotPlanIssues(input: unknown, options: ShotPlanValidationOption
     }
     const glitches = resolved.filter((r) => r.id === 'glitch').length;
     if (glitches > PACING.maxGlitches) issues.warn('shots', 'transition.glitch.max', `${glitches} glitch transitions (max ${PACING.maxGlitches} per video, major revelations only)`);
-    if (assets) validateEditorialLayer(plan as ShotPlan, issues, options.stage ?? 'draft', options.transitions);
+    if (assets) validateEditorialLayer(plan as ShotPlan, issues, options.stage ?? 'draft', options.transitions, options.skillCatalog);
   }
   return issues.result();
 }

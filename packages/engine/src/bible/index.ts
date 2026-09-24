@@ -50,6 +50,26 @@ export const ISSUE_CODE_RULES: Readonly<Record<string, string>> = {
   'silence.payoff': 'SIL-04',
   'asset.license.missing': 'SRC-01',
   'asset.license.noncommercial': 'SRC-02',
+  // Craft: repetition, contrast, restraint, typography, documents, data, sound.
+  'grammar.skill': 'GRAM-01',
+  'grammar.camera': 'GRAM-01',
+  'typography.words': 'TYPO-02',
+  'typography.emphasis': 'TYPO-03',
+  'document.static': 'DOC-01',
+  'document.source': 'DOC-05',
+  'chart.categories': 'CHART-04',
+  'map.labels': 'MAP-03',
+  'intensity.strong.ratio': 'MOT-02',
+  'intensity.strong.intent': 'MOT-02',
+  'motion.restraint': 'MOT-03',
+  'camera.shake.max': 'CAM-07',
+  'repetition.skill': 'REP-01',
+  'repetition.transition': 'REP-02',
+  'repetition.sfx': 'REP-03',
+  'repetition.camera': 'REP-04',
+  'repetition.typography': 'REP-05',
+  'variety.window': 'VAR-02',
+  'sound.density': 'SND-03',
 };
 
 /**
@@ -60,7 +80,7 @@ export function ruleForIssue(issue: { code: string; severity: 'error' | 'warning
   return ISSUE_CODE_RULES[issue.code] ?? (issue.severity === 'error' ? 'TECH-02' : undefined);
 }
 
-/** Rules with at least one automatic check in the code today. */
+/** Rules with at least one automatic (AUTO or HEUR) check in the code today. */
 export function enforcedRuleIds(): string[] {
   return [...new Set(Object.values(ISSUE_CODE_RULES)).add('TECH-02')].sort();
 }

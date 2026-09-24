@@ -73,7 +73,7 @@ export interface SkillProvider {
   toResolver(): ShotSkillResolver;
   availableIds(): Set<string>;
   /** Optional: lets the shot camera use skill-based moves and detect camera conflicts (CAM-02). */
-  get?(id: string): { id: string; controlsCamera: boolean } | undefined;
+  get?(id: string): { id: string; category: string; controlsCamera: boolean } | undefined;
   resolve?: CameraSkillSource['resolve'];
   resolveParams?: CameraSkillSource['resolveParams'];
 }
@@ -260,7 +260,9 @@ function composeLayers(shot: Shot, plan: ShotPlan, theme: DocumentaryTheme, canv
         }));
       });
       const source = shot.document?.source ?? shot.subtext;
-      if (source) add('source', textLayer(id('source'), `Source: ${source}`, { fontFamily: theme.fontFamily, fontSize: 30, fontWeight: 600, color: theme.text, textAlign: 'left', background: { color: 'rgba(18,18,18,0.8)', paddingX: 18, paddingY: 10, radius: 4 } }, box('bottom-left', 4, -4, 60, 7), 45));
+      // Bottom-left by default; top-left when captions use the bottom band (bible CAP-04).
+      const captioned = Boolean(plan.captions?.enabled && (plan.captions.showOn ?? DEFAULT_CAPTION_SHOT_TYPES).includes(shot.type));
+      if (source) add('source', textLayer(id('source'), `Source: ${source}`, { fontFamily: theme.fontFamily, fontSize: 30, fontWeight: 600, color: theme.text, textAlign: 'left', background: { color: 'rgba(18,18,18,0.8)', paddingX: 18, paddingY: 10, radius: 4 } }, captioned ? box('top-left', 4, 4, 60, 7) : box('bottom-left', 4, -4, 60, 7), 45));
       if (shot.text) add('text', textLayer(id('text'), shot.text, headlineStyle(theme, 56, theme.accent), box('top-center', 0, 4, 86, 10), 40, emphasis));
       break;
     }
@@ -290,11 +292,32 @@ function shotWords(words: readonly TranscriptWord[], window: { start: number; en
 function captionTrack(shotId: string, inShot: readonly ShotWord[], wordsPerCue: number): CaptionTrack | undefined {
   if (inShot.length === 0) return undefined;
   const cues: CaptionCue[] = [];
-  for (let i = 0; i < inShot.length; i += wordsPerCue) {
-    const group = inShot.slice(i, i + wordsPerCue);
+  let group: ShotWord[] = [];
+  const flush = () => {
+    if (!group.length) return;
     cues.push({ id: `${shotId}:cue-${cues.length + 1}`, text: group.map((w) => w.text).join(' '), startFrame: group[0]!.startFrame, endFrame: group[group.length - 1]!.endFrame, words: group.map((w) => ({ ...w })) });
+    group = [];
+  };
+  for (const w of inShot) {
+    group.push(w);
+    // A cue never runs across the end of a sentence.
+    if (group.length >= wordsPerCue || /[.!?…]["»”’)]*$/.test(w.text)) flush();
   }
+  flush();
   return { id: `${shotId}:captions`, cues };
+}
+
+/**
+ * True when the shot's own text repeats most of what is spoken during it
+ * (e.g. an image with the sentence as a title): captions would duplicate it.
+ */
+export function captionsRedundant(shot: Pick<Shot, 'text'>, words: readonly ShotWord[]): boolean {
+  if (!shot.text || !words.length) return false;
+  const spoken = new Set(words.map((w) => normalizeWord(w.text)).filter(Boolean));
+  const shown = shot.text.split(/\s+/).map(normalizeWord).filter(Boolean);
+  if (!shown.length) return false;
+  const repeated = shown.filter((w) => spoken.has(w)).length;
+  return repeated / shown.length >= 0.6;
 }
 
 // ---------------------------------------------------------------------------
@@ -304,7 +327,11 @@ function captionTrack(shotId: string, inShot: readonly ShotWord[], wordsPerCue: 
 export function compileShotPlan(plan: ShotPlan, options: CompileShotPlanOptions = {}): CompileShotPlanResult {
   const skills = options.skills === false ? undefined : (options.skills ?? defaultMotionSkillRegistry);
   const applySkill = options.applySkill ?? skills?.toResolver();
-  const pre = validateShotPlan(plan, { ...options, ...(skills && !options.skillIds ? { skillIds: skills.availableIds() } : {}) });
+  const pre = validateShotPlan(plan, {
+    ...options,
+    ...(skills && !options.skillIds ? { skillIds: skills.availableIds() } : {}),
+    ...(skills?.get && !options.skillCatalog ? { skillCatalog: { get: (id: string) => skills.get!(id) } } : {}),
+  });
   if (!pre.valid) return { ok: false, errors: pre.errors, warnings: pre.warnings };
 
   const theme = options.theme ?? DOCUMENTARY_THEME;
@@ -375,8 +402,12 @@ export function compileShotPlan(plan: ShotPlan, options: CompileShotPlanOptions 
     const window = { start: starts[i]!, end: next ?? starts[i]! + shot.durationInFrames };
     const words = shotWords(narration.words, window, shot.durationInFrames, plan.fps);
 
-    // Captions, sliced from the narration transcript.
-    if (captionStyle && narration.words.length && (plan.captions?.showOn ?? DEFAULT_CAPTION_SHOT_TYPES).includes(shot.type)) {
+    // Captions, sliced from the narration transcript. Not when the shot
+    // already shows what is being said (bible CAP-03).
+    const captioned = Boolean(captionStyle && narration.words.length && (plan.captions?.showOn ?? DEFAULT_CAPTION_SHOT_TYPES).includes(shot.type));
+    const redundant = captioned && captionsRedundant(shot, words);
+    if (redundant) notes.push(`${shot.id}: [CAP-03] no captions, the on-screen text already says it`);
+    if (captionStyle && captioned && !redundant) {
       const track = captionTrack(shot.id, words, plan.captions?.wordsPerCue ?? 3);
       if (track) {
         scene.captions = track;

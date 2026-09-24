@@ -13,6 +13,7 @@ import type { TransitionRegistry } from '../transitions/registry.js';
 import { resolveNarration, resolveSilences } from './editorial.js';
 import { getShotPlanDuration, getShotStartFrames } from './timeline.js';
 import type { ShotPlan } from './types.js';
+import { EDITORIAL_GRAMMAR } from './grammar.js';
 import { BEATS, SHOT_CAMERA_MOVES, DECIDED_BY, EDITORIAL_INTENTS, FRAMINGS, isEditorialLevel, MUSIC_STATES, RESOLVING_BEATS, SILENCE_KINDS, type EditorialIntent } from './vocabulary.js';
 
 export type ValidationStage = 'draft' | 'final';
@@ -33,7 +34,7 @@ const SILENCE_PAYOFF: readonly EditorialIntent[] = ['revelation', 'contradiction
 
 const countWords = (s: string) => s.trim().split(/\s+/).filter(Boolean).length;
 
-export function validateEditorialLayer(plan: ShotPlan, issues: IssueCollector, stage: ValidationStage, registry?: TransitionRegistry): void {
+export function validateEditorialLayer(plan: ShotPlan, issues: IssueCollector, stage: ValidationStage, registry?: TransitionRegistry, catalog?: SkillCatalog): void {
   const fps = plan.fps;
   const v2 = plan.version === 2;
   const blocking = (path: string, code: string, message: string) => (stage === 'final' ? issues.error(path, code, message) : issues.warn(path, code, message));
@@ -165,6 +166,8 @@ export function validateEditorialLayer(plan: ShotPlan, issues: IssueCollector, s
     }
   }
 
+  validateCraft(plan, issues, starts, catalog);
+
   if (!v2) return;
 
   // ===========================================================================
@@ -261,6 +264,141 @@ export function validateEditorialLayer(plan: ShotPlan, issues: IssueCollector, s
     const src = asset.source;
     if (!src?.license || typeof src.commercialUse !== 'boolean') blocking(`assets.${id}.source`, 'asset.license.missing', `asset "${id}" has no recorded license (source.license and source.commercialUse)`);
     else if (!src.commercialUse) blocking(`assets.${id}.source`, 'asset.license.noncommercial', `asset "${id}" cannot be used commercially`);
+  }
+}
+
+/** Optional knowledge of the installed skills (the Motion Skill Registry provides it). */
+export interface SkillCatalog {
+  get(id: string): { category: string; controlsCamera: boolean } | undefined;
+}
+
+/** Windows of the repetition and contrast rules (bible §19, §20, §9, §11). */
+export const CRAFT_LIMITS = {
+  window: 10,
+  maxSameSkillInWindow: 3,
+  maxSameTransitionInWindow: 2,
+  maxSameSfxPerMinute: 3,
+  maxSameCameraRun: 3,
+  maxSameTypographyRun: 2,
+  minTypesInWindow: 3,
+  minRestInWindow: 2,
+  maxStrongRatio: 0.2,
+  maxShakes: 3,
+  sfxBurst: { seconds: 2, max: 3 },
+  maxTextWords: 12,
+  maxEmphasis: 2,
+  maxBars: 7,
+  maxPieSlices: 6,
+  maxMapLabels: 8,
+} as const;
+
+const TYPOGRAPHIC: readonly string[] = ['text', 'revelation'];
+const STRONG_INTENTS: readonly EditorialIntent[] = ['hook', 'revelation'];
+
+/**
+ * Craft rules that keep a video from feeling algorithmic: repetition,
+ * contrast, restraint, typography, documents, charts, maps, sound density,
+ * grammar. Warnings only (they never block a render).
+ */
+function validateCraft(plan: ShotPlan, issues: IssueCollector, starts: readonly number[], catalog: SkillCatalog | undefined): void {
+  const shots = plan.shots;
+  const fps = plan.fps;
+  const L = CRAFT_LIMITS;
+  const sp = (i: number) => `shots[${i}]`;
+  const once = new Set<string>();
+  const warnOnce = (key: string, path: string, code: string, message: string) => {
+    if (once.has(key)) return;
+    once.add(key);
+    issues.warn(path, code, message);
+  };
+
+  shots.forEach((shot, i) => {
+    const p = sp(i);
+    if (TYPOGRAPHIC.includes(shot.type) && shot.text && countWords(shot.text) > L.maxTextWords) issues.warn(`${p}.text`, 'typography.words', `${countWords(shot.text)} words on screen (max ${L.maxTextWords}, ideally 3–7): split the statement`);
+    if (Array.isArray(shot.highlightedWords) && shot.highlightedWords.length > L.maxEmphasis) issues.warn(`${p}.highlightedWords`, 'typography.emphasis', `${shot.highlightedWords.length} emphasised words (max ${L.maxEmphasis})`);
+    if (shot.type === 'document') {
+      if (!shot.motionSkill && (!shot.camera || shot.camera === 'static')) issues.warn(p, 'document.static', 'a document is never a static screenshot: add a camera move or a highlight');
+      const attribution = shot.media ? plan.assets[shot.media]?.source?.attribution : undefined;
+      if (!shot.document?.source && !attribution) issues.warn(`${p}.document.source`, 'document.source', 'a document used as proof shows its source (name, date)');
+    }
+    if (shot.type === 'chart' && isObject(shot.chart) && Array.isArray(shot.chart.labels)) {
+      const max = shot.chart.kind === 'pieChart' ? L.maxPieSlices : L.maxBars;
+      if (shot.chart.labels.length > max) issues.warn(`${p}.chart`, 'chart.categories', `${shot.chart.labels.length} categories (max ${max}): one idea per chart`);
+    }
+    if (shot.type === 'map' && Array.isArray(shot.map?.markers) && shot.map.markers.length > L.maxMapLabels) issues.warn(`${p}.map.markers`, 'map.labels', `${shot.map.markers.length} labels at once (max ${L.maxMapLabels})`);
+    // GRAM-01: leaving the grammar of the intent needs a reason.
+    const entry = shot.editorialIntent ? EDITORIAL_GRAMMAR[shot.editorialIntent] : undefined;
+    if (entry && shot.motionSkill && !entry.skills.includes(shot.motionSkill) && !isNonEmptyString(shot.reasons?.motion)) {
+      issues.warn(`${p}.motionSkill`, 'grammar.skill', `"${shot.motionSkill}" is not in the grammar of "${shot.editorialIntent}" (${entry.skills.slice(0, 4).join(', ')}…): say why in reasons.motion`);
+    }
+    if (entry && shot.camera && shot.camera !== 'static' && !entry.camera.includes(shot.camera) && !isNonEmptyString(shot.reasons?.camera)) {
+      issues.warn(`${p}.camera`, 'grammar.camera', `camera "${shot.camera}" is unusual for "${shot.editorialIntent}" (${entry.camera.join(', ')}): say why in reasons.camera`);
+    }
+  });
+
+  // MOT-02: intensity budget.
+  const strong = shots.filter((s) => s.intensity === 'strong');
+  if (shots.length >= 5 && strong.length / shots.length > L.maxStrongRatio) issues.warn('shots', 'intensity.strong.ratio', `${strong.length} of ${shots.length} shots are strong (max ${Math.round(L.maxStrongRatio * 100)} %)`);
+  shots.forEach((s, i) => {
+    if (s.intensity === 'strong' && s.editorialIntent && !STRONG_INTENTS.includes(s.editorialIntent) && s.importance !== 5) {
+      issues.warn(`${sp(i)}.intensity`, 'intensity.strong.intent', `strong intensity is reserved for the hook, revelations and the climax (this shot is "${s.editorialIntent}")`);
+    }
+  });
+
+  // CAM-07: shakes.
+  const shakes = shots.filter((s) => s.camera === 'shake' || s.motionSkill === 'camera_shake').length;
+  if (shakes > L.maxShakes) issues.warn('shots', 'camera.shake.max', `${shakes} camera shakes (max ${L.maxShakes} per video, impacts only)`);
+
+  // Sliding windows of W shots.
+  const W = L.window;
+  for (let end = 0; end < shots.length; end++) {
+    const win = shots.slice(Math.max(0, end - W + 1), end + 1);
+    const skill = shots[end]!.motionSkill;
+    if (skill && win.filter((s) => s.motionSkill === skill).length > L.maxSameSkillInWindow) {
+      warnOnce(`skill:${skill}`, `${sp(end)}.motionSkill`, 'repetition.skill', `"${skill}" is used more than ${L.maxSameSkillInWindow} times in ${W} shots: use another skill of the same category`);
+    }
+    if (win.length === W) {
+      if (new Set(win.map((s) => s.type)).size < L.minTypesInWindow) warnOnce(`types:${end}`, sp(end), 'variety.window', `${W} shots use fewer than ${L.minTypesInWindow} visual types: the visual language needs to breathe`);
+      if (catalog) {
+        const rest = win.filter((s) => !s.motionSkill || catalog.get(s.motionSkill)?.category === 'images').length;
+        if (rest < L.minRestInWindow) warnOnce(`rest:${end}`, sp(end), 'motion.restraint', `fewer than ${L.minRestInWindow} of ${W} shots let the image breathe (no content animation)`);
+      }
+    }
+  }
+  // REP-02: transitions over windows of cuts.
+  for (let end = 1; end < shots.length; end++) {
+    const t = shots[end]!.transition;
+    if (!t || t === 'hard_cut') continue;
+    const cuts = shots.slice(Math.max(1, end - W + 1), end + 1);
+    if (cuts.filter((s) => s.transition === t).length > L.maxSameTransitionInWindow) warnOnce(`transition:${t}`, `${sp(end)}.transition`, 'repetition.transition', `"${t}" is used more than ${L.maxSameTransitionInWindow} times in ${W} cuts`);
+  }
+  // REP-04 / REP-05: runs.
+  for (let i = 1, cam = 1, typo = 1; i < shots.length; i++) {
+    const a = shots[i - 1]!;
+    const b = shots[i]!;
+    cam = b.camera && b.camera !== 'static' && b.camera === a.camera ? cam + 1 : 1;
+    if (cam === L.maxSameCameraRun + 1) issues.warn(`${sp(i)}.camera`, 'repetition.camera', `camera "${b.camera}" on ${cam} shots in a row`);
+    typo = TYPOGRAPHIC.includes(a.type) && TYPOGRAPHIC.includes(b.type) && b.motionSkill !== undefined && b.motionSkill === a.motionSkill ? typo + 1 : 1;
+    if (typo === L.maxSameTypographyRun + 1) issues.warn(`${sp(i)}.motionSkill`, 'repetition.typography', `the same text treatment "${b.motionSkill}" on ${typo} typographic shots in a row`);
+  }
+  // SND-03 / REP-03: sound density.
+  const sfx = shots.flatMap((s, i) => (Array.isArray(s.sfx) ? s.sfx : []).filter((e) => isObject(e)).map((e) => ({ id: e.sfx, frame: starts[i]! + (e.at ?? 0) }))).sort((a, b) => a.frame - b.frame);
+  const burst = Math.round(L.sfxBurst.seconds * fps);
+  for (let i = L.sfxBurst.max; i < sfx.length; i++) {
+    if (sfx[i]!.frame - sfx[i - L.sfxBurst.max]!.frame < burst) {
+      warnOnce('sfx:burst', 'shots', 'sound.density', `more than ${L.sfxBurst.max} sound effects within ${L.sfxBurst.seconds} s around frame ${sfx[i]!.frame}`);
+      break;
+    }
+  }
+  const minute = 60 * fps;
+  for (const id of new Set(sfx.map((e) => e.id))) {
+    const frames = sfx.filter((e) => e.id === id).map((e) => e.frame);
+    for (let i = L.maxSameSfxPerMinute; i < frames.length; i++) {
+      if (frames[i]! - frames[i - L.maxSameSfxPerMinute]! < minute) {
+        issues.warn('shots', 'repetition.sfx', `sound effect "${id}" is used more than ${L.maxSameSfxPerMinute} times in a minute`);
+        break;
+      }
+    }
   }
 }
 

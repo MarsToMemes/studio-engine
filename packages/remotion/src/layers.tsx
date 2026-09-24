@@ -17,6 +17,7 @@ import {
   visibleText,
   type AssetRegistry,
   type Background,
+  type CaptionStyle,
   type CaptionTrack,
   type CompiledScene,
   type LayerFrame,
@@ -140,6 +141,20 @@ const TextView: React.FC<{ frame: LayerFrame; scene: CompiledScene; sceneFrame: 
   );
 };
 
+/**
+ * The active word is scaled up; a scaled inline-block keeps its layout width,
+ * so it gets margins proportional to its length or it would eat the spaces
+ * around it ("FROMFRANCHISEES").
+ */
+function activeWordCss(active: NonNullable<CaptionStyle['activeWord']>, word: string): CSS {
+  const scale = active.highlight?.scale;
+  return {
+    ...css(textStyleToCss(active)),
+    display: 'inline-block',
+    ...(scale && scale !== 1 ? { transform: `scale(${scale})`, marginInline: `${(((scale - 1) / 2) * word.length * 0.62).toFixed(3)}em` } : {}),
+  };
+}
+
 const CaptionView: React.FC<{ frame: LayerFrame; track: CaptionTrack | undefined; sceneFrame: number }> = ({ frame, track, sceneFrame }) => {
   const layer = frame.compiled.layer;
   if (layer.type !== 'caption' || !track) return null;
@@ -152,7 +167,7 @@ const CaptionView: React.FC<{ frame: LayerFrame; track: CaptionTrack | undefined
   return (
     <div style={box}>
       {line.words.map((w, i) => (
-        <span key={i} style={i === line.activeIndex && style.activeWord ? { ...css(textStyleToCss(style.activeWord)), display: 'inline-block', transform: style.activeWord.highlight?.scale ? `scale(${style.activeWord.highlight.scale})` : undefined } : { display: 'inline-block' }}>
+        <span key={i} style={i === line.activeIndex && style.activeWord ? activeWordCss(style.activeWord, w) : { display: 'inline-block' }}>
           {w}
         </span>
       ))}

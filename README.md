@@ -6,8 +6,10 @@ AI-first documentary video engine: **script + voiceover + assets → scenes → 
 packages/
 ├── engine/     @studio-engine/scene-engine — typed scene model, validation, timing, animation, transitions,
 │               presets, serialization, framework-agnostic renderer, Remotion plan, AI blueprint. Zero runtime deps.
+├── editor-brain/ @studio-engine/editor-brain — the AI editor brain: script + voice + assets → editorial analysis →
+│               story structure → ShotPlan v2 that follows VIDEO_EDITING_BIBLE.md, every decision explained.
 ├── remotion/   @studio-engine/remotion — Remotion composition and render (@remotion/renderer).
-└── studio/     @studio-engine/studio — live preview (@remotion/player), shot inspector and timeline editor.
+└── studio/     @studio-engine/studio — technical test bench (@remotion/player preview, browser e2e). The product UI lives elsewhere.
 .claude/skills/ Official Remotion Agent Skills (remotion-dev/skills), pinned in skills-lock.json.
 ```
 

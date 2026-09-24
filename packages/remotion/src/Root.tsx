@@ -4,11 +4,14 @@ import { buildRemotionPlan } from '@studio-engine/scene-engine';
 import { EngineComposition } from './EngineComposition';
 import { buildDemoProject } from './demoProject';
 import { buildShotPlanDemoProject } from './shotPlanDemo';
+import { buildBrainDemoProject } from './brainDemo';
 
 const project = buildDemoProject();
 const { composition } = buildRemotionPlan(project);
 const shotPlanProject = buildShotPlanDemoProject();
 const shotPlanComposition = buildRemotionPlan(shotPlanProject).composition;
+const brainProject = buildBrainDemoProject();
+const brainComposition = buildRemotionPlan(brainProject).composition;
 
 export const RemotionRoot: React.FC = () => (
   <>
@@ -34,6 +37,15 @@ export const RemotionRoot: React.FC = () => (
     fps={shotPlanComposition.fps}
     durationInFrames={shotPlanComposition.durationInFrames}
     defaultProps={{ project: shotPlanProject }}
+  />
+  <Composition
+    id="BrainDemo"
+    component={EngineComposition}
+    width={brainComposition.width}
+    height={brainComposition.height}
+    fps={brainComposition.fps}
+    durationInFrames={brainComposition.durationInFrames}
+    defaultProps={{ project: brainProject }}
   />
   </>
 );

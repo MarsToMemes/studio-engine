@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import {
   buildRemotionPlan,
   compileShotPlan,
+  defaultMotionSkillRegistry,
   deriveMusicCues,
   fromTimeline,
   getShotStartFrames,
@@ -25,7 +26,7 @@ const issue = (p: unknown, code: string, stage: 'draft' | 'final' = 'draft') => 
 
 describe('editorial plan (ShotPlan v2)', () => {
   it('the reference episode is a clean final plan', () => {
-    const r = validateShotPlan(buildEditorialPlan(), { stage: 'final' });
+    const r = validateShotPlan(buildEditorialPlan(), { stage: 'final', skillIds: defaultMotionSkillRegistry.availableIds(), skillCatalog: defaultMotionSkillRegistry });
     expect(r.errors).toEqual([]);
     expect(r.warnings).toEqual([]);
   });

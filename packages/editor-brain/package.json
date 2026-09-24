@@ -1,0 +1,36 @@
+{
+  "name": "@studio-engine/editor-brain",
+  "version": "0.1.0",
+  "private": true,
+  "description": "AI editor brain: script + voice + assets \u2192 editorial analysis \u2192 story structure \u2192 ShotPlan v2, following VIDEO_EDITING_BIBLE.md. Deterministic core; the LLM layer plugs into its analysis.",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "bin"
+  ],
+  "sideEffects": false,
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@studio-engine/scene-engine": "*"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.2",
+    "typescript": "^5.9.3",
+    "vitest": "^5.0.1"
+  },
+  "bin": {
+    "editor-brain": "./bin/editor-brain.mjs"
+  }
+}

@@ -741,26 +741,85 @@ SFX     │◆impact        ◆impact               SFX events, draggable
   - `REVUE`: AI critic or human.
 - `src/bible/parse.ts` parses the markdown. `src/bible/rules.generated.ts` is generated from it (`npm run bible -w @studio-engine/scene-engine`), and `tests/bible.test.ts` fails when the two diverge or when the markdown breaks the format (sequential ids per domain, prefix matching its section, no blocking heuristic).
 - Validation issues carry `rule` (`ISSUE_CODE_RULES`; structural errors fall under `TECH-02`). The studio shows it as a badge whose tooltip is the rule text. `formatIssues` includes it, so an AI repair loop receives the rule with the error.
-- Checked in code today:
-  - DIR-01, DIR-03;
-  - SCENE-01, SCENE-02;
-  - HIER-01;
-  - RHY-01, RHY-03, RHY-04, RHY-08;
-  - VAR-01;
-  - CHAP-01, CHAP-02;
-  - REV-02;
-  - MUS-03, MUS-06 (segments);
-  - SIL-02 to SIL-04;
-  - TRANS-02 to TRANS-07;
-  - TYPO-04;
-  - SRC-01, SRC-02;
-  - TECH-01, TECH-02.
-
-  See `ISSUE_CODE_RULES` for the exact mapping. The other `AUTO` and `HEUR` rules arrive with the rhythm engine, sound design and QC phases.
+- **Checked in code today: 45 rules** (`enforcedRuleIds()`), out of 104 automatable rules (`AUTO` + `HEUR`) and 147 in total. `ISSUE_CODE_RULES` gives the exact mapping. The `REVUE` rules belong to the AI critic and the human; the remaining automatable ones arrive with sound design (LUFS, silences rendered), QC on the render (black frames, clipping, fonts) and the LLM layer.
 
 ---
 
-## 20. Performance
+## 20. Editor brain (`packages/editor-brain`)
+
+AI = director, engine = execution. The brain turns **script + transcript + catalogued assets + music + sound library** into a **ShotPlan v2** that passes `stage: 'final'` validation, and explains every decision. It depends only on the engine; the engine stays zero-dependency.
+
+```
+directEpisode(input) ─► EDITORIAL ANALYZER   one unit per sentence: intent, importance 1–5, entities (figures, places, quote, emphasis), WHY
+                        STORY ARCHITECT      chapters · scenes (purpose) · beats (setup … payoff); no scene opens on a revelation
+                        RHYTHM EDITOR        durations from the voice, pauses by pacing, splits at word boundaries, hook 1.5–2.5 s, holds
+                        SHOT PLANNER /       grammar of the intent × available assets; typography + asset request when proof is missing
+                        VISUAL DIRECTOR      hierarchy, framing, camera alternated with a reason, motif kept for the callback
+                        MOTION DIRECTOR      installed + compatible + applicable skills, repetition manager, intensity budget
+                        SOUND DESIGNER       music states per scene, silence before the chapter's major revelation, SFX on real events
+                        QUALITY CONTROL      validateShotPlan(final) + compile notes + STORY-05 check
+```
+
+- **Grammar** (`EDITORIAL_GRAMMAR`, engine): bible §4 as data. For each intent: shot types, skills, camera moves and sound categories in order of preference, plus the default *why*. The brain picks from it, and validation checks it (GRAM-01: a skill outside the grammar needs `reasons.motion`).
+- **Timing on the voice.**
+  - LCS alignment of the script against the transcript tolerates "61 %" written vs "sixty one percent" spoken.
+  - Cuts fall on word starts, and natural pauses are capped by `pacing` (calm 700 ms, standard 450 ms, dynamic 200 ms).
+  - **J-cuts**: a key figure or place gets its shot on the spoken word (GRAM-03, ±6 frames) while the previous shot covers the first words.
+  - The shot before a transition outlasts its voice by the transition length, so voice ranges never overlap.
+- **Never invents** (SRC-05, DOC-06, STORY-04):
+  - no chart without `hints.chart`, no map without a known place or `hints.map`;
+  - no document without a matching catalogued document, no unrelated image;
+  - the shot falls back to typography and `assetRequests` says what to provide (`chart-data`, `document`, `document-region`, `image`, `sfx`…);
+  - a media imposed by the author (`hints.media`) wins over the grammar.
+- **Visual callback.**
+  - The first image of the first third of the video becomes the motif, and the conclusion brings it back with a dissolve and a pull-out.
+  - The motif is not reused in between.
+  - Without an early image, no callback is claimed.
+- **Sound.**
+  - Music: one state per scene; `build` before a revelation, `reveal` on it, `aftermath` after it.
+  - One 0.4 s music drop before the major revelation of a chapter, at most one per 60 s.
+  - SFX are placed on the events emitted by the compiled skills, in priority order (reveal > number > document > keyword > transition). Budget: at most 3 in 2 s, about one per two shots, the same file at most 3 times a minute.
+- **Heuristics, stated as such.**
+  - The analyzer's cues (EN/FR contradiction, revelation, proof, growth, comparison, process), spelled-out numbers (English only), the 70-place gazetteer and the templated scene purposes are an offline baseline.
+  - The LLM layer (Phase 4) produces the same `EditorialUnit` / `StoryStructure` with real understanding and reuses everything downstream.
+- **Deterministic**: the same input gives the same plan.
+- **CLI.** It exits with 1 when the plan is not final-valid; decisions and asset requests go to stderr.
+
+  ```bash
+  node packages/editor-brain/bin/editor-brain.mjs direct input.json          # { plan, analysis, structure, assetRequests, decisions, qc }
+  node packages/editor-brain/bin/editor-brain.mjs direct input.json --plan   # ShotPlan v2 only
+  ```
+- **Example**: `mcdonaldsExample()` (input format reference), rendered by the `BrainDemo` Remotion composition.
+
+---
+
+## 21. Craft rules checked on every plan
+
+The rules below keep a video from feeling algorithmic. They apply to every plan (v1 or v2), whether it comes from the AI, a human or `montage.py`, and each cites its bible rule.
+
+| Rule | Check |
+|---|---|
+| REP-01 | a skill more than 3 times in 10 shots |
+| REP-02 | a transition more than twice in 10 cuts |
+| REP-03 | a sound effect more than 3 times a minute |
+| REP-04 | the same camera move on more than 3 shots in a row |
+| REP-05 | the same text treatment on 3 typographic shots in a row |
+| VAR-02 | fewer than 3 visual types in 10 shots |
+| MOT-02 | strong intensity on more than 20 % of shots, or outside the hook, revelations and importance-5 shots |
+| MOT-03 | fewer than 2 of 10 shots without content animation (needs the skill catalogue) |
+| CAM-07 | more than 3 shakes |
+| TYPO-02 / TYPO-03 | more than 12 words, or more than 2 emphasised words |
+| DOC-01 / DOC-05 | static document, or document without a source |
+| CHART-04 | too many categories |
+| MAP-03 | more than 8 labels |
+| SND-03 | more than 3 sound effects in 2 s |
+| GRAM-01 | skill or camera outside the grammar of the intent, without a reason |
+
+**Captions.** No captions on a shot whose own text already says what is spoken (CAP-03). A cue never runs across the end of a sentence. The source citation of a document moves to the top when the shot has captions (CAP-04).
+
+---
+
+## 22. Performance
 
 - Timeline resolution is O(scenes + layers + audio); scene lookup is O(log n); keyframe sampling is O(log k).
 - Compile once, sample per frame: per-frame work is proportional to the layers of the visible scene(s) only.
@@ -770,10 +829,10 @@ SFX     │◆impact        ◆impact               SFX events, draggable
 
 ---
 
-## 21. Testing
+## 23. Testing
 
 ```
-npm test          # 264 engine tests + 25 studio tests (Vitest)
+npm test          # 281 engine + 21 editor-brain + 25 studio tests (Vitest)
 npm run e2e -w @studio-engine/studio   # browser smoke test (after npm run build -w @studio-engine/studio)
 npm run check     # typecheck + build + tests, all workspaces
 ```
@@ -782,7 +841,7 @@ Covered: scene/layer creation and registries, validation (~50 targeted error/war
 
 ---
 
-## 22. Known limitations and next steps
+## 24. Known limitations and next steps
 
 - **Non-CSS effects** (grain, vignette, color grade, LUT, chromatic aberration, pixelate) are modeled and validated but the reference Remotion renderer does not draw them yet (needs shaders / SVG filters).
 - **Graphic kinds**: the reference renderer draws `counter`, `statCard`, `barChart`, `lineChart`, `pieChart`, `comparison` and `map`; `progress`, `icon`, `svg`, `lowerThird` and `custom` have no component (no available skill produces them).
