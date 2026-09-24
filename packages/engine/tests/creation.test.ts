@@ -48,14 +48,14 @@ describe('project and scene creation', () => {
 
   it('supports registering new scene types without touching the model', () => {
     const registry = new SceneTypeRegistry().register({
-      type: 'map',
-      label: 'Map',
-      description: 'Animated map route',
+      type: 'route',
+      label: 'Route',
+      description: 'Animated travel route',
       defaultDurationInSeconds: 6,
       allowedLayerTypes: ['background', 'graphic', 'text'],
-      check: (s) => (s.layers.some((l) => l.type === 'graphic') ? undefined : 'a map scene needs a graphic layer'),
+      check: (s) => (s.layers.some((l) => l.type === 'graphic') ? undefined : 'a route scene needs a graphic layer'),
     });
-    const scene = createScene('map', {}, { fps: 30, sceneTypes: registry });
+    const scene = createScene('route', {}, { fps: 30, sceneTypes: registry });
     expect(scene.durationInFrames).toBe(180);
     expect(validateScene(scene, { fps: 30 }, { sceneTypes: registry }).errors.map((e) => e.code)).toEqual(['scene.type.contract']);
     scene.layers.push(createLayer('graphic', { kind: 'custom', data: { route: [] } }));

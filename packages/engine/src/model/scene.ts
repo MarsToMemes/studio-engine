@@ -22,6 +22,7 @@ export type BuiltInSceneType =
   | 'quote'
   | 'statistic'
   | 'chart'
+  | 'map'
   | 'screenshot'
   | 'montage'
   | 'endcard'

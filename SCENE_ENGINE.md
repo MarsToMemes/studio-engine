@@ -53,7 +53,8 @@ packages/engine/src/
 ├── serialization/   Versioned JSON envelope, migrations
 ├── renderer/        compileProject / sampleScene: framework-neutral styles per frame
 ├── adapters/remotion/  buildRemotionPlan, audioVolumeAt
-└── ai/              Blueprint contract, validator, compiler, composers, JSON schema, agent catalog
+├── ai/              Blueprint contract, validator, compiler, composers, JSON schema, agent catalog
+└── shotplan/        ShotPlan (AI/UI language), Timeline JSON view, editorial lint, compiler, CLI
 ```
 
 Dependency direction: `model` ← `core`/`timing` ← `animation`/`transitions`/`presets` ← `validation`/`renderer` ← `adapters`/`ai`. Lower layers never import higher ones.
@@ -513,7 +514,59 @@ Compiler behaviour:
 
 ---
 
-## 15. Performance
+## 15. ShotPlan and Timeline JSON (editorial layer)
+
+The AI director and the UI speak **ShotPlan**: *what* happens, shot by shot. The engine decides *how* by compiling it into a `VideoProject`.
+
+```
+AI / UI ──► ShotPlan ──► validateShotPlan() ──► compileShotPlan() ──► VideoProject ──► Remotion
+                 │                                   ▲
+                 └──► toTimeline() ◄──► fromTimeline()   (flat Timeline JSON, derived startFrame)
+```
+
+```ts
+interface Shot {
+  id: string;                         // becomes the scene id (UI edits map back to the shot)
+  type: 'image' | 'video' | 'text' | 'number' | 'document' | 'chart' | 'map' | 'revelation' | 'chapter';
+  durationInFrames: number;           // the only stored timing
+  media?: string; text?: string; subtext?: string; highlightedWords?: string[];
+  motionSkill?: string;               // resolved by the Motion Skill Registry (never fails the render)
+  transition?: string;                // INTO this shot, default "hard_cut"
+  transitionDurationInFrames?: number;
+  intensity?: 'subtle' | 'medium' | 'strong';
+  sfx?: Array<{ sfx: string; at?: number; gainDb?: number }>;   // several sound events per shot
+  number?: NumberPayload; chart?: ChartPayload; map?: MapPayload; document?: DocumentPayload;
+  metadata?: JsonObject;
+}
+interface ShotPlan { version: 1; fps; width; height; shots: Shot[]; assets; narration?; music?; captions?; metadata? }
+```
+
+Two deliberate differences with a naive flat timeline: **start frames are derived** (changing a duration never desynchronises the rest) and **`sfx` is a list of events**. `toTimeline(plan)` produces the exact flat format (`Timeline { fps, width, height, durationInFrames, shots[{ id, startFrame, durationInFrames, type, media, text, highlightedWords, motionSkill, transition, intensity, sfx, metadata }] }`) and is lossless: extra payloads travel in `metadata`, and `fromTimeline(toTimeline(p))` returns `p`. `fromTimeline` treats an incoming `startFrame` as a hint and reports mismatches.
+
+**Editorial transitions** (snake_case, `EDITORIAL_TRANSITIONS`): `hard_cut` (default, neutral) · `fade`, `dissolve`, `slide`, `push`, `wipe`, `blur` (standard) · `zoom`, `zoom_blur`, `whip`, `flash`, `glitch`, `film_burn` (spectacular). Unknown ids fall back to `hard_cut`; transitions longer than half of a neighbouring shot are shortened.
+
+**Validation** (`validateShotPlan`): errors make the plan uncompilable (missing / wrong-kind media, missing text or payload, invalid durations, odd sizes…). Warnings are the documentary lint: `pacing.hook` (hook outside 1.5–2.5 s), `pacing.static` (> 4 s without a motion skill), `transition.spectacular.adjacent|ratio|subtle`, `transition.unknown|shortened`, `shot.highlight.notFound`, `skill.unknown` (with a skill catalog), `shot.sfx.unresolved`.
+
+**Compilation** (`compileShotPlan`):
+- themed base layers per shot type (`DOCUMENTARY_THEME`: `#121212` background, white text, `#FFC72C` keywords / numbers / data, `#DA291C` revelations); `highlightedWords` → `emphasis` indices;
+- documents: page fitted with `contain`, highlight regions placed on the *displayed* page and revealed at `at` (sync with the narration), source citation;
+- SFX events → `sfx` audio tracks (gain in dB, −6 dB default); narration → continuous `voiceover` track; music at −18 dB, ducked −6 dB more under the voice (→ −24 dB);
+- captions sliced from the transcribed narration (`narration.words`, ms) into each shot, word-timed; by default only on image / video / document / chart / map shots (full-screen typography is not repeated);
+- motion skills through an injected `applySkill` resolver (the Motion Skill Registry, Phase 3). Without it, skills are reported in `notes`, never fatal.
+
+**@remotion/captions interop**: `toRemotionCaptions(track, fps, offset)` → `Caption[]` for `createTikTokStyleCaptions()`; `fromRemotionCaptions(captions)` turns a transcription (Whisper `toCaptions()`, ElevenLabs…) into `narration.words`.
+
+**CLI for external pipelines** (e.g. a Python `montage.py` through `subprocess`):
+
+```bash
+node packages/engine/bin/shotplan.mjs validate plan.json   # issues JSON, exit 1 on errors
+node packages/engine/bin/shotplan.mjs timeline plan.json   # flat Timeline JSON
+node packages/engine/bin/shotplan.mjs compile  plan.json   # VideoProject document (notes on stderr)
+```
+
+---
+
+## 16. Performance
 
 - Timeline resolution is O(scenes + layers + audio); scene lookup is O(log n); keyframe sampling is O(log k).
 - Compile once, sample per frame: per-frame work is proportional to the layers of the visible scene(s) only.
@@ -523,20 +576,18 @@ Compiler behaviour:
 
 ---
 
-## 16. Testing
+## 17. Testing
 
 ```
-npm test          # 144 tests (Vitest)
-npm run typecheck
-npm run build
-npm run check     # all three
+npm test          # 167 tests (Vitest)
+npm run check     # typecheck + build + tests, all workspaces
 ```
 
 Covered: scene/layer creation and registries, validation (~50 targeted error/warning assertions), timing math and overlaps, layer positioning, easing / interpolation / keyframes / every animation type / providers, transitions and the Remotion mapping, presets (every built-in builds valid data), serialization round trips and migrations, renderer styles / masks / captions, the Remotion plan and audio envelopes, blueprint validation and compilation, and a realistic **10-scene documentary** (voiceover, captions, video, images, Lottie, charts, 9 transitions, camera moves) validated, serialized, planned and sampled on every one of its 1 440 frames.
 
 ---
 
-## 17. Known limitations and next steps
+## 18. Known limitations and next steps
 
 - **Non-CSS effects** (grain, vignette, color grade, LUT, chromatic aberration, pixelate) are modeled and validated but the reference Remotion renderer does not draw them yet (needs shaders / SVG filters).
 - **Graphic kinds**: the reference renderer draws `counter` and `barChart`; line/pie charts, icons and lower thirds need renderers.

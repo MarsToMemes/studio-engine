@@ -173,7 +173,7 @@ describe('schema and catalog for LLMs', () => {
   });
   it('lists scene types, presets with parameters, and rules', () => {
     const catalog = buildAgentCatalog();
-    expect(catalog.sceneTypes).toHaveLength(13);
+    expect(catalog.sceneTypes).toHaveLength(14);
     expect(catalog.presets.find((p) => p.id === 'cinematic-zoom')!.parameters.intensity).toEqual({ type: 'number', default: 0.35, min: 0, max: 2 });
     expect(catalog.rules.length).toBeGreaterThan(0);
   });

@@ -57,21 +57,39 @@ export const BackgroundView: React.FC<{ background: Background; assets: AssetReg
   }
 };
 
+/** Text box CSS split in two: the box (font, alignment) and the plate hugging the text (background). */
+function splitTextCss(style: Parameters<typeof textStyleToCss>[0]): { box: CSS; plate: CSS } {
+  const { backgroundColor, padding, borderRadius, boxDecorationBreak, WebkitBoxDecorationBreak, ...box } = css(textStyleToCss(style)) as Record<string, string | number>;
+  const plate: Record<string, string | number | undefined> = { backgroundColor, padding, borderRadius, boxDecorationBreak, WebkitBoxDecorationBreak };
+  return { box: box as CSS, plate: Object.fromEntries(Object.entries(plate).filter(([, v]) => v !== undefined)) as CSS };
+}
+
 const TextView: React.FC<{ frame: LayerFrame; scene: CompiledScene; sceneFrame: number; options: ResolvedRenderOptions }> = ({ frame, scene, sceneFrame, options }) => {
   const layer = frame.compiled.layer;
   if (layer.type !== 'text') return null;
-  const base: CSS = { ...css(textStyleToCss(layer.style)), width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: layer.style.textAlign === 'left' ? 'flex-start' : 'center', flexWrap: 'wrap', alignContent: 'center' };
+  const { box, plate } = splitTextCss(layer.style);
+  const base: CSS = { ...box, width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: layer.style.textAlign === 'left' ? 'flex-start' : 'center', alignContent: 'center' };
   const text = frame.state.textProgress !== undefined ? visibleText(layer.text, frame.state.textProgress) : layer.text;
-  if (!frame.compiled.hasUnitAnimations) return <div style={base}><span>{text}</span></div>;
-  const parts = splitText(text, frame.compiled.textSplit ?? 'words');
-  const units = sampleLayerUnits(frame.compiled, sceneFrame, parts.length, scene, options);
+  const split = frame.compiled.textSplit ?? 'words';
+  // Highlighted words (emphasis indices) use the accent color. Indices refer to words.
+  const emphasis = new Set(split === 'words' ? (layer.emphasis ?? []) : []);
+  const accent = layer.style.highlight?.color;
+  if (!frame.compiled.hasUnitAnimations && emphasis.size === 0) return <div style={base}><span style={plate}>{text}</span></div>;
+  const parts = splitText(text, split);
+  const units = frame.compiled.hasUnitAnimations ? sampleLayerUnits(frame.compiled, sceneFrame, parts.length, scene, options) : [];
   return (
     <div style={base}>
-      {parts.map((w, i) => {
-        const u = units[i]!;
-        const hl = u.highlight && layer.style.highlight?.color ? { color: layer.style.highlight.color } : {};
-        return <span key={i} style={{ display: 'inline-block', whiteSpace: 'pre', ...(stateToStyle(u) as CSS), ...hl }}>{w}</span>;
-      })}
+      <span style={{ ...plate, display: 'inline-flex', flexWrap: 'wrap', justifyContent: 'inherit' }}>
+        {parts.map((w, i) => {
+          const u = units[i];
+          const highlighted = emphasis.has(i) || (u?.highlight ?? 0) > 0.5;
+          return (
+            <span key={i} style={{ display: 'inline-block', whiteSpace: 'pre', ...(u ? (stateToStyle(u) as CSS) : {}), ...(highlighted && accent ? { color: accent } : {}) }}>
+              {w}
+            </span>
+          );
+        })}
+      </span>
     </div>
   );
 };
@@ -119,7 +137,7 @@ const GraphicView: React.FC<{ frame: LayerFrame; fps: number }> = ({ frame, fps 
           const h = (v / max) * 400 * grow;
           return (
             <g key={i}>
-              <rect x={i * w + w * 0.2} y={520 - h} width={w * 0.6} height={h} rx={12} fill={i === values.length - 1 ? '#ffd400' : '#5b6b7f'} />
+              <rect x={i * w + w * 0.2} y={520 - h} width={w * 0.6} height={h} rx={12} fill={i === values.length - 1 ? ((data.accent as string) ?? '#FFC72C') : '#5b6b7f'} />
               <text x={i * w + w / 2} y={570} fill="#fff" fontSize={32} textAnchor="middle" fontFamily="Inter, Arial">{labels[i]}</text>
               <text x={i * w + w / 2} y={505 - h} fill="#fff" fontSize={40} fontWeight={800} textAnchor="middle" fontFamily="Inter, Arial">{(v * grow).toFixed(1)}</text>
             </g>

@@ -109,6 +109,15 @@ export const BUILT_IN_SCENE_TYPES: readonly SceneTypeDefinition[] = [
     check: (s) => need(hasLayer(s, 'graphic'), 'a chart scene needs a graphic layer'),
   },
   {
+    type: 'map',
+    label: 'Map',
+    description: 'Animated map: zoom to a place, route, pins, highlighted countries.',
+    defaultDurationInSeconds: 4,
+    defaultRole: 'context',
+    allowedLayerTypes: VISUAL,
+    check: (s) => need(s.layers.some((l) => l.type === 'graphic' && l.kind === 'map'), 'a map scene needs a map graphic layer'),
+  },
+  {
     type: 'screenshot',
     label: 'Screenshot',
     description: 'Screenshot of a website, article or tweet with highlight and zoom.',

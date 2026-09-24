@@ -21,7 +21,7 @@ export const exhaustive =
 
 export const LAYER_TYPES = exhaustive<LayerType>()(['background', 'video', 'image', 'text', 'caption', 'shape', 'lottie', 'graphic', 'overlay']);
 export const SCENE_TYPES = exhaustive<BuiltInSceneType>()([
-  'video', 'image', 'title', 'text', 'broll', 'talking_head', 'quote', 'statistic', 'chart', 'screenshot', 'montage', 'endcard', 'custom',
+  'video', 'image', 'title', 'text', 'broll', 'talking_head', 'quote', 'statistic', 'chart', 'map', 'screenshot', 'montage', 'endcard', 'custom',
 ]);
 export const TRANSITION_TYPES = exhaustive<BuiltInTransitionType>()([
   'cut', 'fade', 'crossfade', 'slide', 'wipe', 'zoom', 'zoomBlur', 'whip', 'filmBurn', 'ripple', 'glitch', 'blur', 'flash', 'push', 'flip', 'iris',
@@ -47,7 +47,7 @@ export const BLEND_MODES = exhaustive<BlendMode>()([
   'difference', 'exclusion', 'hue', 'saturation', 'color', 'luminosity',
 ]);
 export const SHAPE_KINDS = exhaustive<ShapeKind>()(['rect', 'ellipse', 'line', 'polygon', 'path']);
-export const GRAPHIC_KINDS = exhaustive<GraphicKind>()(['counter', 'barChart', 'lineChart', 'pieChart', 'progress', 'icon', 'svg', 'lowerThird', 'custom']);
+export const GRAPHIC_KINDS = exhaustive<GraphicKind>()(['counter', 'barChart', 'lineChart', 'pieChart', 'map', 'progress', 'icon', 'svg', 'lowerThird', 'custom']);
 export const OVERLAY_KINDS = exhaustive<OverlayKind>()(['color', 'gradient', 'vignette', 'grain', 'lightLeak', 'texture', 'letterbox', 'asset']);
 export const ASSET_KINDS = exhaustive<AssetKind>()(['video', 'image', 'audio', 'lottie', 'dotlottie', 'font', 'svg', 'json']);
 export const AUDIO_ROLES = exhaustive<AudioRole>()(['music', 'sfx', 'ambience', 'voiceover', 'source']);

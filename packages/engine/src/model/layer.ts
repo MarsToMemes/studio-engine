@@ -206,7 +206,7 @@ export interface LottieLayer extends LayerBase {
   };
 }
 
-export type GraphicKind = 'counter' | 'barChart' | 'lineChart' | 'pieChart' | 'progress' | 'icon' | 'svg' | 'lowerThird' | 'custom';
+export type GraphicKind = 'counter' | 'barChart' | 'lineChart' | 'pieChart' | 'map' | 'progress' | 'icon' | 'svg' | 'lowerThird' | 'custom';
 
 /**
  * Data-driven graphic (animated number, chart, lower third…). The engine only

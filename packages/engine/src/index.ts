@@ -18,3 +18,4 @@ export * from './serialization/index.js';
 export * from './renderer/index.js';
 export * from './adapters/remotion/index.js';
 export * from './ai/index.js';
+export * from './shotplan/index.js';

@@ -10,7 +10,8 @@ src/
 ├── layers.tsx             one small component per layer type (DOM only, all values come from the engine)
 ├── presentations.tsx      builtin → @remotion/transitions, custom → generic engine presentation
 ├── assets.ts              asset src → staticFile()
-└── demoProject.ts         AI-style blueprint → compileBlueprint() → manual edits
+├── demoProject.ts         EngineDemo: AI-style blueprint → compileBlueprint() → manual edits
+└── shotPlanDemo.ts        ShotPlanDemo: ShotPlan (Timeline JSON) → compileShotPlan()
 ```
 
 ## Run
@@ -21,7 +22,7 @@ npm run build                    # from the repo root: this package consumes the
 npm run assets                   # synthetic PNG, WAV narration/music, MP4 clip, Lottie JSON → public/
 npm run typecheck
 npm run studio                   # Remotion Studio
-npm run render -- --scale=0.5 [--frames=0-89] [--stills=20,300] [--browser=/path/to/chrome-headless-shell]
+npm run render -- [--composition=EngineDemo|ShotPlanDemo] --scale=0.5 [--frames=0-89] [--stills=20,300] [--browser=/path/to/chrome-headless-shell]
 ```
 
 ## Notes

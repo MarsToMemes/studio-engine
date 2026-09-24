@@ -5,7 +5,7 @@
 import { compileBlueprint, createLayer, sequentialIds, type AssetRegistry, type BlueprintDocument, type VideoProject } from '@studio-engine/scene-engine';
 
 export const demoAssets: AssetRegistry = {
-  narration: { id: 'narration', kind: 'audio', src: 'narration.wav', durationInSeconds: 18 },
+  narration: { id: 'narration', kind: 'audio', src: 'narration.wav', durationInSeconds: 40 },
   music: { id: 'music', kind: 'audio', src: 'music.wav', durationInSeconds: 30 },
   clip: { id: 'clip', kind: 'video', src: 'clip.mp4', durationInSeconds: 6, width: 640, height: 360, fps: 30 },
   landscape: { id: 'landscape', kind: 'image', src: 'landscape.png', width: 1280, height: 720 },

@@ -50,8 +50,8 @@ function wav(seconds, sample) {
   for (let i = 0; i < n; i++) buf.writeInt16LE(Math.max(-1, Math.min(1, sample(i / rate))) * 32767 | 0, 44 + i * 2);
   return buf;
 }
-// "Narration": syllable-like tone bursts, 18 s.
-writeFileSync(join(pub, 'narration.wav'), wav(18, (t) => {
+// "Narration": syllable-like tone bursts, 40 s.
+writeFileSync(join(pub, 'narration.wav'), wav(40, (t) => {
   const syl = (t * 4) % 1;
   const env = syl < 0.7 ? Math.sin((Math.PI * syl) / 0.7) : 0;
   const f = 180 + 60 * Math.sin(t * 1.3);
@@ -59,6 +59,24 @@ writeFileSync(join(pub, 'narration.wav'), wav(18, (t) => {
 }));
 // Music bed: soft chord, 30 s.
 writeFileSync(join(pub, 'music.wav'), wav(30, (t) => 0.12 * ([220, 277.18, 329.63].reduce((a, f) => a + Math.sin(2 * Math.PI * f * t), 0) / 3) * (0.8 + 0.2 * Math.sin(t))));
+
+// --- Document page: white portrait page with grey "text lines" --------------------
+writeFileSync(join(pub, 'report.png'), png(1000, 1400, (x, y) => {
+  const margin = x < 90 || x > 910 || y < 110 || y > 1300;
+  const line = !margin && (y - 110) % 42 < 14 && x < 910 - ((Math.floor((y - 110) / 42) * 97) % 260);
+  const title = y > 110 && y < 170 && x > 90 && x < 640;
+  if (title) return [30, 30, 30];
+  return line ? [150, 150, 150] : [252, 252, 250];
+}));
+
+// --- SFX: short synthetic impact and glitch ----------------------------------------
+mkdirSync(join(pub, 'sfx'), { recursive: true });
+writeFileSync(join(pub, 'sfx', 'impact.wav'), wav(0.8, (t) => 0.9 * Math.exp(-t * 9) * Math.sin(2 * Math.PI * (60 + 90 * Math.exp(-t * 20)) * t)));
+writeFileSync(join(pub, 'sfx', 'glitch.wav'), wav(0.5, (t) => {
+  const step = Math.floor(t * 60);
+  const noise = Math.sin(step * 12.9898) * 43758.5453;
+  return 0.5 * Math.exp(-t * 4) * ((noise - Math.floor(noise)) * 2 - 1) * (step % 3 === 0 ? 1 : 0.3);
+}));
 
 // --- Lottie: pulsing yellow circle ------------------------------------------------
 const kf = (t, s) => ({ t, s, i: { x: [0.5, 0.5, 0.5], y: [1, 1, 1] }, o: { x: [0.5, 0.5, 0.5], y: [0, 0, 0] } });
