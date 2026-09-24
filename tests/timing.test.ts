@@ -126,8 +126,15 @@ describe('animation windows', () => {
     expect(w.durationInFrames).toBe(45);
   });
   it('typewriter derives its duration from characters per second', () => {
-    const w = resolveAnimationWindow({ type: 'typewriter', charactersPerSecond: 30 }, { ...ctx, textLength: 45 });
+    const w = resolveAnimationWindow({ type: 'typewriter', charactersPerSecond: 30 }, { ...ctx, text: 'x'.repeat(45) });
     expect(w.durationInFrames).toBe(45);
+  });
+  it('counts units with the split of each animation', () => {
+    const text = 'Hello big world';
+    const words = resolveAnimationWindow({ type: 'kineticTypography', style: 'pop', split: 'words', each: 2, durationInFrames: 10 }, { ...ctx, text });
+    const chars = resolveAnimationWindow({ type: 'kineticTypography', style: 'pop', split: 'characters', each: 2, durationInFrames: 10 }, { ...ctx, text });
+    expect(words.endFrame).toBe(10 + 2 * 2);
+    expect(chars.endFrame).toBe(10 + 2 * 14);
   });
   it('stagger spans every unit', () => {
     const w = resolveAnimationWindow({ type: 'stagger', each: 5, animation: { type: 'fade', durationInFrames: 10 } }, { ...ctx, unitCount: 4 });

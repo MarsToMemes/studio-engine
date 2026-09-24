@@ -1,0 +1,31 @@
+# Remotion reference composition
+
+Renders any `VideoProject` from `@studio-engine/scene-engine` with Remotion. This package is **not** part of the engine: the engine has no dependency on Remotion or React, this example depends on both.
+
+```
+src/
+├── Root.tsx               <Composition> + calculateMetadata (project JSON as input props)
+├── EngineComposition.tsx  plan.series → <TransitionSeries>, plan.audio → <Html5Audio>
+├── SceneView.tsx          sampleScene() → background, camera container, layers, edge transitions
+├── layers.tsx             one small component per layer type (DOM only, all values come from the engine)
+├── presentations.tsx      builtin → @remotion/transitions, custom → generic engine presentation
+├── assets.ts              asset src → staticFile()
+└── demoProject.ts         AI-style blueprint → compileBlueprint() → manual edits
+```
+
+## Run
+
+```bash
+npm --prefix ../.. run build     # the example consumes the built engine (file:../..)
+npm install
+npm run assets                   # synthetic PNG, WAV narration/music, MP4 clip, Lottie JSON → public/
+npm run typecheck
+npm run studio                   # Remotion Studio
+npm run render -- --scale=0.5 [--frames=0-89] [--stills=20,300] [--browser=/path/to/chrome-headless-shell]
+```
+
+## Notes
+
+- Springs are computed by Remotion's own `spring()` through `createRemotionAnimationProvider({ spring })`; every other animation uses the engine's deterministic native provider.
+- Remotion's shader transitions (`zoomBlur`, `filmBurn`, `ripple`, `zoomInOut`) need Chrome ≥ 148 with HTML-in-Canvas. The plan only uses them with `buildRemotionPlan(project, { capabilities: { htmlInCanvas: true } })`; otherwise the engine's CSS fallbacks are used.
+- Not implemented in this reference renderer: non-CSS effects (grain, vignette, color grade, LUT…), line/pie charts, Lottie color overrides, asset masks. See SCENE_ENGINE.md §17.

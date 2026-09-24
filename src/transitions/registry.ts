@@ -5,6 +5,7 @@ import { secondsToFrames } from '../timing/frames.js';
 import { BUILT_IN_TRANSITIONS } from './definitions.js';
 import type {
   NormalizedTransition,
+  RemotionCapabilities,
   RemotionPresentationSpec,
   RemotionTimingSpec,
   TransitionDefinition,
@@ -81,10 +82,26 @@ export class TransitionRegistry {
     return d.evaluate(n, getEasingFunction(n.easing)(raw), ctx);
   }
 
-  /** Remotion `<TransitionSeries.Transition>` description, or `undefined` for a cut. */
-  toRemotion(transition: Transition, ctx: TransitionEvaluationContext): { presentation: RemotionPresentationSpec; timing: RemotionTimingSpec } | undefined {
+  /**
+   * State at an already-eased progress in [0, 1]. Use this when the host
+   * applies the timing itself (Remotion passes an eased `presentationProgress`).
+   */
+  evaluateAtProgress(transition: Transition, progress: number, ctx: TransitionEvaluationContext): TransitionFrameState {
+    const n = this.normalize(transition);
+    return this.get(n.type).evaluate(n, Math.min(1, Math.max(0, progress)), ctx);
+  }
+
+  /**
+   * Remotion `<TransitionSeries.Transition>` description, or `undefined` for a cut.
+   * Shader presentations are only chosen when `capabilities.htmlInCanvas` is true.
+   */
+  toRemotion(
+    transition: Transition,
+    ctx: TransitionEvaluationContext & { capabilities?: Partial<RemotionCapabilities> },
+  ): { presentation: RemotionPresentationSpec; timing: RemotionTimingSpec } | undefined {
     const n = this.normalize(transition);
     const d = this.get(n.type);
+    const mapping = { box: ctx.box, capabilities: { htmlInCanvas: ctx.capabilities?.htmlInCanvas ?? false } };
     if (!d.toRemotion || n.durationInFrames <= 0) return undefined;
     const timing: RemotionTimingSpec =
       typeof n.easing === 'object' && n.easing.type === 'spring'
@@ -98,7 +115,7 @@ export class TransitionRegistry {
             },
           }
         : { kind: 'linear', durationInFrames: n.durationInFrames, easing: n.easing };
-    return { presentation: d.toRemotion(n, ctx), timing };
+    return { presentation: d.toRemotion(n, mapping), timing };
   }
 }
 

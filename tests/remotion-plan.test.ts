@@ -32,6 +32,16 @@ describe('buildRemotionPlan', () => {
     expect(push).toMatchObject({ presentation: { kind: 'builtin', name: 'slide', props: { direction: 'from-right' } } });
     expect(last).toMatchObject({ kind: 'sequence', startFrame: 160, edgeOut: { durationInFrames: 20 } });
     expect(plan.customPresentations).toEqual(['whip']);
+    expect(plan.requiredCapabilities).toEqual([]);
+  });
+
+  it('opts into Remotion shader transitions only when the capability is declared', () => {
+    const p = withAudio();
+    p.scenes[1]!.transitionIn = { type: 'zoomBlur', durationInFrames: 10 };
+    expect(buildRemotionPlan(p).customPresentations).toEqual(['zoomBlur']);
+    const withShaders = buildRemotionPlan(p, { capabilities: { htmlInCanvas: true } });
+    expect(withShaders.customPresentations).toEqual([]);
+    expect(withShaders.requiredCapabilities).toEqual(['htmlInCanvas']);
   });
 
   it('places audio in absolute frames with trims and ducking windows', () => {

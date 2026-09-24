@@ -10,7 +10,7 @@
  */
 import { hash01 } from '../animation/noise.js';
 import type { Direction, Vec2 } from '../model/primitives.js';
-import type { NormalizedTransition, TransitionDefinition, TransitionFrameState } from './types.js';
+import type { NormalizedTransition, RemotionMappingContext, RemotionPresentationSpec, RemotionShaderPresentation, TransitionDefinition, TransitionFrameState } from './types.js';
 
 const VEC: Readonly<Record<Direction, Vec2>> = {
   left: { x: -1, y: 0 },
@@ -25,6 +25,13 @@ const OPPOSITE: Readonly<Record<Direction, string>> = { right: 'left', left: 'ri
 export function toRemotionDirection(direction: Direction): string {
   return `from-${OPPOSITE[direction]}`;
 }
+
+/** Remotion shader presentation when HTML-in-Canvas is available, engine fallback otherwise. */
+function shaderOr(name: RemotionShaderPresentation, fallback: string, props: RemotionPresentationSpec['props'], ctx: RemotionMappingContext, fallbackProps: RemotionPresentationSpec['props'] = {}): RemotionPresentationSpec {
+  return ctx.capabilities.htmlInCanvas ? { kind: 'builtin', name, props, requires: 'htmlInCanvas' } : { kind: 'custom', name: fallback, props: fallbackProps };
+}
+
+const num = (t: NormalizedTransition, key: string): number | undefined => (typeof t.params[key] === 'number' ? (t.params[key] as number) : undefined);
 
 const dir = (t: NormalizedTransition, fallback: Direction = 'right'): Direction => t.direction ?? fallback;
 const bump = (p: number) => Math.sin(Math.PI * p);
@@ -135,7 +142,7 @@ export const BUILT_IN_TRANSITIONS: readonly TransitionDefinition[] = [
     defaultEasing: 'easeInOutCubic',
     directional: false,
     defaultIntensity: 1,
-    toRemotion: () => ({ kind: 'custom', name: 'zoom', props: {} }),
+    toRemotion: (_t, ctx) => shaderOr('zoomInOut', 'zoom', {}, ctx),
     evaluate: (t, p) => {
       const k = t.intensity;
       return {
@@ -152,7 +159,7 @@ export const BUILT_IN_TRANSITIONS: readonly TransitionDefinition[] = [
     defaultEasing: 'easeInOutQuad',
     directional: false,
     defaultIntensity: 1,
-    toRemotion: () => ({ kind: 'custom', name: 'zoomBlur', props: {} }),
+    toRemotion: (t, ctx) => shaderOr('zoomBlur', 'zoomBlur', num(t, 'rotation') !== undefined ? { rotation: num(t, 'rotation')! } : {}, ctx),
     evaluate: (t, p) => {
       const k = t.intensity;
       return {
@@ -189,7 +196,7 @@ export const BUILT_IN_TRANSITIONS: readonly TransitionDefinition[] = [
     directional: false,
     defaultIntensity: 1,
     defaultParams: { color: '#ff8a3d' },
-    toRemotion: (t) => ({ kind: 'custom', name: 'filmBurn', props: { color: color(t, '#ff8a3d') } }),
+    toRemotion: (t, ctx) => shaderOr('filmBurn', 'filmBurn', num(t, 'seed') !== undefined ? { seed: num(t, 'seed')! } : {}, ctx, { color: color(t, '#ff8a3d') }),
     evaluate: (t, p) => {
       const b = bump(p) * t.intensity;
       return {
@@ -207,7 +214,8 @@ export const BUILT_IN_TRANSITIONS: readonly TransitionDefinition[] = [
     defaultEasing: 'easeInOut',
     directional: false,
     defaultIntensity: 1,
-    toRemotion: () => ({ kind: 'custom', name: 'ripple', props: {} }),
+    toRemotion: (t, ctx) =>
+      shaderOr('ripple', 'ripple', { ...(num(t, 'amplitude') !== undefined ? { amplitude: num(t, 'amplitude')! } : {}), ...(num(t, 'speed') !== undefined ? { speed: num(t, 'speed')! } : {}) }, ctx),
     evaluate: (t, p) => {
       const s = 1 + 0.03 * t.intensity * Math.sin(4 * Math.PI * p) * (1 - p);
       return {

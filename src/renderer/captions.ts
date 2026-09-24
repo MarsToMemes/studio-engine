@@ -6,6 +6,8 @@ export interface ActiveCaption {
   cueIndex: number;
   /** Index in `cue.words` of the word being spoken, -1 between words or without word timings. */
   wordIndex: number;
+  /** Index of the last word that has started (stays valid in pauses between words), -1 before the first. */
+  lastWordIndex: number;
   word?: CaptionWord;
 }
 
@@ -25,8 +27,17 @@ export function getActiveCaption(track: CaptionTrack, sceneFrame: Frames): Activ
   if (found < 0) return undefined;
   const cue = cues[found]!;
   if (sceneFrame >= cue.endFrame) return undefined;
-  const wordIndex = cue.words ? cue.words.findIndex((w) => sceneFrame >= w.startFrame && sceneFrame < w.endFrame) : -1;
-  return { cue, cueIndex: found, wordIndex, ...(wordIndex >= 0 ? { word: cue.words![wordIndex]! } : {}) };
+  let wordIndex = -1;
+  let lastWordIndex = -1;
+  if (cue.words) {
+    for (let i = 0; i < cue.words.length; i++) {
+      const w = cue.words[i]!;
+      if (w.startFrame > sceneFrame) break;
+      lastWordIndex = i;
+      if (sceneFrame < w.endFrame) wordIndex = i;
+    }
+  }
+  return { cue, cueIndex: found, wordIndex, lastWordIndex, ...(wordIndex >= 0 ? { word: cue.words![wordIndex]! } : {}) };
 }
 
 /**
@@ -36,6 +47,8 @@ export function getActiveCaption(track: CaptionTrack, sceneFrame: Frames): Activ
 export function getCaptionLine(active: ActiveCaption, maxWordsPerLine: number): { words: string[]; activeIndex: number } {
   const words = active.cue.words?.map((w) => w.text) ?? active.cue.text.split(/\s+/).filter(Boolean);
   const size = Math.max(1, maxWordsPerLine);
-  const lineIndex = active.wordIndex >= 0 ? Math.floor(active.wordIndex / size) : 0;
+  // Keep showing the line of the last spoken word during pauses instead of jumping back to the first line.
+  const anchor = active.wordIndex >= 0 ? active.wordIndex : Math.max(0, active.lastWordIndex);
+  const lineIndex = Math.floor(anchor / size);
   return { words: words.slice(lineIndex * size, lineIndex * size + size), activeIndex: active.wordIndex >= 0 ? active.wordIndex % size : -1 };
 }

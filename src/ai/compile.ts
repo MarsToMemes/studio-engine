@@ -64,7 +64,7 @@ function chunkWords<T>(words: T[], size: number): T[][] {
   return out;
 }
 
-/** Caption cues from word timings, or estimated from the script (proportional to characters). */
+/** Caption cues from word timings, or estimated from the script (word timings proportional to characters). */
 export function buildCaptionCues(bp: SceneBlueprint, window: Window, fps: number, ids: IdGenerator, wordsPerCue = 6): CaptionCue[] {
   const length = window.endFrame - window.startFrame;
   if (bp.words && bp.words.length > 0) {
@@ -76,20 +76,20 @@ export function buildCaptionCues(bp: SceneBlueprint, window: Window, fps: number
       })
       .filter((c) => c.endFrame > c.startFrame);
   }
+  // No alignment available: estimate word timings from character counts so
+  // word-by-word caption styles still advance through the whole cue.
   const words = (bp.script ?? '').split(/\s+/).filter(Boolean);
   if (words.length === 0 || length <= 0) return [];
-  const chunks = chunkWords(words, wordsPerCue);
-  const totalChars = words.join(' ').length;
-  const cues: CaptionCue[] = [];
+  const totalChars = words.reduce((n, w) => n + w.length + 1, 0);
   let consumed = 0;
-  for (const chunk of chunks) {
-    const text = chunk.join(' ');
-    const start = Math.round((consumed / totalChars) * length);
+  const timed = words.map((text) => {
+    const startFrame = Math.round((consumed / totalChars) * length);
     consumed += text.length + 1;
-    const end = Math.min(length, Math.round((Math.min(consumed, totalChars) / totalChars) * length));
-    if (end > start) cues.push({ id: ids('cue'), text, startFrame: start, endFrame: end });
-  }
-  return cues;
+    return { text, startFrame, endFrame: Math.round((consumed / totalChars) * length) };
+  });
+  return chunkWords(timed, wordsPerCue)
+    .map((group) => ({ id: ids('cue'), text: group.map((w) => w.text).join(' '), startFrame: group[0]!.startFrame, endFrame: group[group.length - 1]!.endFrame, words: group.filter((w) => w.endFrame > w.startFrame) }))
+    .filter((c) => c.endFrame > c.startFrame);
 }
 
 export function compileBlueprint(doc: BlueprintDocument, options: CompileBlueprintOptions = {}): CompileBlueprintResult {

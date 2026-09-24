@@ -20,7 +20,7 @@ import type { Transition } from '../../model/transition.js';
 import { getUsedAssetIds } from '../../assets/library.js';
 import { resolveTimeline, type ResolvedAudio, type ResolvedTransition } from '../../timing/timeline.js';
 import { defaultTransitionRegistry, type TransitionRegistry } from '../../transitions/registry.js';
-import type { RemotionPresentationSpec, RemotionTimingSpec } from '../../transitions/types.js';
+import type { RemotionCapabilities, RemotionPresentationSpec, RemotionTimingSpec } from '../../transitions/types.js';
 import { SceneValidationError } from '../../validation/issues.js';
 import { validateProject, type ValidationOptions } from '../../validation/validate.js';
 
@@ -92,6 +92,8 @@ export interface RemotionCompositionPlan {
   preload: RemotionPreloadItem[];
   /** Transitions whose Remotion presentation is provided by the engine (not by @remotion/transitions). */
   customPresentations: string[];
+  /** Optional Remotion capabilities this plan relies on. Empty unless enabled in the options. */
+  requiredCapabilities: Array<keyof RemotionCapabilities>;
 }
 
 export interface BuildPlanOptions extends ValidationOptions {
@@ -99,6 +101,11 @@ export interface BuildPlanOptions extends ValidationOptions {
   transitions?: TransitionRegistry;
   /** Validate first (default true). An invalid project never produces a plan. */
   validate?: boolean;
+  /**
+   * Capabilities of the render environment. Off by default so plans render
+   * on any Chrome; enable `htmlInCanvas` to use Remotion's shader transitions.
+   */
+  capabilities?: Partial<RemotionCapabilities>;
 }
 
 function edge(resolved: ResolvedTransition | undefined): { transition: Transition; durationInFrames: number } | undefined {
@@ -116,12 +123,14 @@ export function buildRemotionPlan(project: VideoProject, options: BuildPlanOptio
 
   const series: RemotionSeriesItem[] = [];
   const custom = new Set<string>();
+  const required = new Set<keyof RemotionCapabilities>();
   timeline.scenes.forEach((s, i) => {
     const tIn = s.transitionIn;
     if (i > 0 && tIn && tIn.placement === 'overlap') {
-      const remotion = registry.toRemotion(tIn.transition, { box });
+      const remotion = registry.toRemotion(tIn.transition, { box, ...(options.capabilities ? { capabilities: options.capabilities } : {}) });
       if (remotion) {
         if (remotion.presentation.kind === 'custom') custom.add(remotion.presentation.name);
+        else if (remotion.presentation.requires) required.add(remotion.presentation.requires);
         series.push({ kind: 'transition', fromSceneId: tIn.fromSceneId!, toSceneId: s.sceneId, transition: tIn.transition, ...remotion });
       }
     }
@@ -194,6 +203,7 @@ export function buildRemotionPlan(project: VideoProject, options: BuildPlanOptio
     audio,
     preload,
     customPresentations: [...custom],
+    requiredCapabilities: [...required],
   };
 }
 

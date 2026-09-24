@@ -218,7 +218,7 @@ export const BUILT_IN_COMPOSERS: Readonly<Record<string, SceneComposer>> = {
     const c = ctx.blueprint.chart;
     const out: Layer[] = [...mediaLayers(ctx)];
     if (c) {
-      out.push(createLayer('graphic', { name: 'Chart', kind: c.kind, data: c.data, zIndex: Z.graphic, position: box('center', 0, 6, 80, 64), animations: applyChoice(ctx, 'animation', 'fade-in') }, { ids: ctx.ids }));
+      out.push(createLayer('graphic', { name: 'Chart', kind: c.kind, data: c.data, zIndex: Z.graphic, position: box('center', 0, 0, 80, 54), animations: applyChoice(ctx, 'animation', 'fade-in') }, { ids: ctx.ids }));
       const title = c.title ?? ctx.blueprint.headline;
       if (title) out.push(textLayer(ctx, title, { position: box('top-center', 0, 8, 86, 12), typography: typographyOf(ctx, 'headline-impact'), effect: 'fade-in', fontScale: 0.5, name: 'Chart title' }));
     }

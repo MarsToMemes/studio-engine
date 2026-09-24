@@ -33,6 +33,12 @@ describe('transition registry', () => {
     }
   });
 
+  it('evaluates at an already-eased progress without easing it again', () => {
+    const t = reg.create('crossfade', 30, { easing: 'easeIn' });
+    expect(reg.evaluateAtProgress(t, 0.3, { box }).entering.opacity).toBe(0.3);
+    expect(reg.evaluate(t, t.durationInFrames * 0.3, { box }).entering.opacity!).toBeLessThan(0.3);
+  });
+
   it('flash and dip peak in the middle', () => {
     const flash = reg.create('flash', 30, { durationInFrames: 10 });
     expect(reg.evaluate(flash, 5, { box }).overlay).toMatchObject({ color: '#ffffff', opacity: 1 });
@@ -48,6 +54,15 @@ describe('transition registry', () => {
     expect(mapping('flip')).toMatchObject({ kind: 'builtin', name: 'flip' });
     expect(mapping('iris')).toEqual({ kind: 'builtin', name: 'iris', props: { width: 1920, height: 1080 } });
     for (const t of ['fade', 'slide', 'zoom', 'zoomBlur', 'whip', 'filmBurn', 'ripple', 'glitch', 'blur', 'flash']) expect(mapping(t)?.kind, t).toBe('custom');
+    // With HTML-in-Canvas, Remotion's own shader presentations are used instead of the engine fallback.
+    const shader = (type: string, params = {}) => reg.toRemotion(reg.create(type, 30, { params }), { box, capabilities: { htmlInCanvas: true } })?.presentation;
+    expect(shader('zoomBlur')).toEqual({ kind: 'builtin', name: 'zoomBlur', props: {}, requires: 'htmlInCanvas' });
+    expect(shader('filmBurn', { seed: 3 })).toEqual({ kind: 'builtin', name: 'filmBurn', props: { seed: 3 }, requires: 'htmlInCanvas' });
+    expect(shader('ripple', { amplitude: 2 })).toMatchObject({ name: 'ripple', props: { amplitude: 2 } });
+    expect(shader('zoom')).toMatchObject({ kind: 'builtin', name: 'zoomInOut' });
+    expect(shader('glitch')?.kind).toBe('custom'); // no Remotion equivalent
+    expect(shader('push')).toMatchObject({ kind: 'builtin', name: 'slide' }); // CSS presentations need no capability
+    expect(shader('push')).not.toHaveProperty('requires');
     expect(reg.toRemotion({ type: 'cut', durationInFrames: 0 }, { box })).toBeUndefined();
   });
 

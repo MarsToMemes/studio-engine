@@ -22,16 +22,32 @@ export interface TransitionEvaluationContext {
   box: Dimensions;
 }
 
-export type RemotionBuiltInPresentation = 'fade' | 'slide' | 'wipe' | 'flip' | 'iris' | 'clockWipe';
+/** CSS presentations, available in every Remotion 4 setup. */
+export type RemotionCssPresentation = 'fade' | 'slide' | 'wipe' | 'flip' | 'iris' | 'clockWipe';
+/** WebGL presentations built on Remotion's HTML-in-Canvas (Chrome ≥ 148 with the feature enabled). */
+export type RemotionShaderPresentation = 'zoomBlur' | 'filmBurn' | 'ripple' | 'zoomInOut';
+export type RemotionBuiltInPresentation = RemotionCssPresentation | RemotionShaderPresentation;
+
+/** What the Remotion render environment supports. */
+export interface RemotionCapabilities {
+  /** Remotion HTML-in-Canvas shader presentations can run (Chrome ≥ 148, flag enabled). */
+  htmlInCanvas: boolean;
+}
+
+export interface RemotionMappingContext extends TransitionEvaluationContext {
+  capabilities: RemotionCapabilities;
+}
 
 /**
  * How a transition is expressed with `@remotion/transitions`.
- * - `builtin`: use Remotion's own presentation (no duplication).
+ * - `builtin`: use Remotion's own presentation (no duplication). `requires`
+ *   is set when it only works with an optional capability.
  * - `custom`: use the engine's generic presentation, which renders
- *   `evaluateTransition()` output. Only needed where Remotion has no equivalent.
+ *   `evaluateAtProgress()` output. Used where Remotion has no equivalent, or
+ *   where the Remotion equivalent needs a capability that is not available.
  */
 export type RemotionPresentationSpec =
-  | { kind: 'builtin'; name: RemotionBuiltInPresentation; props: Record<string, JsonValue> }
+  | { kind: 'builtin'; name: RemotionBuiltInPresentation; props: Record<string, JsonValue>; requires?: keyof RemotionCapabilities }
   | { kind: 'custom'; name: string; props: Record<string, JsonValue> };
 
 export type RemotionTimingSpec =
@@ -48,8 +64,8 @@ export interface TransitionDefinition {
   defaultDirection?: Direction;
   defaultIntensity: number;
   defaultParams?: JsonObject;
-  /** Maps a normalized transition to Remotion. `undefined` for `cut` (no transition element). */
-  toRemotion?: (transition: NormalizedTransition, ctx: TransitionEvaluationContext) => RemotionPresentationSpec;
+  /** Maps a normalized transition to Remotion. Omitted for `cut` (no transition element). */
+  toRemotion?: (transition: NormalizedTransition, ctx: RemotionMappingContext) => RemotionPresentationSpec;
   /** Deterministic evaluation. `progress` is already eased. */
   evaluate: (transition: NormalizedTransition, progress: number, ctx: TransitionEvaluationContext) => TransitionFrameState;
 }

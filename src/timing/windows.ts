@@ -2,6 +2,7 @@
  * Timing windows of animations inside their owner (layer or scene).
  * Pure functions; everything is relative to the owner's start.
  */
+import { countTextUnits, getAnimationSplit } from '../core/text.js';
 import type { Animation } from '../model/animation.js';
 import type { Frames } from '../model/primitives.js';
 
@@ -9,9 +10,9 @@ export interface AnimationWindowContext {
   /** Duration of the layer or scene that owns the animation. */
   ownerDurationInFrames: Frames;
   fps: number;
-  /** Number of characters, used by `typewriter` with `charactersPerSecond`. */
-  textLength?: number;
-  /** Number of units (chars/words/lines) for `stagger` and `kineticTypography`. */
+  /** Text of the owner layer. Drives `typewriter` speed and unit counts of split animations. */
+  text?: string;
+  /** Explicit unit count for split animations on non-text layers (chart bars, list items…). */
   unitCount?: number;
 }
 
@@ -26,11 +27,12 @@ export interface AnimationWindow {
   iterations: number;
 }
 
-const DEFAULT_KINETIC_EACH = 3;
+/** Default frames between units for kinetic typography. */
+export const DEFAULT_KINETIC_EACH = 3;
 
 function baseDuration(animation: Animation, ctx: AnimationWindowContext, available: Frames): Frames {
-  if (animation.type === 'typewriter' && animation.charactersPerSecond && ctx.textLength !== undefined) {
-    return Math.max(1, Math.round((ctx.textLength / animation.charactersPerSecond) * ctx.fps));
+  if (animation.type === 'typewriter' && animation.charactersPerSecond && ctx.text !== undefined) {
+    return Math.max(1, Math.round((countTextUnits(ctx.text, 'characters') / animation.charactersPerSecond) * ctx.fps));
   }
   if (animation.durationInFrames !== undefined) return Math.max(0, animation.durationInFrames);
   if (animation.type === 'keyframes') {
@@ -45,8 +47,14 @@ function baseDuration(animation: Animation, ctx: AnimationWindowContext, availab
   return available;
 }
 
+function unitCount(animation: Animation, ctx: AnimationWindowContext): number {
+  if (ctx.unitCount !== undefined) return ctx.unitCount;
+  const split = getAnimationSplit(animation);
+  return split && ctx.text !== undefined ? countTextUnits(ctx.text, split) : 1;
+}
+
 function staggerSpan(animation: Animation, ctx: AnimationWindowContext): Frames {
-  const units = Math.max(1, ctx.unitCount ?? 1);
+  const units = Math.max(1, unitCount(animation, ctx));
   if (animation.type === 'stagger') return animation.each * (units - 1);
   if (animation.type === 'kineticTypography') return (animation.each ?? DEFAULT_KINETIC_EACH) * (units - 1);
   return 0;

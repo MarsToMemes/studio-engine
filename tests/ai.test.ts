@@ -141,11 +141,16 @@ describe('blueprint validation (feedback for the model)', () => {
 });
 
 describe('caption cue estimation', () => {
-  it('spreads cues over the window proportionally to text length', () => {
+  it('spreads cues and estimated word timings over the window', () => {
     const cues = buildCaptionCues({ type: 'text', script: 'one two three four five six seven eight' }, { startFrame: 0, endFrame: 80 }, 30, sequentialIds(), 4);
     expect(cues.map((c) => c.text)).toEqual(['one two three four', 'five six seven eight']);
     expect(cues[0]!.startFrame).toBe(0);
     expect(cues[1]!.endFrame).toBe(80);
+    // Every word gets a contiguous estimated timing, so word-by-word captions advance.
+    const words = cues.flatMap((c) => c.words!);
+    expect(words.map((w) => w.text)).toEqual(['one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight']);
+    for (let i = 1; i < words.length; i++) expect(words[i]!.startFrame).toBe(words[i - 1]!.endFrame);
+    expect(words[2]!.endFrame - words[2]!.startFrame).toBeGreaterThan(words[1]!.endFrame - words[1]!.startFrame); // longer word, longer time
   });
   it('uses word timings when available', () => {
     const cues = buildCaptionCues(

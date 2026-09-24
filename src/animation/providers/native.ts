@@ -12,7 +12,7 @@ import type {
   LeafAnimation,
 } from '../../model/animation.js';
 import type { Direction, Easing, Vec2 } from '../../model/primitives.js';
-import { animationProgressAt } from '../../timing/windows.js';
+import { animationProgressAt, DEFAULT_KINETIC_EACH } from '../../timing/windows.js';
 import { getEasingFunction, springEasing, springValue } from '../easing.js';
 import { lerp, sampleKeyframes } from '../interpolate.js';
 import { hash01, valueNoise } from '../noise.js';
@@ -27,7 +27,6 @@ const DIRECTION_VECTORS: Readonly<Record<Direction, Vec2>> = {
 };
 
 const CENTER: Vec2 = { x: 0.5, y: 0.5 };
-const DEFAULT_KINETIC_EACH = 3;
 
 interface LeafContext extends AnimationEvaluationContext {
   phase: AnimationPhase;

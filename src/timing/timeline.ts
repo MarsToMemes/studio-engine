@@ -279,16 +279,6 @@ function resolveAudioTrack(
   };
 }
 
-function textLengthOf(layer: Layer): number | undefined {
-  return layer.type === 'text' ? layer.text.length : undefined;
-}
-
-function unitCountOf(layer: Layer): number | undefined {
-  if (layer.type !== 'text') return undefined;
-  const words = layer.text.trim().split(/\s+/).filter(Boolean).length;
-  return words;
-}
-
 function resolveAnimations(
   animations: Layer['animations'],
   ownerDuration: Frames,
@@ -300,14 +290,7 @@ function resolveAnimations(
   for (let i = 0; i < animations.length; i++) {
     const animation = animations[i]!;
     if (animation.enabled === false) continue;
-    const textLength = layer ? textLengthOf(layer) : undefined;
-    const unitCount = layer ? unitCountOf(layer) : undefined;
-    const w = resolveAnimationWindow(animation, {
-      ownerDurationInFrames: ownerDuration,
-      fps,
-      ...(textLength !== undefined ? { textLength } : {}),
-      ...(unitCount !== undefined ? { unitCount } : {}),
-    });
+    const w = resolveAnimationWindow(animation, { ownerDurationInFrames: ownerDuration, fps, ...(layer?.type === 'text' ? { text: layer.text } : {}) });
     out.push({ ...w, index: i, absoluteStartFrame: ownerAbsoluteStart + w.startFrame, absoluteEndFrame: ownerAbsoluteStart + w.endFrame });
   }
   return out;

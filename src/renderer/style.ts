@@ -6,7 +6,8 @@
 import type { AnimationState, ClipState } from '../animation/state.js';
 import { sampleKeyframes } from '../animation/interpolate.js';
 import type { Effect } from '../model/effects.js';
-import type { Crop, Layer } from '../model/layer.js';
+import type { Crop, Layer, Mask } from '../model/layer.js';
+import type { TextStyle } from '../model/text.js';
 import type { Rect } from '../core/layout.js';
 
 export type StyleMap = Record<string, string | number>;
@@ -137,6 +138,57 @@ export function stateToStyle(state: Partial<AnimationState>): StyleMap {
   return style;
 }
 
+function svgUrl(width: number, height: number, body: string): string {
+  const svg = `<svg xmlns='http://www.w3.org/2000/svg' width='${r(width)}' height='${r(height)}' viewBox='0 0 ${r(width)} ${r(height)}'>${body}</svg>`;
+  return `url("data:image/svg+xml;utf8,${encodeURIComponent(svg)}")`;
+}
+
+function gradientCss(g: NonNullable<Extract<Mask, { type: 'gradient' }>['gradient']>): string {
+  const stops = g.stops.map((s) => `${s.color} ${r(s.offset * 100)}%`).join(', ');
+  if (g.kind === 'radial') return `radial-gradient(${stops})`;
+  if (g.kind === 'conic') return `conic-gradient(from ${g.angle ?? 0}deg, ${stops})`;
+  return `linear-gradient(${g.angle ?? 180}deg, ${stops})`;
+}
+
+/**
+ * CSS mask for a layer mask. Masks use `mask-image` (not `clip-path`) so they
+ * combine with reveal animations, which use `clip-path`. Shapes are drawn as
+ * inline SVG in layer pixels, so corner radii and feathering are exact.
+ * Asset masks need asset resolution and are left to the renderer (`{}`).
+ */
+export function maskToCss(mask: Mask, rect: Rect): StyleMap {
+  const { width: w, height: h } = rect;
+  let image: string;
+  switch (mask.type) {
+    case 'asset':
+      return {};
+    case 'gradient':
+      image = gradientCss(mask.gradient);
+      break;
+    case 'shape':
+    case 'polygon': {
+      const feather = mask.feather ?? 0;
+      const filter = feather > 0 ? `<filter id='f' x='-50%' y='-50%' width='200%' height='200%'><feGaussianBlur stdDeviation='${r(feather)}'/></filter>` : '';
+      const f = feather > 0 ? ` filter='url(#f)'` : '';
+      // Default shapes shrink by 2σ so a feathered edge fades out inside the box instead of being cut by it.
+      const inset = 2 * feather;
+      let shape: string;
+      if (mask.type === 'polygon') shape = `<polygon points='${mask.points.map((p) => `${r((p.x / 100) * w)},${r((p.y / 100) * h)}`).join(' ')}'${f}/>`;
+      else if (mask.shape === 'circle') shape = `<circle cx='${r(w / 2)}' cy='${r(h / 2)}' r='${r(mask.radius ?? Math.max(0, Math.min(w, h) / 2 - inset))}'${f}/>`;
+      else if (mask.shape === 'ellipse') shape = `<ellipse cx='${r(w / 2)}' cy='${r(h / 2)}' rx='${r(Math.max(0, w / 2 - inset))}' ry='${r(Math.max(0, h / 2 - inset))}'${f}/>`;
+      else shape = `<rect x='${r(inset)}' y='${r(inset)}' width='${r(Math.max(0, w - 2 * inset))}' height='${r(Math.max(0, h - 2 * inset))}' rx='${r(mask.shape === 'roundedRect' ? (mask.radius ?? 24) : 0)}'${f}/>`;
+      image = svgUrl(w, h, `${filter}${shape}`);
+      break;
+    }
+  }
+  const style: StyleMap = { maskImage: image, WebkitMaskImage: image, maskSize: '100% 100%', WebkitMaskSize: '100% 100%', maskRepeat: 'no-repeat', WebkitMaskRepeat: 'no-repeat' };
+  if (mask.invert) {
+    const layered = `linear-gradient(#000, #000), ${image}`;
+    return { ...style, maskImage: layered, WebkitMaskImage: layered, maskComposite: 'exclude', WebkitMaskComposite: 'xor' };
+  }
+  return style;
+}
+
 export function buildLayerStyle(layer: Layer, rect: Rect, state: AnimationState, effectsFilter: string): StyleMap {
   const origin = state.origin ?? layer.transform?.origin;
   const style: StyleMap = {
@@ -155,5 +207,39 @@ export function buildLayerStyle(layer: Layer, rect: Rect, state: AnimationState,
   const clip = combineClip(layer.crop, state.clip, rect);
   if (clip) style.clipPath = clipToCss(clip);
   if (layer.blendMode && layer.blendMode !== 'normal') style.mixBlendMode = layer.blendMode;
+  if (layer.mask) Object.assign(style, maskToCss(layer.mask, rect));
   return style;
+}
+
+/** CSS for a `TextStyle`. Gradient text uses background-clip. */
+export function textStyleToCss(style: TextStyle): StyleMap {
+  const css: StyleMap = {};
+  if (style.fontFamily) css.fontFamily = style.fontFamily;
+  if (style.fontSize !== undefined) css.fontSize = style.fontSize;
+  if (style.fontWeight !== undefined) css.fontWeight = style.fontWeight;
+  if (style.fontStyle) css.fontStyle = style.fontStyle;
+  if (style.lineHeight !== undefined) css.lineHeight = style.lineHeight;
+  if (style.letterSpacing !== undefined) css.letterSpacing = style.letterSpacing;
+  if (style.textTransform) css.textTransform = style.textTransform;
+  if (style.textAlign) css.textAlign = style.textAlign;
+  if (style.color) css.color = style.color;
+  if (style.gradient && style.gradient.colors.length > 1) {
+    css.backgroundImage = `linear-gradient(${style.gradient.angle ?? 90}deg, ${style.gradient.colors.join(', ')})`;
+    css.WebkitBackgroundClip = 'text';
+    css.backgroundClip = 'text';
+    css.color = 'transparent';
+  }
+  if (style.stroke) {
+    css.WebkitTextStroke = `${style.stroke.width}px ${style.stroke.color}`;
+    css.paintOrder = 'stroke fill';
+  }
+  if (style.shadow) css.textShadow = `${style.shadow.x}px ${style.shadow.y}px ${style.shadow.blur}px ${style.shadow.color}`;
+  if (style.background) {
+    css.backgroundColor = style.background.color;
+    css.padding = `${style.background.paddingY ?? 0}px ${style.background.paddingX ?? 0}px`;
+    if (style.background.radius) css.borderRadius = style.background.radius;
+    css.boxDecorationBreak = 'clone';
+    css.WebkitBoxDecorationBreak = 'clone';
+  }
+  return css;
 }

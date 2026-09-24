@@ -10,7 +10,8 @@
 import { createAnimationProviderRegistry, type AnimationProviderRegistry, type EvaluationMode } from '../animation/providers/registry.js';
 import { hasUnitAnimations, type WindowedAnimation } from '../animation/evaluate.js';
 import { resolveLayerBox, type Rect } from '../core/layout.js';
-import type { Animation } from '../model/animation.js';
+import type { Animation, TextSplit } from '../model/animation.js';
+import { getLayerTextSplit } from '../core/text.js';
 import type { Layer } from '../model/layer.js';
 import type { Dimensions } from '../model/primitives.js';
 import type { Scene, VideoProject } from '../model/scene.js';
@@ -43,6 +44,8 @@ export interface CompiledLayer {
   animations: WindowedAnimation[];
   /** True when stagger / kinetic animations must be evaluated per unit. */
   hasUnitAnimations: boolean;
+  /** How text is split into units for those animations. */
+  textSplit: TextSplit | undefined;
   /** Precomputed CSS filter when effects are static, `undefined` when they are animated. */
   staticEffectsFilter: string | undefined;
 }
@@ -78,19 +81,9 @@ export function resolveRenderOptions(options: RenderOptions = {}): ResolvedRende
 
 function windowed(animations: readonly Animation[], ownerDuration: number, fps: number, layer?: Layer): WindowedAnimation[] {
   const out: WindowedAnimation[] = [];
-  const textLength = layer?.type === 'text' ? layer.text.length : undefined;
-  const unitCount = layer?.type === 'text' ? layer.text.trim().split(/\s+/).filter(Boolean).length : undefined;
   for (const animation of animations) {
     if (animation.enabled === false) continue;
-    out.push({
-      animation,
-      window: resolveAnimationWindow(animation, {
-        ownerDurationInFrames: ownerDuration,
-        fps,
-        ...(textLength !== undefined ? { textLength } : {}),
-        ...(unitCount !== undefined ? { unitCount } : {}),
-      }),
-    });
+    out.push({ animation, window: resolveAnimationWindow(animation, { ownerDurationInFrames: ownerDuration, fps, ...(layer?.type === 'text' ? { text: layer.text } : {}) }) });
   }
   return out;
 }
@@ -105,6 +98,7 @@ export function compileLayer(layer: Layer, scene: Scene, canvas: Dimensions, fps
     localEndFrame: localStartFrame + duration,
     animations: windowed(layer.animations, duration, fps, layer),
     hasUnitAnimations: hasUnitAnimations(layer.animations),
+    textSplit: getLayerTextSplit(layer.animations),
     staticEffectsFilter: hasAnimatedEffects(layer.effects) ? undefined : effectsToCssFilter(layer.effects),
   };
 }

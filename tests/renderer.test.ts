@@ -13,11 +13,14 @@ import {
   getCaptionLine,
   getMediaPlayback,
   getNonCssEffects,
+  maskToCss,
   sampleLayerUnits,
   sampleProjectFrame,
   sampleScene,
   sequentialIds,
   splitText,
+  getLayerTextSplit,
+  textStyleToCss,
   visibleText,
   type VideoProject,
 } from '../src/index.js';
@@ -98,6 +101,42 @@ describe('style helpers', () => {
   });
 });
 
+describe('masks', () => {
+  const rect = { x: 0, y: 0, width: 400, height: 200 };
+  const svg = (css: Record<string, string | number>) => decodeURIComponent(String(css.maskImage));
+  it('draws shape and polygon masks as inline SVG in layer pixels', () => {
+    expect(svg(maskToCss({ type: 'shape', shape: 'circle' }, rect))).toContain("<circle cx='200' cy='100' r='100'");
+    expect(svg(maskToCss({ type: 'shape', shape: 'roundedRect', radius: 16 }, rect))).toContain("rx='16'");
+    const feathered = svg(maskToCss({ type: 'shape', shape: 'ellipse', feather: 8 }, rect));
+    expect(feathered).toContain("stdDeviation='8'");
+    expect(feathered).toContain("rx='184' ry='84'"); // shrunk by 2σ so the blur is not clipped by the box
+    expect(svg(maskToCss({ type: 'polygon', points: [{ x: 0, y: 0 }, { x: 100, y: 0 }, { x: 50, y: 100 }] }, rect))).toContain("points='0,0 400,0 200,200'");
+    expect(maskToCss({ type: 'shape', shape: 'rect' }, rect)).toMatchObject({ maskSize: '100% 100%', maskRepeat: 'no-repeat' });
+  });
+  it('supports gradient masks, inversion, and leaves asset masks to the renderer', () => {
+    expect(maskToCss({ type: 'gradient', gradient: { kind: 'linear', angle: 90, stops: [{ color: '#000', offset: 0 }, { color: 'transparent', offset: 1 }] } }, rect).maskImage).toBe('linear-gradient(90deg, #000 0%, transparent 100%)');
+    expect(maskToCss({ type: 'shape', shape: 'circle', invert: true }, rect)).toMatchObject({ maskComposite: 'exclude', WebkitMaskComposite: 'xor' });
+    expect(maskToCss({ type: 'asset', assetId: 'm' }, rect)).toEqual({});
+  });
+  it('is applied by buildLayerStyle alongside clip-path animations', () => {
+    const p = createProject({ id: 'm' });
+    p.scenes = [createScene('custom', { id: 's', durationInFrames: 30, layers: [createLayer('shape', { id: 'l', shape: 'rect', mask: { type: 'shape', shape: 'circle' }, animations: [{ type: 'reveal', direction: 'right', durationInFrames: 10 }] })] })];
+    const c = compileProject(p);
+    const style = sampleScene(c.scenes[0]!, 5, c.options).layers[0]!.style;
+    expect(style.maskImage).toBeDefined();
+    expect(style.clipPath).toMatch(/^inset\(/);
+  });
+});
+
+describe('text style CSS', () => {
+  it('maps a TextStyle to CSS properties', () => {
+    expect(textStyleToCss({ fontSize: 40, fontWeight: 900, color: '#fff', stroke: { color: '#000', width: 6 }, shadow: { x: 0, y: 2, blur: 8, color: 'black' } })).toEqual({
+      fontSize: 40, fontWeight: 900, color: '#fff', WebkitTextStroke: '6px #000', paintOrder: 'stroke fill', textShadow: '0px 2px 8px black',
+    });
+    expect(textStyleToCss({ color: '#fff', gradient: { angle: 45, colors: ['red', 'blue'] } })).toMatchObject({ color: 'transparent', backgroundImage: 'linear-gradient(45deg, red, blue)' });
+  });
+});
+
 describe('content helpers', () => {
   it('captions', () => {
     const track = {
@@ -107,14 +146,23 @@ describe('content helpers', () => {
         { id: 'b', text: 'again', startFrame: 40, endFrame: 50 },
       ],
     };
-    expect(getActiveCaption(track, 15)).toMatchObject({ cueIndex: 0, wordIndex: 1, word: { text: 'big' } });
+    expect(getActiveCaption(track, 15)).toMatchObject({ cueIndex: 0, wordIndex: 1, lastWordIndex: 1, word: { text: 'big' } });
     expect(getActiveCaption(track, 35)).toBeUndefined();
     expect(getActiveCaption(track, 45)).toMatchObject({ cueIndex: 1, wordIndex: -1 });
     expect(getCaptionLine(getActiveCaption(track, 25)!, 2)).toEqual({ words: ['world'], activeIndex: 0 });
+    // A pause between words keeps the current line instead of jumping back to the first one.
+    const gappy = { id: 'g', cues: [{ id: 'c', text: 'a b c', startFrame: 0, endFrame: 60, words: [{ text: 'a', startFrame: 0, endFrame: 10 }, { text: 'b', startFrame: 10, endFrame: 20 }, { text: 'c', startFrame: 40, endFrame: 60 }] }] };
+    const pause = getActiveCaption(gappy, 30)!;
+    expect(pause).toMatchObject({ wordIndex: -1, lastWordIndex: 1 });
+    expect(getCaptionLine(pause, 1)).toEqual({ words: ['b'], activeIndex: -1 });
   });
   it('text', () => {
     expect(splitText('one two  three', 'words')).toEqual(['one ', 'two  ', 'three']);
     expect(splitText('a\nb', 'lines')).toEqual(['a', 'b']);
+    expect(splitText('   ', 'words')).toEqual([]);
+    expect(getLayerTextSplit([{ type: 'fade' }, { type: 'kineticTypography', style: 'pop', split: 'characters' }])).toBe('characters');
+    expect(getLayerTextSplit([{ type: 'stagger', each: 2, animation: { type: 'fade' } }])).toBe('words');
+    expect(getLayerTextSplit([{ type: 'fade' }])).toBeUndefined();
     expect(visibleText('héllo 👋', 0.5)).toBe('héll');
   });
   it('counters and media', () => {
