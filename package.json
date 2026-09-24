@@ -1,0 +1,29 @@
+{
+  "name": "@studio-engine/scene-engine",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Framework-agnostic scene engine for an AI video editing platform. Data model, timing, animation, transitions, presets and a Remotion adapter.",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": "./dist/index.js",
+    "./package.json": "./package.json"
+  },
+  "files": ["dist", "SCENE_ENGINE.md"],
+  "sideEffects": false,
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "check": "npm run typecheck && npm run test && npm run build"
+  },
+  "engines": { "node": ">=20" },
+  "dependencies": {},
+  "devDependencies": {
+    "@types/node": "^22.10.2",
+    "typescript": "^5.9.3",
+    "vitest": "^5.0.1"
+  }
+}
