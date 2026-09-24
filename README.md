@@ -13,6 +13,7 @@ packages/
 .claude/skills/ Official Remotion Agent Skills (remotion-dev/skills), pinned in skills-lock.json.
 ```
 
+- **[STUDIO_ENGINE_HANDOFF.md](./STUDIO_ENGINE_HANDOFF.md)**: everything built so far and how to plug it into the local `montage.py` engine, step by step (start here).
 - **[VIDEO_EDITING_BIBLE.md](./VIDEO_EDITING_BIBLE.md)**: the editorial reference. Every rule has an id (`RHY-03`), a severity and an enforcement mode. The code catalogue is generated from it (`npm run bible -w @studio-engine/scene-engine`), and validation issues cite the rule they enforce.
 - **[SCENE_ENGINE.md](./SCENE_ENGINE.md)**: architecture and API.
 - **[LOCAL_ENGINE_INTEGRATION.md](./LOCAL_ENGINE_INTEGRATION.md)**: contract with the local `montage.py` / FFmpeg engine, which this repository complements and never replaces.
