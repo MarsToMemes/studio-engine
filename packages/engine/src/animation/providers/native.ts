@@ -285,13 +285,25 @@ function unitOrder(index: number, count: number, from: 'start' | 'end' | 'center
   return index;
 }
 
+/**
+ * Position of a unit among the animated units, or -1 when the animation only
+ * targets other units. Delays are counted among targeted units only.
+ */
+function targetPosition(unit: { index: number; count: number }, units: readonly number[] | undefined): { position: number; count: number } {
+  if (!units) return { position: unit.index, count: unit.count };
+  const sorted = [...new Set(units)].sort((a, b) => a - b);
+  return { position: sorted.indexOf(unit.index), count: sorted.length };
+}
+
 export function evaluateNative(animation: Animation, ctx: AnimationEvaluationContext): Partial<AnimationState> {
   const phase = animation.phase ?? 'during';
   const { window } = ctx;
 
   if (animation.type === 'stagger') {
     if (!ctx.unit) return {};
-    const delay = animation.each * unitOrder(ctx.unit.index, ctx.unit.count, animation.from);
+    const target = targetPosition(ctx.unit, animation.units);
+    if (target.position < 0) return {};
+    const delay = animation.each * unitOrder(target.position, target.count, animation.from);
     const p = animationProgressAt(animation, window, ctx.frame, delay);
     const elapsed = Math.max(0, ctx.frame - window.startFrame - delay);
     const inner = animation.animation.easing || !animation.easing ? animation.animation : { ...animation.animation, easing: animation.easing };
@@ -301,7 +313,9 @@ export function evaluateNative(animation: Animation, ctx: AnimationEvaluationCon
   let delay = 0;
   if (animation.type === 'kineticTypography') {
     if (!ctx.unit) return {};
-    delay = (animation.each ?? DEFAULT_KINETIC_EACH) * ctx.unit.index;
+    const target = targetPosition(ctx.unit, animation.units);
+    if (target.position < 0) return {};
+    delay = (animation.each ?? DEFAULT_KINETIC_EACH) * target.position;
   }
   const p = animationProgressAt(animation, window, ctx.frame, delay);
   const elapsed = Math.min(Math.max(0, ctx.frame - window.startFrame - delay), Math.max(0, window.endFrame - window.startFrame));

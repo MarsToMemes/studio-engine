@@ -48,6 +48,7 @@ function baseDuration(animation: Animation, ctx: AnimationWindowContext, availab
 }
 
 function unitCount(animation: Animation, ctx: AnimationWindowContext): number {
+  if ((animation.type === 'stagger' || animation.type === 'kineticTypography') && animation.units) return new Set(animation.units).size;
   if (ctx.unitCount !== undefined) return ctx.unitCount;
   const split = getAnimationSplit(animation);
   return split && ctx.text !== undefined ? countTextUnits(ctx.text, split) : 1;

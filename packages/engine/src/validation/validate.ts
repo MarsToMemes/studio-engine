@@ -214,6 +214,7 @@ function checkAnimation(ctx: Ctx, a: unknown, path: string, ownerDuration: numbe
       if (nested) ctx.issues.error(path, 'animation.stagger.nested', 'stagger cannot contain another stagger');
       if (!isNonNegativeInteger(a.each)) ctx.issues.error(`${path}.each`, 'animation.stagger.each', 'each must be a non-negative integer');
       checkEnum(ctx, a.unit, TEXT_SPLITS, `${path}.unit`, 'animation.split.invalid', false);
+      checkUnits(ctx, a.units, `${path}.units`);
       checkAnimation(ctx, a.animation, `${path}.animation`, undefined, true);
       break;
     case 'typewriter':
@@ -224,6 +225,7 @@ function checkAnimation(ctx: Ctx, a: unknown, path: string, ownerDuration: numbe
     case 'kineticTypography':
       checkEnum(ctx, a.style, KINETIC_STYLES, `${path}.style`, 'animation.kinetic.style');
       checkEnum(ctx, a.split, TEXT_SPLITS, `${path}.split`, 'animation.split.invalid');
+      checkUnits(ctx, a.units, `${path}.units`);
       break;
     case 'camera':
       checkEnum(ctx, a.move, CAMERA_MOVES, `${path}.move`, 'animation.camera.move');
@@ -259,6 +261,11 @@ function checkAnimation(ctx: Ctx, a: unknown, path: string, ownerDuration: numbe
     default:
       break;
   }
+}
+
+function checkUnits(ctx: Ctx, units: unknown, path: string): void {
+  if (units === undefined) return;
+  if (!Array.isArray(units) || units.length === 0 || !units.every(isNonNegativeInteger)) ctx.issues.error(path, 'animation.units.invalid', 'units must be a non-empty array of unit indices');
 }
 
 function checkAnimations(ctx: Ctx, list: unknown, path: string, ownerDuration: number | undefined): void {
@@ -386,6 +393,17 @@ function checkLayer(ctx: Ctx, l: unknown, path: string, sceneDuration: number | 
       if (!isString(l.text)) ctx.issues.error(`${path}.text`, 'layer.text.invalid', 'text must be a string');
       else if (l.text.trim() === '') ctx.issues.warn(`${path}.text`, 'layer.text.empty', 'text layer is empty');
       if (!isObject(l.style)) ctx.issues.error(`${path}.style`, 'layer.style.invalid', 'style must be an object');
+      if (l.decorations !== undefined) {
+        if (!Array.isArray(l.decorations)) ctx.issues.error(`${path}.decorations`, 'layer.decoration.invalid', 'decorations must be an array');
+        else l.decorations.forEach((d, di) => {
+          const dp = `${path}.decorations[${di}]`;
+          if (!isObject(d) || !isOneOf(d.kind, ['underline', 'marker'] as const) || !Array.isArray(d.words) || d.words.length === 0 || !d.words.every(isNonNegativeInteger)) {
+            return ctx.issues.error(dp, 'layer.decoration.invalid', 'decoration needs kind (underline|marker) and word indices');
+          }
+          checkFrameField(ctx, d, 'startFrame', dp, { required: true });
+          checkFrameField(ctx, d, 'durationInFrames', dp, { required: true, positive: true });
+        });
+      }
       break;
     case 'caption':
       if (!isObject(l.style) || !isOneOf(l.style.mode, ['word', 'line', 'block'] as const) || !isObject(l.style.text)) {

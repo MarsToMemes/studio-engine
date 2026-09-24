@@ -86,6 +86,8 @@ export interface Shot {
   highlightedWords?: string[];
   /** Motion skill id from the skill registry. Unknown skills never break the render. */
   motionSkill?: string;
+  /** Parameters of the motion skill (validated against the skill definition). */
+  motionParams?: JsonObject;
   /** Transition INTO this shot. Defaults to `hard_cut`. */
   transition?: string;
   /** Overrides the transition's default duration. */

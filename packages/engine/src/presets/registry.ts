@@ -42,6 +42,19 @@ function checkParam(presetId: string, name: string, def: PresetParameter, value:
   }
 }
 
+/**
+ * Defaults merged with overrides and validated against parameter definitions.
+ * Shared by presets and motion skills. Throws `PresetError`.
+ */
+export function resolveParameterValues(ownerId: string, parameters: Record<string, PresetParameter>, overrides: PresetParams = {}): PresetParams {
+  for (const key of Object.keys(overrides)) {
+    if (!(key in parameters)) throw new PresetError(ownerId, `unknown parameter "${key}"`);
+  }
+  const out: PresetParams = {};
+  for (const [name, def] of Object.entries(parameters)) out[name] = checkParam(ownerId, name, def, overrides[name] ?? def.default);
+  return out;
+}
+
 export interface ApplyContext {
   fps: number;
   canvas?: { width: number; height: number };
@@ -77,13 +90,7 @@ export class PresetRegistry {
 
   /** Defaults merged with overrides, validated. Unknown parameters are rejected. */
   resolveParams(id: string, overrides: PresetParams = {}): PresetParams {
-    const preset = this.get(id);
-    for (const key of Object.keys(overrides)) {
-      if (!(key in preset.parameters)) throw new PresetError(id, `unknown parameter "${key}"`);
-    }
-    const out: PresetParams = {};
-    for (const [name, def] of Object.entries(preset.parameters)) out[name] = checkParam(id, name, def, overrides[name] ?? def.default);
-    return out;
+    return resolveParameterValues(id, this.get(id).parameters, overrides);
   }
 
   /** Build the output of a preset reference, checking its category. */

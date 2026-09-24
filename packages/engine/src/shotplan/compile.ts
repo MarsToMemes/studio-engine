@@ -20,6 +20,7 @@ import { defaultPresetRegistry, type PresetRegistry } from '../presets/registry.
 import { defaultTransitionRegistry, type TransitionRegistry } from '../transitions/registry.js';
 import type { ValidationIssue, ValidationResult } from '../validation/issues.js';
 import { validateProject } from '../validation/validate.js';
+import { defaultMotionSkillRegistry } from '../skills/index.js';
 import { DOCUMENTARY_THEME, type DocumentaryTheme } from './theme.js';
 import { getShotStartFrames, resolveShotTransitions } from './timeline.js';
 import type { Shot, ShotPlan, TranscriptWord } from './types.js';
@@ -35,11 +36,27 @@ export interface ComposedShot {
   roles: Partial<Record<ShotLayerRole, Layer>>;
 }
 
+/** A narration word inside a shot, in frames relative to the shot start. */
+export interface ShotWord {
+  text: string;
+  startFrame: number;
+  endFrame: number;
+}
+
 export interface ShotSkillContext {
   fps: number;
   canvas: Dimensions;
   theme: DocumentaryTheme;
   presets: PresetRegistry;
+  /** Narration words spoken during the shot (empty without a transcript). */
+  words: ShotWord[];
+}
+
+/** Editorial moment emitted by a skill (keyword appears, number lands…). Drives automatic SFX. */
+export interface ShotEvent {
+  kind: 'text' | 'keyword' | 'number' | 'highlight' | 'reveal' | 'impact' | 'glitch' | 'whoosh' | 'chapter';
+  /** Frame relative to the shot start. */
+  at: number;
 }
 
 /**
@@ -47,7 +64,13 @@ export interface ShotSkillContext {
  * animations). Returns the skill id actually applied — possibly a fallback —
  * or `undefined` when nothing was applied.
  */
-export type ShotSkillResolver = (composed: ComposedShot, ctx: ShotSkillContext) => { applied?: string; note?: string };
+export type ShotSkillResolver = (composed: ComposedShot, ctx: ShotSkillContext) => { applied?: string; note?: string; events?: ShotEvent[] };
+
+/** What `compileShotPlan` needs from a skill registry (keeps this module free of the skill catalog). */
+export interface SkillProvider {
+  toResolver(): ShotSkillResolver;
+  availableIds(): Set<string>;
+}
 
 export interface CompileShotPlanOptions extends ShotPlanValidationOptions {
   projectId?: string;
@@ -55,6 +78,9 @@ export interface CompileShotPlanOptions extends ShotPlanValidationOptions {
   theme?: DocumentaryTheme;
   presets?: PresetRegistry;
   transitions?: TransitionRegistry;
+  /** Motion skill registry. Defaults to the built-in skills; `false` compiles without motion. */
+  skills?: SkillProvider | false;
+  /** Custom skill resolver; wins over `skills`. */
   applySkill?: ShotSkillResolver;
 }
 
@@ -240,9 +266,10 @@ function composeLayers(shot: Shot, plan: ShotPlan, theme: DocumentaryTheme, canv
 // Captions
 // ---------------------------------------------------------------------------
 
-function captionTrack(shotId: string, words: TranscriptWord[], window: { start: number; end: number }, duration: number, fps: number, wordsPerCue: number): CaptionTrack | undefined {
+/** Narration words whose start falls inside the shot window, in shot-relative frames. */
+function shotWords(words: readonly TranscriptWord[], window: { start: number; end: number }, duration: number, fps: number): ShotWord[] {
   const toFrame = (ms: number) => Math.round((ms / 1000) * fps);
-  const inShot = words
+  return words
     .filter((w) => {
       const f = toFrame(w.startMs);
       return f >= window.start && f < window.end;
@@ -252,11 +279,14 @@ function captionTrack(shotId: string, words: TranscriptWord[], window: { start: 
       return { text: w.text.trim(), startFrame, endFrame: Math.min(duration, Math.max(startFrame + 1, toFrame(w.endMs) - window.start)) };
     })
     .filter((w) => w.text !== '');
+}
+
+function captionTrack(shotId: string, inShot: readonly ShotWord[], wordsPerCue: number): CaptionTrack | undefined {
   if (inShot.length === 0) return undefined;
   const cues: CaptionCue[] = [];
   for (let i = 0; i < inShot.length; i += wordsPerCue) {
     const group = inShot.slice(i, i + wordsPerCue);
-    cues.push({ id: `${shotId}:cue-${cues.length + 1}`, text: group.map((w) => w.text).join(' '), startFrame: group[0]!.startFrame, endFrame: group[group.length - 1]!.endFrame, words: group });
+    cues.push({ id: `${shotId}:cue-${cues.length + 1}`, text: group.map((w) => w.text).join(' '), startFrame: group[0]!.startFrame, endFrame: group[group.length - 1]!.endFrame, words: group.map((w) => ({ ...w })) });
   }
   return { id: `${shotId}:captions`, cues };
 }
@@ -266,7 +296,9 @@ function captionTrack(shotId: string, words: TranscriptWord[], window: { start: 
 // ---------------------------------------------------------------------------
 
 export function compileShotPlan(plan: ShotPlan, options: CompileShotPlanOptions = {}): CompileShotPlanResult {
-  const pre = validateShotPlan(plan, options);
+  const skills = options.skills === false ? undefined : (options.skills ?? defaultMotionSkillRegistry);
+  const applySkill = options.applySkill ?? skills?.toResolver();
+  const pre = validateShotPlan(plan, { ...options, ...(skills && !options.skillIds ? { skillIds: skills.availableIds() } : {}) });
   if (!pre.valid) return { ok: false, errors: pre.errors, warnings: pre.warnings };
 
   const theme = options.theme ?? DOCUMENTARY_THEME;
@@ -327,11 +359,13 @@ export function compileShotPlan(plan: ShotPlan, options: CompileShotPlanOptions 
     });
     scene.audio = audio;
 
+    const next = starts[i + 1];
+    const window = { start: starts[i]!, end: next ?? starts[i]! + shot.durationInFrames };
+    const words = shotWords(plan.narration?.words ?? [], window, shot.durationInFrames, plan.fps);
+
     // Captions, sliced from the continuous narration transcript.
     if (captionStyle && plan.narration?.words?.length && (plan.captions?.showOn ?? DEFAULT_CAPTION_SHOT_TYPES).includes(shot.type)) {
-      const next = starts[i + 1];
-      const window = { start: starts[i]!, end: next ?? starts[i]! + shot.durationInFrames };
-      const track = captionTrack(shot.id, plan.narration.words, window, shot.durationInFrames, plan.fps, plan.captions?.wordsPerCue ?? 3);
+      const track = captionTrack(shot.id, words, plan.captions?.wordsPerCue ?? 3);
       if (track) {
         scene.captions = track;
         const layer = createLayer('caption', { id: `${shot.id}:captions`, trackId: track.id, style: captionStyle, zIndex: 60, position: box('bottom-center', 0, -6, 90, 16) });
@@ -342,10 +376,11 @@ export function compileShotPlan(plan: ShotPlan, options: CompileShotPlanOptions 
 
     // Motion skill (Motion Skill Registry, injected).
     if (shot.motionSkill) {
-      if (options.applySkill) {
-        const r = options.applySkill({ shot, scene, roles }, { fps: plan.fps, canvas, theme, presets });
+      if (applySkill) {
+        const r = applySkill({ shot, scene, roles }, { fps: plan.fps, canvas, theme, presets, words });
         if (r.note) notes.push(`${shot.id}: ${r.note}`);
         if (r.applied && scene.metadata?.extra) scene.metadata.extra.appliedSkill = r.applied;
+        if (r.events?.length && scene.metadata?.extra) scene.metadata.extra.events = r.events.map((e) => ({ kind: e.kind, at: e.at }));
       } else {
         notes.push(`${shot.id}: motion skill "${shot.motionSkill}" not applied (no skill registry)`);
       }

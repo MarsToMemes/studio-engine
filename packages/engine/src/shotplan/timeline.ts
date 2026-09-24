@@ -58,7 +58,7 @@ export function getShotPlanDuration(plan: Pick<ShotPlan, 'shots' | 'fps'>, regis
   return getTimelineDuration(timedShots(plan, registry));
 }
 
-const PAYLOAD_KEYS = ['subtext', 'number', 'chart', 'map', 'document', 'transitionDurationInFrames'] as const;
+const PAYLOAD_KEYS = ['subtext', 'motionParams', 'number', 'chart', 'map', 'document', 'transitionDurationInFrames'] as const;
 
 const toJson = (v: unknown): JsonValue => JSON.parse(JSON.stringify(v)) as JsonValue;
 

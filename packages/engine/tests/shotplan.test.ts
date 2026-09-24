@@ -196,8 +196,10 @@ describe('ShotPlan → VideoProject', () => {
     }
   });
 
-  it('never fails on skills: reports them until a registry is plugged in', () => {
-    expect(result.notes).toContain('counter: motion skill "slow_zoom" not applied (no skill registry)');
+  it('never fails on skills: without a registry they are reported, with a custom resolver they are delegated', () => {
+    const noMotion = compileShotPlan(plan, { skills: false });
+    expect(noMotion.ok && noMotion.notes).toContain('counter: motion skill "slow_zoom" not applied (no skill registry)');
+    expect(result.ok && result.project.scenes.find((s) => s.id === 'counter')!.metadata!.extra).toMatchObject({ appliedSkill: 'slow_zoom' });
     const seen: string[] = [];
     const withRegistry = compileShotPlan(plan, {
       applySkill: ({ shot, roles }) => {
@@ -251,7 +253,8 @@ describe('shotplan CLI (for external pipelines such as montage.py)', () => {
     const c = run(['compile', '-'], plan);
     expect(c.code).toBe(0);
     expect(JSON.parse(c.out)).toMatchObject({ format: 'studio-engine/project', project: { scenes: expect.any(Array) } });
-    expect(c.err).toMatch(/note: counter: motion skill "slow_zoom" not applied/);
+    const scenes = JSON.parse(c.out).project.scenes as Array<{ id: string; metadata: { extra: { appliedSkill?: string } } }>;
+    expect(scenes.find((s) => s.id === 'counter')!.metadata.extra.appliedSkill).toBe('slow_zoom');
   });
 
   it('reports usage, unreadable input and invalid plans with distinct exit codes', () => {

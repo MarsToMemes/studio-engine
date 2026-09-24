@@ -54,7 +54,8 @@ packages/engine/src/
 ├── renderer/        compileProject / sampleScene: framework-neutral styles per frame
 ├── adapters/remotion/  buildRemotionPlan, audioVolumeAt
 ├── ai/              Blueprint contract, validator, compiler, composers, JSON schema, agent catalog
-└── shotplan/        ShotPlan (AI/UI language), Timeline JSON view, editorial lint, compiler, CLI
+├── shotplan/        ShotPlan (AI/UI language), Timeline JSON view, editorial lint, compiler, CLI
+└── skills/          Motion Skill Registry: 49 skills, fallbacks, renderer capabilities
 ```
 
 Dependency direction: `model` ← `core`/`timing` ← `animation`/`transitions`/`presets` ← `validation`/`renderer` ← `adapters`/`ai`. Lower layers never import higher ones.
@@ -552,7 +553,7 @@ Two deliberate differences with a naive flat timeline: **start frames are derive
 - documents: page fitted with `contain`, highlight regions placed on the *displayed* page and revealed at `at` (sync with the narration), source citation;
 - SFX events → `sfx` audio tracks (gain in dB, −6 dB default); narration → continuous `voiceover` track; music at −18 dB, ducked −6 dB more under the voice (→ −24 dB);
 - captions sliced from the transcribed narration (`narration.words`, ms) into each shot, word-timed; by default only on image / video / document / chart / map shots (full-screen typography is not repeated);
-- motion skills through an injected `applySkill` resolver (the Motion Skill Registry, Phase 3). Without it, skills are reported in `notes`, never fatal.
+- motion skills through the Motion Skill Registry (§16), built in by default; `skills: false` disables motion and a custom `applySkill` resolver can replace it. Skills never fail a compile: fallbacks and problems are reported in `notes`.
 
 **@remotion/captions interop**: `toRemotionCaptions(track, fps, offset)` → `Caption[]` for `createTikTokStyleCaptions()`; `fromRemotionCaptions(captions)` turns a transcription (Whisper `toCaptions()`, ElevenLabs…) into `narration.words`.
 
@@ -566,7 +567,56 @@ node packages/engine/bin/shotplan.mjs compile  plan.json   # VideoProject docume
 
 ---
 
-## 16. Performance
+## 16. Motion Skill Registry (AI = director, engine = execution)
+
+The AI never writes animation code. It picks a **motion skill id** per shot (`Shot.motionSkill`, optional `intensity` and `motionParams`); the registry executes it with deterministic engine data.
+
+```
+AI: "number_pop" ──► MotionSkillRegistry.resolve() ──► skill.apply(shot) ──► layers / animations (data) ──► Remotion
+                          │ not installed / renderer lacks it / nothing to animate
+                          └──► fallback chain ──► … ──► no motion (hard cut). A render never fails on a skill.
+```
+
+```ts
+getAvailableMotionSkills({ category?, shotType?, intensity?, query? })   // metadata only, plain JSON, for the AI
+// { id: 'number_pop', name, category: 'numbers', description, parameters, intensity: 'medium',
+//   duration: { min: 0.4, max: 1.2 }, compatibleShotTypes: ['number'], fallback: ['number_count', 'scale_text'],
+//   events: ['number'], requires?: { graphicKinds: [...] }, version: 1 }
+
+compileShotPlan(plan)                                      // uses defaultMotionSkillRegistry
+compileShotPlan(plan, { skills: createMotionSkillRegistry({ graphicKinds }) })   // another renderer
+compileShotPlan(plan, { skills: false })                   // no motion
+```
+
+- **Only real skills are advertised.** A skill that needs a renderer component (`requires.graphicKinds`) is available only if the renderer declares it. The reference Remotion renderer's component record is typed on `REFERENCE_RENDERER_GRAPHIC_KINDS`: if the engine advertises a component the Remotion package does not implement, the Remotion package does not compile.
+- **Fallbacks** work even for skills that are not installed (`BUILT_IN_SKILL_FALLBACKS`), are cycle-safe, and are reported in `notes` (e.g. `glitch_reveal` → `zoom_reveal` → `text_reveal` → … → no motion). A skill also falls back when the shot has nothing for it to animate (e.g. `keyword_pop` without highlighted words).
+- **Intensity** (`subtle | medium | strong`) scales each skill (e.g. `slow_zoom` 5 % / 7.5 % / 10 %, `punch_in` 106 % / **112 %** / 118 %).
+- **Voice sync.** Skills receive the narration words of their shot (`ShotSkillContext.words`). Keyword effects (`keyword_pop`, `highlight_word`, `underline_word`, `punch_in`, `camera_shake`) land on the frame the word is spoken, never later than 0.5 s before the cut so they are seen.
+- **Events.** Each application records editorial events (`keyword`, `number`, `highlight`, `reveal`, `impact`, `glitch`, `whoosh`, `chapter`, `text`) with their frame in `scene.metadata.extra.events` — the input of automatic sound design (Phase 8).
+- **Parameters** (`motionParams`) are validated against the skill definition; invalid values fall back to defaults with a note.
+
+Catalog (49 skills):
+
+| Category | Skills |
+|---|---|
+| text | `keyword_pop`, `word_reveal`, `character_reveal`, `typewriter`, `slide_text`, `scale_text`, `blur_reveal`, `mask_reveal`, `highlight_word`, `underline_word` |
+| numbers | `number_pop`, `number_count`, `percentage_reveal` (ring), `currency_reveal`, `stat_card` |
+| images | `slow_zoom`, `slow_push`, `punch_in`, `punch_out`, `pan_left`, `pan_right`, `parallax`, `blur_transition`, `camera_shake` |
+| documents | `document_highlight`, `document_zoom`, `document_pan`, `source_reveal` (the camera moves the whole page so highlights stay on their lines) |
+| data | `chart_growth`, `chart_reveal`, `bar_animation`, `line_animation`, `pie_reveal`, `comparison_graph` |
+| maps | `map_zoom`, `map_route`, `location_pin`, `country_highlight`, `business_expansion` |
+| reveals | `glitch_reveal`, `flash_reveal`, `blackout_reveal`, `zoom_reveal`, `text_reveal` |
+| editorial | `chapter_card`, `source_card`, `quote_card`, `lower_third`, `full_screen_statement` |
+
+Engine primitives added for skills: `units` on `stagger` / `kineticTypography` (animate only some words), `TextLayer.decorations` (underline / marker drawn at a frame, optional `textColor`), graphic kinds `statCard` and `comparison`.
+
+Reference renderer components (`packages/remotion/src/graphics`): `Counter` (with percentage ring), `StatCard`, `BarChart`, `LineChart` (optional area), `PieChart`, `Comparison`, `WorldMap`. Maps use **Natural Earth** data via `world-atlas` (ISC; data public domain) projected with `d3-geo` (ISC): offline, no token, no attribution requirement.
+
+Adding a skill: `defineSkill({ id, name, category, description, intensity, duration, compatibleShotTypes, fallback, events, requires?, canApply?, apply })` and `registry.register(skill)`. `apply` only edits engine data (layers, animations, scene camera) of the composed shot, addressed by role (`media`, `text`, `number`, `chart`, `map`, `document`, `highlight`, `source`, `subtext`, `accent`, `captions`).
+
+---
+
+## 17. Performance
 
 - Timeline resolution is O(scenes + layers + audio); scene lookup is O(log n); keyframe sampling is O(log k).
 - Compile once, sample per frame: per-frame work is proportional to the layers of the visible scene(s) only.
@@ -576,10 +626,10 @@ node packages/engine/bin/shotplan.mjs compile  plan.json   # VideoProject docume
 
 ---
 
-## 17. Testing
+## 18. Testing
 
 ```
-npm test          # 167 tests (Vitest)
+npm test          # 234 tests (Vitest)
 npm run check     # typecheck + build + tests, all workspaces
 ```
 
@@ -587,10 +637,10 @@ Covered: scene/layer creation and registries, validation (~50 targeted error/war
 
 ---
 
-## 18. Known limitations and next steps
+## 19. Known limitations and next steps
 
 - **Non-CSS effects** (grain, vignette, color grade, LUT, chromatic aberration, pixelate) are modeled and validated but the reference Remotion renderer does not draw them yet (needs shaders / SVG filters).
-- **Graphic kinds**: the reference renderer draws `counter` and `barChart`; line/pie charts, icons and lower thirds need renderers.
+- **Graphic kinds**: the reference renderer draws `counter`, `statCard`, `barChart`, `lineChart`, `pieChart`, `comparison` and `map`; `progress`, `icon`, `svg`, `lowerThird` and `custom` have no component (no available skill produces them).
 - **Asset masks** (`mask.type: 'asset'`) need asset URL resolution and are left to the renderer (`maskToCss` returns `{}`).
 - **Lottie overrides** (slots, colors, themes) are modeled; the reference renderer does not apply them.
 - **Remotion shader transitions** require Chrome ≥ 148 with HTML-in-Canvas; off by default.

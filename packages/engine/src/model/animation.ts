@@ -154,6 +154,8 @@ export interface StaggerAnimation extends AnimationBase {
   each: Frames;
   from?: 'start' | 'end' | 'center';
   unit?: TextSplit;
+  /** Only animate these unit indices (e.g. the keywords of a sentence). Others are left untouched. */
+  units?: number[];
 }
 
 export interface RevealAnimation extends AnimationBase {
@@ -181,6 +183,8 @@ export interface KineticTypographyAnimation extends AnimationBase {
   /** Frames between units. */
   each?: Frames;
   intensity?: number;
+  /** Only animate these unit indices (e.g. the keywords of a sentence). Others are left untouched. */
+  units?: number[];
 }
 
 /** Depth-based drift. Layers with a higher `depth` move more. */

@@ -141,12 +141,31 @@ export interface ImageLayer extends LayerBase {
   focalPoint?: Vec2;
 }
 
+/**
+ * Animated decoration drawn under / behind words: an underline that draws
+ * itself, or a highlighter marker that sweeps across the word.
+ */
+export interface TextDecoration {
+  kind: 'underline' | 'marker';
+  /** Word indices (whitespace split of the text). */
+  words: number[];
+  /** Relative to the layer start. */
+  startFrame: Frames;
+  durationInFrames: Frames;
+  color?: Color;
+  /** Color of the decorated word once the decoration is drawn (e.g. dark text on a yellow marker). */
+  textColor?: Color;
+  /** Underline thickness in px. */
+  thickness?: number;
+}
+
 export interface TextLayer extends LayerBase {
   type: 'text';
   text: string;
   style: TextStyle;
   /** Word indices to render with `style.highlight`. */
   emphasis?: number[];
+  decorations?: TextDecoration[];
   maxWidth?: number;
   /** Shrink the font to fit the box. */
   autoFit?: boolean;
@@ -206,7 +225,7 @@ export interface LottieLayer extends LayerBase {
   };
 }
 
-export type GraphicKind = 'counter' | 'barChart' | 'lineChart' | 'pieChart' | 'map' | 'progress' | 'icon' | 'svg' | 'lowerThird' | 'custom';
+export type GraphicKind = 'counter' | 'statCard' | 'barChart' | 'lineChart' | 'pieChart' | 'comparison' | 'map' | 'progress' | 'icon' | 'svg' | 'lowerThird' | 'custom';
 
 /**
  * Data-driven graphic (animated number, chart, lower third…). The engine only
