@@ -13,7 +13,7 @@ function animate(target: ComposedShot, animation: JsonObject): void {
   map.data = { ...map.data, animation: { ...previous, ...animation } };
 }
 
-const mapSkill = (init: Omit<SkillDefinition, 'category' | 'compatibleShotTypes' | 'requires' | 'version' | 'parameters' | 'events' | 'fallback'> & Partial<SkillDefinition>) =>
+const mapSkill = (init: Omit<SkillDefinition, 'category' | 'compatibleShotTypes' | 'requires' | 'version' | 'parameters' | 'events' | 'fallback' | 'controlsCamera'> & Partial<SkillDefinition>) =>
   defineSkill({ category: 'maps', compatibleShotTypes: ['map'], requires: { graphicKinds: ['map'] }, ...init });
 
 export const MAP_SKILLS: SkillDefinition[] = [

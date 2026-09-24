@@ -563,7 +563,76 @@ Two deliberate differences with a naive flat timeline: **start frames are derive
 node packages/engine/bin/shotplan.mjs validate plan.json   # issues JSON, exit 1 on errors
 node packages/engine/bin/shotplan.mjs timeline plan.json   # flat Timeline JSON
 node packages/engine/bin/shotplan.mjs compile  plan.json   # VideoProject document (notes on stderr)
+# --stage=final on any command: blocking editorial rules become errors
 ```
+
+### 15.1 Editorial plan (ShotPlan version 2)
+
+- **Structure.** Version 2 adds the editorial layer of VIDEO_EDITING_BIBLE.md on top of the shots: **chapters → scenes → beats → shots**, with the reasoning behind every decision.
+- **Compatibility.** Version 1 plans stay valid and compile as before. Every v2 field is optional in v1; the rules that need that data only apply to plans that carry it.
+
+```ts
+// Shot (added)
+sceneId, beat,                        // setup | development | contradiction | escalation | revelation | proof | payoff | aftermath | transition
+editorialIntent,                      // hook | context | fact | important_fact | keyword | number | statistic | comparison | quote | proof
+                                      // | location | process | contradiction | revelation | aftermath | chapter | conclusion
+reasons: { shot, motion?, camera?, transition?, sfx?, music? },   // the inspectable "why"
+importance?: 1..5, analysis?: { surprise?, informationDensity?, visualPotential?, tension?: 1..5, emotion?, proofRequired? },
+visualHierarchy: { primary, secondary?, background? },
+framing?: wide | medium | close_up | extreme_close_up | overhead | pov,
+camera?: static | push_in | pull_out | pan_left | pan_right | tilt_up | tilt_down | tracking | parallax | punch_in | punch_out | shake,
+focus?: { x, y },                     // percent, target of framing and camera
+musicState?: calm | build | tension | reveal | aftermath,
+hold?: string,                        // reason of an intentional long shot (RHY-04)
+sequence?: string,                    // intentional same-type sequence (exempt from VAR-01)
+decidedBy?: ai | user | rules | migration
+
+// ShotPlan (added)
+chapters?: [{ id, title, question? }]
+scenes?: [{ id, chapterId?, purpose, motifs? }]
+narration.segments?: [{ id, sourceStartMs, sourceEndMs, startFrame }]   // ranges of the narration file on the timeline
+music.cues?: [{ id, atFrame, state, gainDb?, fadeInFrames? }]           // default: derived from musicState
+silences?: [{ id, beforeShotId, durationInFrames, kinds: [music_drop | sfx_drop | ambient_drop] }]
+memory?: { visualMotifs, introducedConcepts, callbackCandidates }
+asset.source: { provider, id, url, license, commercialUse, attributionRequired, attribution, syntheticMedia }
+```
+
+- **Levels.** Editorial scores are ordinal levels from 1 to 5. A decimal such as 0.87 is rejected: these are heuristics, not measurements.
+- **Stages.** `validateShotPlan(plan, { stage })`:
+  - `draft` (default): the blocking editorial rules are warnings, so a plan in progress can still be previewed. These rules are DIR-01 (intent + `reasons.shot`), SCENE-01 (scenes with a purpose), HIER-01 (primary element) and SRC-01/02 (every asset's license, commercial use);
+  - `final`: they are errors. Use it for the final render and to check the AI's output.
+- **Rules checked.**
+  - Every plan:
+    - RHY-01, RHY-03, RHY-04 (`hold`, max 8 s), RHY-08 (no cut inside a spoken word);
+    - VAR-01 (≤ 3 shots of the same type in a row);
+    - CHAP-01 (card 1–1.5 s), CHAP-02 (title ≤ 6 words);
+    - TRANS-02..07 (glitch ≤ 3 per video);
+    - SIL-02/03/04 (silence 0.3–0.6 s, one per chapter and ≥ 60 s apart, followed by a strong event), plus a warning when the voice speaks during a silence.
+  - v2 plans:
+    - SCENE-02 (setup + resolving beat), REV-02 (a revelation needs a setup);
+    - MUS-03 (music changes at scene boundaries or around a revelation);
+    - scene and chapter contiguity.
+- **Segmented narration** (`resolveNarration`):
+  - Without segments, the voice is one file from frame 0 (v1).
+  - With segments, each range of the file plays where it is placed, and the transcript words move with their segment. This drives captions, keyword sync and the RHY-08 check.
+  - Each segment compiles to its own trimmed voice-over track, so the music is ducked **per segment** and comes back up in the pauses (MUS-06).
+  - This is what makes silent chapter cards and controlled silences possible.
+- **Camera** (`skills/camera.ts`):
+  - `camera` moves the media independently of the motion skill;
+  - amplitudes follow CAM-03: push 5 %, 7.5 % or 10 % depending on intensity;
+  - `punch_in`, `punch_out`, `parallax` and `shake` reuse the corresponding skills;
+  - `tracking` is rendered as a pan on a still image, and this is reported;
+  - `framing` crops the media around `focus`;
+  - a skill that already moves the camera (`controlsCamera`: image, document and map skills, chapter cards) wins, and the conflict is reported as `[CAM-02]` in `notes`.
+- **Not rendered yet** (reported in `notes`, never silently ignored): music cues and controlled silences are validated and exported in the Timeline JSON, but the renderer still plays the music at one level with ducking. They are rendered in the sound design phase.
+- **Timeline JSON v2.**
+  - Adds, flat on each shot: `sceneId`, `beat`, `editorialIntent`, `importance`, `camera`, `framing`, `musicState`, `hold`. `reasons`, `visualHierarchy`, `analysis`, `focus`, `sequence` and `decidedBy` travel in `metadata`.
+  - At the top level: `version`, `chapters`, `scenes`, `musicCues` (effective cues, MUS-05), `silences` (with `startFrame`), `narrationSegments`, `memory`.
+  - Still lossless.
+- **Migration.** `migrateShotPlan(v1)` returns a v2 **draft**:
+  - intents are guessed from shot types and marked `decidedBy: 'migration'`;
+  - `reasons` and `visualHierarchy` are left empty on purpose (no invented reasoning), so a `final` validation lists exactly what the editor brain must fill in.
+- **Reference.** `tests/fixtures/editorial-episode.ts`, the bible's McDonald's sequence, is a clean `final` plan: zero errors, zero warnings.
 
 ---
 
@@ -673,13 +742,21 @@ SFX     │◆impact        ◆impact               SFX events, draggable
 - `src/bible/parse.ts` parses the markdown. `src/bible/rules.generated.ts` is generated from it (`npm run bible -w @studio-engine/scene-engine`), and `tests/bible.test.ts` fails when the two diverge or when the markdown breaks the format (sequential ids per domain, prefix matching its section, no blocking heuristic).
 - Validation issues carry `rule` (`ISSUE_CODE_RULES`; structural errors fall under `TECH-02`). The studio shows it as a badge whose tooltip is the rule text. `formatIssues` includes it, so an AI repair loop receives the rule with the error.
 - Checked in code today:
-  - RHY-01, RHY-03;
-  - DIR-03;
-  - TRANS-02, TRANS-04 to TRANS-07;
+  - DIR-01, DIR-03;
+  - SCENE-01, SCENE-02;
+  - HIER-01;
+  - RHY-01, RHY-03, RHY-04, RHY-08;
+  - VAR-01;
+  - CHAP-01, CHAP-02;
+  - REV-02;
+  - MUS-03, MUS-06 (segments);
+  - SIL-02 to SIL-04;
+  - TRANS-02 to TRANS-07;
   - TYPO-04;
+  - SRC-01, SRC-02;
   - TECH-01, TECH-02.
 
-  The other `AUTO` and `HEUR` rules arrive with the phases that introduce their data (editorial plan, rhythm engine, sound design, QC).
+  See `ISSUE_CODE_RULES` for the exact mapping. The other `AUTO` and `HEUR` rules arrive with the rhythm engine, sound design and QC phases.
 
 ---
 
@@ -696,7 +773,7 @@ SFX     │◆impact        ◆impact               SFX events, draggable
 ## 21. Testing
 
 ```
-npm test          # 240 engine tests + 25 studio tests (Vitest)
+npm test          # 264 engine tests + 25 studio tests (Vitest)
 npm run e2e -w @studio-engine/studio   # browser smoke test (after npm run build -w @studio-engine/studio)
 npm run check     # typecheck + build + tests, all workspaces
 ```

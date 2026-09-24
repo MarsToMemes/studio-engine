@@ -21,6 +21,8 @@ import { defaultTransitionRegistry, type TransitionRegistry } from '../transitio
 import type { ValidationIssue, ValidationResult } from '../validation/issues.js';
 import { validateProject } from '../validation/validate.js';
 import { defaultMotionSkillRegistry } from '../skills/index.js';
+import { applyFraming, applyShotCamera, type CameraSkillSource } from '../skills/camera.js';
+import { resolveNarration, resolveSilences } from './editorial.js';
 import { DOCUMENTARY_THEME, type DocumentaryTheme } from './theme.js';
 import { getShotStartFrames, resolveShotTransitions } from './timeline.js';
 import type { Shot, ShotPlan, TranscriptWord } from './types.js';
@@ -70,6 +72,10 @@ export type ShotSkillResolver = (composed: ComposedShot, ctx: ShotSkillContext) 
 export interface SkillProvider {
   toResolver(): ShotSkillResolver;
   availableIds(): Set<string>;
+  /** Optional: lets the shot camera use skill-based moves and detect camera conflicts (CAM-02). */
+  get?(id: string): { id: string; controlsCamera: boolean } | undefined;
+  resolve?: CameraSkillSource['resolve'];
+  resolveParams?: CameraSkillSource['resolveParams'];
 }
 
 export interface CompileShotPlanOptions extends ShotPlanValidationOptions {
@@ -320,6 +326,8 @@ export function compileShotPlan(plan: ShotPlan, options: CompileShotPlanOptions 
 
   const transitions = resolveShotTransitions(plan, registry);
   const starts = getShotStartFrames(plan, registry);
+  // Where the voice really plays (segments), with words in timeline time.
+  const narration = resolveNarration(plan);
   const captionStyle = plan.captions?.enabled ? presets.apply('caption', plan.captions.style ?? 'caption-bold-pop', { fps: plan.fps, canvas }) : undefined;
   if (captionStyle?.activeWord) captionStyle.activeWord = { ...captionStyle.activeWord, color: theme.accent };
 
@@ -338,6 +346,10 @@ export function compileShotPlan(plan: ShotPlan, options: CompileShotPlanOptions 
           ...(shot.intensity ? { intensity: shot.intensity } : {}),
           ...(shot.motionSkill ? { motionSkill: shot.motionSkill } : {}),
           transition: transitions[i]!.id,
+          ...(shot.editorialIntent ? { editorialIntent: shot.editorialIntent } : {}),
+          ...(shot.sceneId ? { sceneId: shot.sceneId } : {}),
+          ...(shot.beat ? { beat: shot.beat } : {}),
+          ...(shot.musicState ? { musicState: shot.musicState } : {}),
         },
       },
     });
@@ -361,10 +373,10 @@ export function compileShotPlan(plan: ShotPlan, options: CompileShotPlanOptions 
 
     const next = starts[i + 1];
     const window = { start: starts[i]!, end: next ?? starts[i]! + shot.durationInFrames };
-    const words = shotWords(plan.narration?.words ?? [], window, shot.durationInFrames, plan.fps);
+    const words = shotWords(narration.words, window, shot.durationInFrames, plan.fps);
 
-    // Captions, sliced from the continuous narration transcript.
-    if (captionStyle && plan.narration?.words?.length && (plan.captions?.showOn ?? DEFAULT_CAPTION_SHOT_TYPES).includes(shot.type)) {
+    // Captions, sliced from the narration transcript.
+    if (captionStyle && narration.words.length && (plan.captions?.showOn ?? DEFAULT_CAPTION_SHOT_TYPES).includes(shot.type)) {
       const track = captionTrack(shot.id, words, plan.captions?.wordsPerCue ?? 3);
       if (track) {
         scene.captions = track;
@@ -385,11 +397,35 @@ export function compileShotPlan(plan: ShotPlan, options: CompileShotPlanOptions 
         notes.push(`${shot.id}: motion skill "${shot.motionSkill}" not applied (no skill registry)`);
       }
     }
+
+    // Shot camera and framing, independent of the motion skill (bible §7).
+    const target = { shot, scene, roles };
+    const framingNote = applyFraming(target);
+    if (framingNote) notes.push(`${shot.id}: ${framingNote}`);
+    if (shot.camera) {
+      const extra = scene.metadata!.extra!;
+      const appliedSkill = typeof extra.appliedSkill === 'string' ? skills?.get?.(extra.appliedSkill) : undefined;
+      const source = skills?.resolve && skills.resolveParams ? { resolve: skills.resolve.bind(skills), resolveParams: skills.resolveParams.bind(skills) } : undefined;
+      const cam = applyShotCamera(target, { fps: plan.fps, canvas, theme, presets, words }, source, appliedSkill?.controlsCamera ? appliedSkill.id : undefined);
+      if (cam.note) notes.push(`${shot.id}: ${cam.note}`);
+      if (cam.applied) extra.camera = cam.applied;
+      if (cam.events?.length) extra.events = [...((extra.events as Array<{ kind: string; at: number }> | undefined) ?? []), ...cam.events.map((e) => ({ kind: e.kind, at: e.at }))];
+    }
     return scene;
   });
 
-  // Continuous narration and ducked music bed, in absolute frames.
-  if (plan.narration) project.audio.push({ id: 'narration', assetId: plan.narration.assetId, role: 'voiceover', startFrame: 0, volume: Math.min(1, dbToGain(plan.narration.gainDb ?? 0)) });
+  // Narration (continuous, or one track per segment) and ducked music bed, in
+  // absolute frames. With segments the music ducks per segment, not for the
+  // whole file (bible MUS-06).
+  if (plan.narration) {
+    const volume = Math.min(1, dbToGain(plan.narration.gainDb ?? 0));
+    if (!narration.segmented) project.audio.push({ id: 'narration', assetId: plan.narration.assetId, role: 'voiceover', startFrame: 0, volume });
+    else for (const v of narration.voice) {
+      project.audio.push({ id: `narration:${v.id}`, assetId: plan.narration.assetId, role: 'voiceover', startFrame: v.startFrame, durationInFrames: v.durationInFrames, trim: { startFrom: v.sourceStartFrame, endAt: v.sourceStartFrame + v.durationInFrames }, volume });
+    }
+  }
+  if (plan.music?.cues?.length || plan.shots.some((s) => s.musicState)) notes.push('music cues are part of the Timeline JSON but not rendered yet (sound design phase): the music keeps one level with ducking');
+  if (resolveSilences(plan, starts).length) notes.push('controlled silences are validated but not rendered yet (sound design phase)');
   if (plan.music) {
     project.audio.push({
       id: 'music',

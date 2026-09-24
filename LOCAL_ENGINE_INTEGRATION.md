@@ -32,7 +32,8 @@ Ce document est le contrat entre les deux. Il est écrit pour être lu par la se
   "assets": {
     "narration": { "id": "narration", "kind": "audio", "src": "http://localhost:8080/ep01/voice.wav", "durationInSeconds": 612.4 },
     "report":    { "id": "report", "kind": "image", "src": "http://localhost:8080/ep01/annual-report.png", "width": 1654, "height": 2339,
-                   "license": { "source": "McDonald's IR", "license": "press use", "commercialUse": true, "attributionRequired": true } }
+                   "source": { "provider": "McDonald's IR", "url": "https://corporate.mcdonalds.com", "license": "press use",
+                               "commercialUse": true, "attributionRequired": true, "attribution": "McDonald's Annual Report 2023" } }
   },
   "narration": { "assetId": "narration", "words": [{ "text": "McDonald's", "startMs": 0, "endMs": 420 }] },
   "music": { "assetId": "music", "gainDb": -18, "duckDb": -6 },
@@ -46,11 +47,22 @@ Ce document est le contrat entre les deux. Il est écrit pour être lu par la se
 - Vidéos : H.264/AAC en MP4. Le Chromium open source ne lit pas le H.264 ; Chrome et le rendu Remotion le lisent. WebM/VP9 est lu partout.
 - `narration.words` : les temps en millisecondes absolues depuis le début du fichier de voix, triés.
 
-**Prochaine phase : plan éditorial v2.** Il ajoute des champs sans rien casser :
-- par plan : scènes et étapes, `editorialIntent`, `reason`, `visualHierarchy`, `camera`, `musicState` ;
-- pour l'épisode : segments de narration, indications musicales (cues) et silences.
+**Plan éditorial v2** (voir SCENE_ENGINE.md §15.1). Un plan v1 reste accepté tel quel. En v2, le moteur local fournit surtout deux choses :
 
-Un plan v1 restera accepté et migré sans perte.
+1. **Les droits de chaque asset**, dans `asset.source` :
+   - `license` et `commercialUse` sont obligatoires en v2 ;
+   - `attributionRequired`, `attribution` et `url` quand ils s'appliquent ;
+   - `syntheticMedia: true` pour une vidéo IA réaliste.
+2. **La narration découpée en segments** (`narration.segments`) : une plage du fichier de voix par phrase, avec `sourceStartMs` et `sourceEndMs` tirés de la transcription mot à mot.
+   - `startFrame` indique où la phrase joue dans la timeline. Il peut être décidé par le cerveau éditorial ; par défaut, les phrases se suivent.
+   - C'est ce qui permet les pauses, les cartons de chapitre muets, les silences avant une révélation et une musique qui remonte entre les phrases.
+   - Les `narration.words` restent en millisecondes **du fichier de voix** : le moteur les place lui-même.
+
+Les champs éditoriaux (intentions, justifications, scènes, caméra, états musicaux) sont produits par le cerveau éditorial de `studio-engine`. Le moteur local n'a pas à les inventer.
+
+Validation :
+- `shotplan validate plan.json` : mode brouillon ;
+- `shotplan validate plan.json --stage=final` : avant le rendu final, les règles bloquantes deviennent des erreurs.
 
 ## Points d'entrée disponibles aujourd'hui
 
@@ -80,14 +92,15 @@ report = json.loads(r.stdout)   # {"valid": bool, "errors": [...], "warnings": [
 > Le dépôt `MarsToMemes/studio-engine` (branche `claude/studio-montage-youtube-doc-dzcmsg`) complète notre moteur. Lis `LOCAL_ENGINE_INTEGRATION.md`, `VIDEO_EDITING_BIBLE.md` et `SCENE_ENGINE.md` §15. **Ne supprime pas `montage.py`.** Ensuite :
 >
 > 1. Décris la structure de `projet.yaml` et le pipeline de `montage.py` (entrées, étapes FFmpeg, sorties), dans un fichier `docs/montage-pipeline.md` à envoyer dans `studio-engine`.
-> 2. Écris un exporteur `projet.yaml` → `plan.json` (ShotPlan v1) :
->    - assets avec `ffprobe` et licences ;
+> 2. Écris un exporteur `projet.yaml` → `plan.json` (ShotPlan, SCENE_ENGINE.md §15 et §15.1) :
+>    - assets avec `ffprobe` et droits dans `asset.source` ;
 >    - voix normalisée à −16 LUFS ;
->    - transcription mot à mot.
+>    - transcription mot à mot ;
+>    - `narration.segments`, une plage par phrase.
 >
 >    Ne change pas le comportement actuel de `montage.py` : ajoute une commande ou un module à côté.
 > 3. Valide le résultat avec `node packages/engine/bin/shotplan.mjs validate plan.json` et corrige les erreurs.
-> 4. Liste ce que `projet.yaml` contient et que ShotPlan ne sait pas encore représenter : ce sera pris en compte dans le plan éditorial v2.
+> 4. Liste ce que `projet.yaml` contient et que ShotPlan ne sait pas encore représenter : ce sera ajouté au format dans une prochaine phase.
 
 ## Questions à régler avec `projet.yaml`
 

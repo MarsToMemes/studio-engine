@@ -4,6 +4,9 @@
  * Pure function: I/O is injected so it is testable.
  *
  *   shotplan validate <plan.json|->   issues as JSON, exit 1 on errors
+ *
+ * Option `--stage=final` (any command): blocking editorial rules (intent,
+ * reasons, scenes, hierarchy, licenses) become errors. Default: draft.
  *   shotplan timeline <plan.json|->   flat Timeline JSON (derived start frames)
  *   shotplan compile  <plan.json|->   VideoProject document (studio-engine/project)
  */
@@ -19,12 +22,13 @@ export interface CliIo {
   stderr: (text: string) => void;
 }
 
-export const SHOTPLAN_CLI_USAGE = 'usage: shotplan <validate|timeline|compile> <plan.json|->';
+export const SHOTPLAN_CLI_USAGE = 'usage: shotplan <validate|timeline|compile> <plan.json|-> [--stage=draft|final]';
 
 /** Returns the process exit code. */
 export function runShotPlanCli(args: readonly string[], io: CliIo): number {
-  const [command, input] = args;
-  if (!command || !input || !['validate', 'timeline', 'compile'].includes(command)) {
+  const stageArg = args.find((a) => a.startsWith('--stage='))?.slice('--stage='.length);
+  const [command, input] = args.filter((a) => !a.startsWith('--'));
+  if (!command || !input || !['validate', 'timeline', 'compile'].includes(command) || (stageArg !== undefined && stageArg !== 'draft' && stageArg !== 'final')) {
     io.stderr(SHOTPLAN_CLI_USAGE);
     return 2;
   }
@@ -35,7 +39,8 @@ export function runShotPlanCli(args: readonly string[], io: CliIo): number {
     io.stderr(`cannot read plan: ${(e as Error).message}`);
     return 2;
   }
-  const validation = validateShotPlan(plan);
+  const stage = stageArg === 'final' ? 'final' : 'draft';
+  const validation = validateShotPlan(plan, { stage });
   if (command === 'validate') {
     io.stdout(JSON.stringify({ valid: validation.valid, errors: validation.errors, warnings: validation.warnings }, null, 2));
     return validation.valid ? 0 : 1;
@@ -48,7 +53,7 @@ export function runShotPlanCli(args: readonly string[], io: CliIo): number {
     io.stdout(JSON.stringify(toTimeline(plan as ShotPlan), null, 2));
     return 0;
   }
-  const result = compileShotPlan(plan as ShotPlan);
+  const result = compileShotPlan(plan as ShotPlan, { stage });
   if (!result.ok) {
     io.stderr(JSON.stringify({ valid: false, errors: result.errors }, null, 2));
     return 1;

@@ -28,6 +28,28 @@ export const ISSUE_CODE_RULES: Readonly<Record<string, string>> = {
   'shot.highlight.notFound': 'TYPO-04',
   'asset.missing': 'TECH-01',
   'asset.kind.mismatch': 'TECH-01',
+  'transition.glitch.max': 'TRANS-03',
+  // Editorial layer (plan version 2 and every plan with the data).
+  'editorial.intent.missing': 'DIR-01',
+  'editorial.reason.missing': 'DIR-01',
+  'camera.unknown': 'DIR-03',
+  'scene.missing': 'SCENE-01',
+  'scene.purpose.missing': 'SCENE-01',
+  'scene.beats': 'SCENE-02',
+  'hierarchy.primary.missing': 'HIER-01',
+  'pacing.hold.max': 'RHY-04',
+  'pacing.cut.word': 'RHY-08',
+  'variety.consecutive': 'VAR-01',
+  'chapter.duration': 'CHAP-01',
+  'chapter.title.long': 'CHAP-02',
+  'reveal.setup': 'REV-02',
+  'music.state.missing': 'MUS-03',
+  'music.state.change': 'MUS-03',
+  'silence.duration': 'SIL-02',
+  'silence.frequency': 'SIL-03',
+  'silence.payoff': 'SIL-04',
+  'asset.license.missing': 'SRC-01',
+  'asset.license.noncommercial': 'SRC-02',
 };
 
 /**

@@ -14,6 +14,7 @@ import {
   validateProject,
   validateShotPlan,
   type ShotPlan,
+  migrateShotPlan,
 } from '../src/index.js';
 import { buildEpisodePlan } from './fixtures/shotplan-episode.js';
 import { codes } from './helpers.js';
@@ -259,6 +260,11 @@ describe('shotplan CLI (for external pipelines such as montage.py)', () => {
 
   it('reports usage, unreadable input and invalid plans with distinct exit codes', () => {
     expect(run(['render', '-'], plan).code).toBe(2);
+    expect(run(['validate', '-', '--stage=later'], plan).code).toBe(2);
+    // A v1 plan migrated to v2 is a valid draft but not a final plan.
+    const draft = JSON.stringify(migrateShotPlan(JSON.parse(plan) as ShotPlan));
+    expect(run(['validate', '-'], draft).code).toBe(0);
+    expect(run(['validate', '-', '--stage=final'], draft).code).toBe(1);
     expect(run(['timeline', '-'], '{oops').code).toBe(2);
     const bad = JSON.parse(plan);
     bad.shots[1].media = 'ghost';

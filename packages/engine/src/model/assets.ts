@@ -25,8 +25,25 @@ export interface Asset {
   /** Content hash, used for dedupe and cache keys. */
   checksum?: string;
   /** Licensing / provenance, e.g. stock provider id. */
-  source?: { provider?: string; id?: string; license?: string; attribution?: string };
+  /** Provenance and rights (bible SRC-01): never use an asset whose rights are uncertain. */
+  source?: AssetSource;
   metadata?: JsonObject;
 }
 
 export type AssetRegistry = Record<AssetId, Asset>;
+
+export interface AssetSource {
+  /** Where the asset comes from: "own production", "Pexels", "McDonald's IR", … */
+  provider?: string;
+  /** Id of the asset at the provider. */
+  id?: string;
+  url?: string;
+  /** License name, e.g. "CC0", "Pexels License", "press use", "own". */
+  license?: string;
+  commercialUse?: boolean;
+  attributionRequired?: boolean;
+  /** Attribution text to publish when required. */
+  attribution?: string;
+  /** True for realistic AI-generated video (YouTube synthetic-content disclosure, bible SRC-04). */
+  syntheticMedia?: boolean;
+}

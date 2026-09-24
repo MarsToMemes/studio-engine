@@ -12,6 +12,7 @@ const sourceText = (t: ComposedShot) => t.shot.document?.source ?? t.shot.subtex
 export const EDITORIAL_SKILLS: SkillDefinition[] = [
   defineSkill({
     id: 'chapter_card',
+    controlsCamera: true, // subtle scene zoom
     name: 'Chapter card',
     category: 'editorial',
     description: 'Chapter number fades in, the title rises word by word, the accent bar draws under it.',
@@ -118,6 +119,7 @@ export const EDITORIAL_SKILLS: SkillDefinition[] = [
   }),
   defineSkill({
     id: 'full_screen_statement',
+    controlsCamera: true, // subtle scene zoom
     name: 'Full-screen statement',
     category: 'editorial',
     description: 'A big statement fills the screen, words slamming in, with a slow push.',

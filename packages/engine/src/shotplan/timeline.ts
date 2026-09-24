@@ -10,6 +10,7 @@ import type { Transition } from '../model/transition.js';
 import { getSceneStartFrames, getTimelineDuration } from '../timing/timeline.js';
 import { defaultTransitionRegistry, type TransitionRegistry } from '../transitions/registry.js';
 import { DEFAULT_TRANSITION_ID, getEditorialTransition, toEngineTransition } from './transitions.js';
+import { deriveMusicCues, resolveSilences } from './editorial.js';
 import type { JsonObject, JsonValue } from '../model/primitives.js';
 import type { Shot, ShotPlan, Timeline, TimelineShot } from './types.js';
 
@@ -58,7 +59,9 @@ export function getShotPlanDuration(plan: Pick<ShotPlan, 'shots' | 'fps'>, regis
   return getTimelineDuration(timedShots(plan, registry));
 }
 
-const PAYLOAD_KEYS = ['subtext', 'motionParams', 'number', 'chart', 'map', 'document', 'transitionDurationInFrames'] as const;
+const PAYLOAD_KEYS = ['subtext', 'motionParams', 'number', 'chart', 'map', 'document', 'transitionDurationInFrames', 'reasons', 'analysis', 'visualHierarchy', 'focus', 'sequence', 'decidedBy'] as const;
+/** Editorial fields that are flat in the Timeline view. */
+const FLAT_EDITORIAL_KEYS = ['sceneId', 'beat', 'editorialIntent', 'importance', 'camera', 'framing', 'musicState', 'hold'] as const;
 
 const toJson = (v: unknown): JsonValue => JSON.parse(JSON.stringify(v)) as JsonValue;
 
@@ -66,11 +69,20 @@ const toJson = (v: unknown): JsonValue => JSON.parse(JSON.stringify(v)) as JsonV
 export function toTimeline(plan: ShotPlan, registry?: TransitionRegistry): Timeline {
   const starts = getShotStartFrames(plan, registry);
   const transitions = resolveShotTransitions(plan, registry);
+  const cues = deriveMusicCues(plan, starts);
+  const silences = resolveSilences(plan, starts);
   return {
+    ...(plan.version === 2 ? { version: 2 as const } : {}),
     fps: plan.fps,
     width: plan.width,
     height: plan.height,
     durationInFrames: getShotPlanDuration(plan, registry),
+    ...(plan.chapters ? { chapters: structuredClone(plan.chapters) } : {}),
+    ...(plan.scenes ? { scenes: structuredClone(plan.scenes) } : {}),
+    ...(cues.length ? { musicCues: cues } : {}),
+    ...(silences.length ? { silences: silences.map((r) => ({ ...structuredClone(r.silence), startFrame: r.startFrame })) } : {}),
+    ...(plan.narration?.segments ? { narrationSegments: structuredClone(plan.narration.segments) } : {}),
+    ...(plan.memory ? { memory: structuredClone(plan.memory) } : {}),
     shots: plan.shots.map((shot, i): TimelineShot => {
       const metadata: Record<string, JsonValue> = { ...(shot.metadata ?? {}) };
       for (const key of PAYLOAD_KEYS) if (shot[key] !== undefined) metadata[key] = toJson(shot[key]);
@@ -89,6 +101,7 @@ export function toTimeline(plan: ShotPlan, registry?: TransitionRegistry): Timel
         transition: transitions[i]!.id,
         ...(shot.intensity ? { intensity: shot.intensity } : {}),
         ...(shot.sfx && shot.sfx[0] ? { sfx: shot.sfx[0].sfx } : {}),
+        ...Object.fromEntries(FLAT_EDITORIAL_KEYS.filter((k) => shot[k] !== undefined).map((k) => [k, shot[k]])),
         ...(Object.keys(metadata).length > 0 ? { metadata } : {}),
       };
     }),
@@ -120,6 +133,7 @@ export function fromTimeline(timeline: Timeline, rest: Pick<ShotPlan, 'assets'> 
     // `hard_cut` is the default: omitting it is equivalent and keeps plans minimal.
     if (transition !== undefined && transition !== DEFAULT_TRANSITION_ID) shot.transition = transition;
     if (t.intensity) shot.intensity = t.intensity;
+    for (const key of FLAT_EDITORIAL_KEYS) if (t[key] !== undefined) (shot as unknown as Record<string, unknown>)[key] = t[key];
     if (Array.isArray(metadata.sfxEvents)) shot.sfx = metadata.sfxEvents as unknown as Shot['sfx'];
     else if (t.sfx) shot.sfx = [{ sfx: t.sfx }];
     delete metadata.sfxEvents;
@@ -132,7 +146,15 @@ export function fromTimeline(timeline: Timeline, rest: Pick<ShotPlan, 'assets'> 
     if (Object.keys(metadata).length > 0) shot.metadata = metadata;
     return shot;
   });
-  const plan: ShotPlan = { version: 1, fps: timeline.fps, width: timeline.width, height: timeline.height, ...rest, shots };
+  // Plan-level editorial data travels in the Timeline unless `rest` provides it.
+  const editorial: Partial<ShotPlan> = {
+    ...(timeline.chapters ? { chapters: timeline.chapters } : {}),
+    ...(timeline.scenes ? { scenes: timeline.scenes } : {}),
+    ...(timeline.silences ? { silences: timeline.silences.map(({ startFrame: _s, ...silence }) => silence) } : {}),
+    ...(timeline.memory ? { memory: timeline.memory } : {}),
+  };
+  const plan: ShotPlan = { version: timeline.version ?? 1, fps: timeline.fps, width: timeline.width, height: timeline.height, ...editorial, ...rest, shots };
+  if (timeline.narrationSegments && plan.narration && !plan.narration.segments) plan.narration = { ...plan.narration, segments: timeline.narrationSegments };
   const derived = getShotStartFrames(plan, registry);
   const startFrameMismatches = timeline.shots
     .map((t, i) => ({ id: t.id, declared: t.startFrame, derived: derived[i]! }))

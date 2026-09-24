@@ -13,6 +13,7 @@
  * The exact flat `Timeline` format (with `startFrame`) is produced by
  * `toTimeline()` and accepted back by `fromTimeline()`.
  */
+import type { Beat, ShotCameraMove, DecidedBy, EditorialIntent, EditorialLevel, Framing, MusicState, SilenceKind } from './vocabulary.js';
 import type { AssetRegistry } from '../model/assets.js';
 import type { JsonObject, JsonValue } from '../model/primitives.js';
 
@@ -99,6 +100,114 @@ export interface Shot {
   map?: MapPayload;
   document?: DocumentPayload;
   metadata?: JsonObject;
+
+  // --- Editorial layer (version 2). Optional in version 1 plans. -------------
+  /** Scene the shot belongs to (`ShotPlan.scenes`). Shots of a scene are contiguous. */
+  sceneId?: string;
+  /** Narrative step inside the scene. */
+  beat?: Beat;
+  /** What the viewer must understand, feel or discover here (bible DIR-01). */
+  editorialIntent?: EditorialIntent;
+  /** Why each decision was taken: the inspectable reasoning shown to the user. `shot` is required in v2. */
+  reasons?: ShotReasons;
+  /** Importance of the information, 1–5. */
+  importance?: EditorialLevel;
+  /** Editorial heuristics from the analyzer (ordinal, never measurements). */
+  analysis?: EditorialAnalysis;
+  visualHierarchy?: VisualHierarchy;
+  framing?: Framing;
+  /** Camera movement on the media, independent of the motion skill (bible §7). */
+  camera?: ShotCameraMove;
+  /** Point of interest for framing and camera moves, percent of the media (default centre). */
+  focus?: { x: number; y: number };
+  musicState?: MusicState;
+  /** Intentional long shot (> 4 s): the reason (bible RHY-04). */
+  hold?: string;
+  /** Id of an intentional sequence of same-type shots (archive montage…), exempt from VAR-01. */
+  sequence?: string;
+  decidedBy?: DecidedBy;
+}
+
+export interface ShotReasons {
+  /** Why this shot: what the viewer must understand, feel or discover. */
+  shot: string;
+  motion?: string;
+  camera?: string;
+  transition?: string;
+  sfx?: string;
+  music?: string;
+}
+
+export interface EditorialAnalysis {
+  surprise?: EditorialLevel;
+  informationDensity?: EditorialLevel;
+  visualPotential?: EditorialLevel;
+  tension?: EditorialLevel;
+  /** Free label, e.g. "tension", "curiosity". */
+  emotion?: string;
+  proofRequired?: boolean;
+}
+
+export interface VisualHierarchy {
+  primary: string;
+  secondary?: string;
+  background?: string;
+}
+
+export interface Chapter {
+  id: string;
+  title: string;
+  /** Question the chapter answers (bible STORY-01, CHAP-05). */
+  question?: string;
+}
+
+export interface EditorialScene {
+  id: string;
+  chapterId?: string;
+  /** Narrative purpose in one sentence (bible SCENE-01). */
+  purpose: string;
+  /** Ids of `memory.visualMotifs` used in the scene. */
+  motifs?: string[];
+}
+
+/**
+ * A range of the narration file placed on the timeline. With segments the
+ * voice-over is no longer one continuous file from frame 0: pauses and
+ * controlled silences become possible and music ducking follows the speech.
+ */
+export interface NarrationSegment {
+  id: string;
+  /** Range of `narration.assetId`, in milliseconds. */
+  sourceStartMs: number;
+  sourceEndMs: number;
+  /** Timeline frame where the range starts playing. */
+  startFrame: number;
+  text?: string;
+}
+
+export interface MusicCue {
+  id: string;
+  /** Absolute timeline frame. */
+  atFrame: number;
+  state: MusicState;
+  /** Music level from this cue, in dB (default: the music gain). */
+  gainDb?: number;
+  fadeInFrames?: number;
+}
+
+/** A controlled silence that ends where `beforeShotId` starts (bible §13). */
+export interface ControlledSilence {
+  id: string;
+  beforeShotId: string;
+  durationInFrames: number;
+  kinds: SilenceKind[];
+}
+
+/** Visual concepts introduced during the episode, for callbacks (bible §21). */
+export interface EditorialMemory {
+  visualMotifs?: Array<{ id: string; description: string; assetId?: string; introducedIn?: string }>;
+  introducedConcepts?: Array<{ id: string; label: string; introducedIn?: string }>;
+  callbackCandidates?: Array<{ motifId: string; callbackShotId?: string; note?: string }>;
 }
 
 /** One transcribed word, in absolute milliseconds (same unit as @remotion/captions). */
@@ -110,19 +219,24 @@ export interface TranscriptWord {
 }
 
 export interface ShotPlan {
-  version: 1;
+  /** 1: shots only. 2: editorial plan (scenes, intents, reasons, camera, music, silences). */
+  version: 1 | 2;
   fps: number;
   width: number;
   height: number;
   shots: Shot[];
   assets: AssetRegistry;
-  /** Continuous voice-over for the whole episode, starting at frame 0. */
+  /**
+   * Voice-over. Without `segments` it is one continuous file starting at
+   * frame 0; with `segments`, ranges of the file are placed on the timeline.
+   */
   narration?: {
     assetId: string;
-    /** Word timings from transcription / forced alignment. Drives captions. */
+    /** Word timings from transcription / forced alignment, in milliseconds of the narration FILE. Drives captions. */
     words?: TranscriptWord[];
     /** Gain applied to the narration asset in dB (after loudness normalisation). */
     gainDb?: number;
+    segments?: NarrationSegment[];
   };
   music?: {
     assetId: string;
@@ -130,6 +244,8 @@ export interface ShotPlan {
     gainDb?: number;
     /** Extra attenuation while the voice plays. Default -6 dB (→ -24 dB under voice). */
     duckDb?: number;
+    /** Explicit music cues. Default: derived from the shots' `musicState`. */
+    cues?: MusicCue[];
   };
   captions?: {
     enabled: boolean;
@@ -143,6 +259,11 @@ export interface ShotPlan {
      */
     showOn?: ShotType[];
   };
+  // --- Editorial layer (version 2) -------------------------------------------
+  chapters?: Chapter[];
+  scenes?: EditorialScene[];
+  silences?: ControlledSilence[];
+  memory?: EditorialMemory;
   metadata?: JsonObject;
 }
 
@@ -160,13 +281,33 @@ export interface TimelineShot {
   intensity?: Intensity;
   /** First SFX event. The full list is in `metadata.sfxEvents`. */
   sfx?: string;
+  // Editorial layer (v2). `reasons`, `visualHierarchy`, `analysis`, `focus`,
+  // `sequence` and `decidedBy` travel in `metadata`.
+  sceneId?: string;
+  beat?: Beat;
+  editorialIntent?: EditorialIntent;
+  importance?: EditorialLevel;
+  camera?: ShotCameraMove;
+  framing?: Framing;
+  musicState?: MusicState;
+  hold?: string;
   metadata?: Record<string, JsonValue>;
 }
 
 export interface Timeline {
+  /** Version of the plan it was derived from (absent = 1). */
+  version?: 1 | 2;
   fps: number;
   width: number;
   height: number;
   durationInFrames: number;
   shots: TimelineShot[];
+  chapters?: Chapter[];
+  scenes?: EditorialScene[];
+  /** Effective music cues: explicit ones, or derived from the shots' `musicState` (bible MUS-05). */
+  musicCues?: MusicCue[];
+  /** Controlled silences with their resolved position. */
+  silences?: Array<ControlledSilence & { startFrame: number }>;
+  narrationSegments?: NarrationSegment[];
+  memory?: EditorialMemory;
 }

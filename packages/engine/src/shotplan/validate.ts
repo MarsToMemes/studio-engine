@@ -12,6 +12,7 @@ import { ruleForIssue } from '../bible/index.js';
 import { defaultTransitionRegistry, type TransitionRegistry } from '../transitions/registry.js';
 import { getEditorialTransition } from './transitions.js';
 import { resolveShotTransitions } from './timeline.js';
+import { validateEditorialLayer, type ValidationStage } from './validate-editorial.js';
 import type { Shot, ShotPlan, ShotType } from './types.js';
 
 export const SHOT_TYPES: readonly ShotType[] = ['image', 'video', 'text', 'number', 'document', 'chart', 'map', 'revelation', 'chapter'];
@@ -25,6 +26,8 @@ export const PACING = {
   maxStaticSeconds: 4,
   /** Share of cuts that may use a spectacular transition before it is flagged. */
   maxSpectacularRatio: 0.25,
+  /** Glitch transitions per video (bible TRANS-03). */
+  maxGlitches: 3,
 } as const;
 
 const MEDIA_KINDS: Partial<Record<ShotType, readonly AssetKind[]>> = {
@@ -42,6 +45,12 @@ export interface ShotPlanValidationOptions {
   /** Resolves a SFX id to an asset id. Defaults to looking the id up in `plan.assets`. */
   resolveSfx?: (id: string) => string | undefined;
   transitions?: TransitionRegistry;
+  /**
+   * `draft` (default): blocking editorial rules (intent, reasons, scenes,
+   * hierarchy, licenses) are warnings, so a plan in progress can be previewed.
+   * `final`: they are errors (before the final render, or for the AI's output).
+   */
+  stage?: ValidationStage;
 }
 
 /** Words of a text, normalised for highlight matching. */
@@ -70,7 +79,7 @@ function collectShotPlanIssues(input: unknown, options: ShotPlanValidationOption
     return issues.result();
   }
   const plan = input as Partial<ShotPlan> & Record<string, unknown>;
-  if (plan.version !== 1) issues.error('version', 'plan.version', 'version must be 1');
+  if (plan.version !== 1 && plan.version !== 2) issues.error('version', 'plan.version', 'version must be 1 or 2');
   const fpsOk = isFiniteNumber(plan.fps) && plan.fps > 0 && plan.fps <= 240;
   if (!fpsOk) issues.error('fps', 'plan.fps', 'fps must be a number in (0, 240]');
   for (const k of ['width', 'height'] as const) {
@@ -192,7 +201,8 @@ function collectShotPlanIssues(input: unknown, options: ShotPlanValidationOption
       if (isHookShot(shot, i) && (seconds < PACING.hook.min || seconds > PACING.hook.max)) {
         issues.warn(`${p}.durationInFrames`, 'pacing.hook', `hook lasts ${seconds.toFixed(2)} s (recommended ${PACING.hook.min}–${PACING.hook.max} s)`);
       }
-      if (seconds > PACING.maxStaticSeconds && !shot.motionSkill && shot.type !== 'video') {
+      const moving = shot.motionSkill !== undefined || (shot.camera !== undefined && shot.camera !== 'static');
+      if (seconds > PACING.maxStaticSeconds && !moving && !shot.hold && shot.type !== 'video') {
         issues.warn(`${p}.motionSkill`, 'pacing.static', `${seconds.toFixed(1)} s without a motion skill: add movement, a cut or a new element`);
       }
     }
@@ -222,6 +232,9 @@ function collectShotPlanIssues(input: unknown, options: ShotPlanValidationOption
     if (cuts > 0 && spectacular >= 2 && spectacular / cuts > PACING.maxSpectacularRatio) {
       issues.warn('shots', 'transition.spectacular.ratio', `${spectacular} of ${cuts} cuts use spectacular transitions (max ${Math.round(PACING.maxSpectacularRatio * 100)}%)`);
     }
+    const glitches = resolved.filter((r) => r.id === 'glitch').length;
+    if (glitches > PACING.maxGlitches) issues.warn('shots', 'transition.glitch.max', `${glitches} glitch transitions (max ${PACING.maxGlitches} per video, major revelations only)`);
+    if (assets) validateEditorialLayer(plan as ShotPlan, issues, options.stage ?? 'draft', options.transitions);
   }
   return issues.result();
 }

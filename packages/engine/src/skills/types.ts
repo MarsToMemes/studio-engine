@@ -26,6 +26,11 @@ export interface MotionSkill {
   fallback: string[];
   /** Editorial events the skill emits (for automatic sound design). */
   events: ShotEvent['kind'][];
+  /**
+   * The skill moves the camera itself (media layer or scene zoom/pan). A
+   * shot `camera` is then ignored (bible CAM-02: one camera move per shot).
+   */
+  controlsCamera: boolean;
   /** Renderer capabilities the skill needs. */
   requires?: { graphicKinds?: GraphicKind[] };
   version: number;

@@ -8,6 +8,7 @@
  */
 import {
   normalizeWord,
+  resolveNarration,
   resolveShotTransitions,
   toTimeline,
   type SfxEvent,
@@ -61,8 +62,9 @@ export interface TimelineLayout {
 
 const msToFrame = (ms: number, fps: number) => Math.round((ms / 1000) * fps);
 
+/** Narration words where they are spoken on the timeline (segments included). */
 export function narrationWords(plan: ShotPlan): WordMark[] {
-  return (plan.narration?.words ?? []).map((w) => ({ text: w.text, startFrame: msToFrame(w.startMs, plan.fps), endFrame: Math.max(msToFrame(w.startMs, plan.fps) + 1, msToFrame(w.endMs, plan.fps)) }));
+  return resolveNarration(plan).words.map((w) => ({ text: w.text, startFrame: msToFrame(w.startMs, plan.fps), endFrame: Math.max(msToFrame(w.startMs, plan.fps) + 1, msToFrame(w.endMs, plan.fps)) }));
 }
 
 /** Everything the timeline draws, derived from the plan (and the compiled project for skill events). */

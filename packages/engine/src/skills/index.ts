@@ -39,3 +39,4 @@ export const defaultMotionSkillRegistry = createMotionSkillRegistry();
 export function getAvailableMotionSkills(filter?: Parameters<MotionSkillRegistry['getAvailableMotionSkills']>[0]) {
   return defaultMotionSkillRegistry.getAvailableMotionSkills(filter);
 }
+export * from './camera.js';
