@@ -17,10 +17,10 @@ SCRIPT + VOICEOVER + ASSETS
      (renderer-agnostic, per frame)          (composition, series, audio, preload)
                └───────────────────┬───────────────────┘
                                    ▼
-             Remotion composition (examples/remotion) → renderMedia() → MP4
+             Remotion composition (packages/remotion) → renderMedia() → MP4
 ```
 
-This document is meant to be enough to work on the engine without reading the whole source. Every name in `code` is an export of `src/index.ts`.
+This document is meant to be enough to work on the engine without reading the whole source. Every name in `code` is an export of `packages/engine/src/index.ts`.
 
 ---
 
@@ -29,7 +29,7 @@ This document is meant to be enough to work on the engine without reading the wh
 | Principle | What it means in practice |
 |---|---|
 | **Data only** | Scenes, layers, animations, transitions, effects and presets are plain JSON-serialisable objects. No classes, functions, `Infinity`, `NaN` or `Date` in the model. |
-| **No framework in the model** | Nothing under `src/` imports React or Remotion. The Remotion code lives in `examples/remotion/` and consumes the engine. |
+| **No framework in the model** | Nothing in `packages/engine` imports React or Remotion. The Remotion code lives in `packages/remotion` and consumes the engine. |
 | **Integer frames everywhere** | All timing is in frames. Seconds only appear at the edges (AI blueprints, `secondsToFrames`). |
 | **Timing is derived, never duplicated** | A scene stores its own `durationInFrames`. Absolute starts, ends, overlaps and clip positions are computed by `resolveTimeline()`. |
 | **Deterministic** | Same input → same pixels, on any machine, in any frame order. Noise is seeded (`hash01`, `valueNoise`), springs are analytic, ids can be sequential. Required by Remotion's parallel rendering. |
@@ -41,7 +41,7 @@ This document is meant to be enough to work on the engine without reading the wh
 ## 2. Module map
 
 ```
-src/
+packages/engine/src/
 ├── model/           Types only (+ runtime enum lists in constants.ts)
 ├── core/            Factories, ids, aspect ratios, layout (LayerBox → px), scene type registry, text splitting
 ├── assets/          AssetLibrary (dedupe), reference collection, pruning
@@ -458,7 +458,7 @@ plan.preload       // used assets, once each
 plan.customPresentations / plan.requiredCapabilities
 ```
 
-Mapping to components (see `examples/remotion/src`):
+Mapping to components (see `packages/remotion/src`):
 
 | Engine | Remotion |
 |---|---|
@@ -470,7 +470,7 @@ Mapping to components (see `examples/remotion/src`):
 | `spring` animations | `createRemotionAnimationProvider({ spring })` registered as default provider |
 | `plan.audio` | `<Html5Audio>` with `trimBefore` / `trimAfter` and a volume callback (fades + ducking under voiceover) |
 
-**Verified end-to-end.** `examples/remotion` compiles an AI-style blueprint (6 scenes: title, b-roll video, statistic, chart, quote with a feathered mask, end card with Lottie; narration + ducked music; captions) and renders it with `@remotion/renderer` (`renderMedia`, H.264 + AAC, 540 frames). The output was checked with `ffprobe` and by inspecting stills at key frames of every scene. See `examples/remotion/README.md`.
+**Verified end-to-end.** `packages/remotion` compiles an AI-style blueprint (6 scenes: title, b-roll video, statistic, chart, quote with a feathered mask, end card with Lottie; narration + ducked music; captions) and renders it with `@remotion/renderer` (`renderMedia`, H.264 + AAC, 540 frames). The output was checked with `ffprobe` and by inspecting stills at key frames of every scene. See `packages/remotion/README.md`.
 
 ---
 

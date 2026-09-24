@@ -1,25 +1,24 @@
 # studio-engine
 
-Scene engine for an AI video editing platform: **script + voiceover + assets → scenes → timeline → animation → transitions → final video**, rendered with [Remotion](https://www.remotion.dev).
+AI-first documentary video engine: **script + voiceover + assets → scenes → timeline → animation → transitions → final video**, rendered with [Remotion](https://www.remotion.dev).
 
-- `src/` — `@studio-engine/scene-engine`: typed scene model, validation, timing, animation and transition systems, presets, serialization, a framework-agnostic renderer layer, the Remotion composition plan and the AI blueprint compiler. Zero runtime dependencies.
-- `examples/remotion/` — reference Remotion composition that renders any project to MP4 (separate package, own dependencies).
-- **[SCENE_ENGINE.md](./SCENE_ENGINE.md)** — architecture and API documentation.
+```
+packages/
+├── engine/     @studio-engine/scene-engine — typed scene model, validation, timing, animation, transitions,
+│               presets, serialization, framework-agnostic renderer, Remotion plan, AI blueprint. Zero runtime deps.
+└── remotion/   @studio-engine/remotion — Remotion composition, preview (@remotion/player) and render (@remotion/renderer).
+.claude/skills/ Official Remotion Agent Skills (remotion-dev/skills), pinned in skills-lock.json.
+```
+
+**[SCENE_ENGINE.md](./SCENE_ENGINE.md)** documents the architecture and API.
 
 ```bash
-npm install
-npm run check        # typecheck + tests + build
+npm install              # npm workspaces
+npm run check            # engine typecheck + build + remotion typecheck + tests
 
-cd examples/remotion
-npm install
-npm run assets       # generates offline test media into public/
-npm run render -- --scale=0.5   # → out/demo.mp4
+cd packages/remotion
+npm run assets           # generates offline test media into public/
+npm run render -- --scale=0.5   # → out/demo.mp4 (540p preview); omit --scale for 1080p
 ```
 
-```ts
-import { compileBlueprint, buildRemotionPlan, validateProject } from '@studio-engine/scene-engine';
-
-const result = compileBlueprint(blueprintFromLLM, { assets });
-if (!result.ok) throw new Error(result.errors.map((e) => `${e.path}: ${e.message}`).join('\n'));
-const plan = buildRemotionPlan(result.project); // → <TransitionSeries>, audio, preload
-```
+Restore the agent skills on a fresh machine: `npx skills experimental_install`.

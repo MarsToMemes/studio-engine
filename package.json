@@ -1,37 +1,18 @@
 {
-  "name": "@studio-engine/scene-engine",
-  "version": "0.1.0",
+  "name": "studio-engine",
   "private": true,
-  "description": "Framework-agnostic scene engine for an AI video editing platform. Data model, timing, animation, transitions, presets and a Remotion adapter.",
-  "type": "module",
-  "main": "./dist/index.js",
-  "types": "./dist/index.d.ts",
-  "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.js"
-    },
-    "./package.json": "./package.json"
-  },
-  "files": [
-    "dist",
-    "SCENE_ENGINE.md"
+  "description": "AI-first documentary video engine: scene engine + Remotion composition.",
+  "workspaces": [
+    "packages/engine",
+    "packages/remotion"
   ],
-  "sideEffects": false,
-  "scripts": {
-    "build": "tsc -p tsconfig.build.json",
-    "typecheck": "tsc -p tsconfig.json --noEmit",
-    "test": "vitest run",
-    "test:watch": "vitest",
-    "check": "npm run typecheck && npm run test && npm run build"
-  },
   "engines": {
     "node": ">=20"
   },
-  "dependencies": {},
-  "devDependencies": {
-    "@types/node": "^22.10.2",
-    "typescript": "^5.9.3",
-    "vitest": "^5.0.1"
+  "scripts": {
+    "build": "npm run build -w @studio-engine/scene-engine",
+    "test": "npm test -w @studio-engine/scene-engine",
+    "typecheck": "npm run typecheck -w @studio-engine/scene-engine && npm run build && npm run typecheck -w @studio-engine/remotion",
+    "check": "npm run typecheck && npm test"
   }
 }

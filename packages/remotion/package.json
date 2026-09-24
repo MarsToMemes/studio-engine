@@ -1,0 +1,30 @@
+{
+  "name": "@studio-engine/remotion",
+  "private": true,
+  "type": "module",
+  "description": "Remotion composition, preview and render for @studio-engine/scene-engine.",
+  "scripts": {
+    "assets": "node scripts/generate-assets.mjs",
+    "typecheck": "tsc --noEmit",
+    "studio": "remotion studio src/index.ts",
+    "render": "node scripts/render.mjs"
+  },
+  "dependencies": {
+    "@remotion/bundler": "4.0.528",
+    "@remotion/captions": "4.0.528",
+    "@remotion/lottie": "4.0.528",
+    "@remotion/player": "4.0.528",
+    "@remotion/renderer": "4.0.528",
+    "@remotion/transitions": "4.0.528",
+    "@studio-engine/scene-engine": "*",
+    "lottie-web": "^5.12.2",
+    "react": "19.2.0",
+    "react-dom": "19.2.0",
+    "remotion": "4.0.528"
+  },
+  "devDependencies": {
+    "@remotion/cli": "4.0.528",
+    "@types/react": "^19.2.0",
+    "typescript": "^5.9.3"
+  }
+}
