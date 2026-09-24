@@ -84,6 +84,8 @@ try {
   await page.fill('[data-testid=field-highlights]', 'pizza');
   await page.waitForTimeout(200);
   check('editorial warnings are shown live', (await page.innerText('[data-testid=issues]')).includes('does not appear in the shot text'));
+  const badge = page.locator('[data-testid=rule-badge]', { hasText: 'TYPO-04' }).first();
+  check('warnings cite their VIDEO_EDITING_BIBLE rule', (await badge.count()) === 1 && ((await badge.getAttribute('title')) ?? '').includes('prononcés'));
 
   // Map zoom slider.
   await page.click('[data-testid=shot-world]');

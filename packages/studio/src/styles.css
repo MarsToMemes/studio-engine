@@ -100,3 +100,4 @@ legend { color: var(--muted); }
 .tl-playhead::before { content: ''; position: absolute; top: 0; left: -5px; border: 6px solid transparent; border-top-color: var(--alert); }
 .tl-hint { position: absolute; top: 2px; transform: translateX(-50%); background: var(--accent); color: #121212; font-size: 11px; font-weight: 600; padding: 1px 6px; border-radius: 4px; pointer-events: none; z-index: 9; white-space: nowrap; }
 .toast { position: fixed; left: 50%; top: 56px; transform: translateX(-50%); background: #2a1d1c; border: 1px solid var(--alert); padding: 8px 14px; border-radius: 6px; z-index: 20; }
+.rule { text-decoration: none; font-size: 10px; font-weight: 600; border: 1px solid currentColor; border-radius: 3px; padding: 0 4px; margin-right: 2px; cursor: help; }

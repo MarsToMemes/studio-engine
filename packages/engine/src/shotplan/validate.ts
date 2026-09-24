@@ -7,7 +7,8 @@
  */
 import type { AssetKind } from '../model/assets.js';
 import { isFiniteNumber, isNonEmptyString, isObject, isOneOf, isPositiveInteger, isNonNegativeInteger, isString } from '../validation/guards.js';
-import { IssueCollector, type ValidationResult } from '../validation/issues.js';
+import { IssueCollector, type ValidationIssue, type ValidationResult } from '../validation/issues.js';
+import { ruleForIssue } from '../bible/index.js';
 import { defaultTransitionRegistry, type TransitionRegistry } from '../transitions/registry.js';
 import { getEditorialTransition } from './transitions.js';
 import { resolveShotTransitions } from './timeline.js';
@@ -52,7 +53,17 @@ export function isHookShot(shot: Shot, index: number): boolean {
   return shot.metadata?.role === 'hook' || (index === 0 && shot.metadata?.role === undefined);
 }
 
+/** Validates a plan. Every issue cites the VIDEO_EDITING_BIBLE.md rule it enforces (`issue.rule`) when there is one. */
 export function validateShotPlan(input: unknown, options: ShotPlanValidationOptions = {}): ValidationResult {
+  const r = collectShotPlanIssues(input, options);
+  const cite = (i: ValidationIssue): ValidationIssue => {
+    const rule = ruleForIssue(i);
+    return rule ? { ...i, rule } : i;
+  };
+  return { valid: r.valid, errors: r.errors.map(cite), warnings: r.warnings.map(cite) };
+}
+
+function collectShotPlanIssues(input: unknown, options: ShotPlanValidationOptions): ValidationResult {
   const issues = new IssueCollector();
   if (!isObject(input)) {
     issues.error('', 'plan.invalid', 'shot plan must be an object');

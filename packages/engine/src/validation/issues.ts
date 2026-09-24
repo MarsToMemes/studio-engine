@@ -7,6 +7,8 @@ export interface ValidationIssue {
   /** JSON path of the offending value, e.g. `scenes[3].layers[1].opacity`. */
   path: string;
   message: string;
+  /** VIDEO_EDITING_BIBLE.md rule enforced by this check (e.g. `RHY-03`), when there is one. */
+  rule?: string;
 }
 
 export interface ValidationResult {
@@ -47,6 +49,6 @@ export class SceneValidationError extends Error {
 
 /** Human / LLM friendly report, suitable for an AI self-repair loop. */
 export function formatIssues(result: ValidationResult): string {
-  const lines = [...result.errors, ...result.warnings].map((i) => `${i.severity.toUpperCase()} ${i.path} [${i.code}] ${i.message}`);
+  const lines = [...result.errors, ...result.warnings].map((i) => `${i.severity.toUpperCase()} ${i.path} [${i.code}${i.rule ? ` · ${i.rule}` : ''}] ${i.message}`);
   return lines.length ? lines.join('\n') : 'OK';
 }

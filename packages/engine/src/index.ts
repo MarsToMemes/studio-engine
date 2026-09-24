@@ -20,3 +20,4 @@ export * from './adapters/remotion/index.js';
 export * from './ai/index.js';
 export * from './shotplan/index.js';
 export * from './skills/index.js';
+export * from './bible/index.js';

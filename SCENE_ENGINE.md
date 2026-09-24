@@ -663,7 +663,27 @@ SFX     │◆impact        ◆impact               SFX events, draggable
 
 ---
 
-## 19. Performance
+## 19. Editorial bible (`VIDEO_EDITING_BIBLE.md`)
+
+- **Single source of truth.** The editorial rules live in `VIDEO_EDITING_BIBLE.md` at the repository root: 147 rules in 26 domains, from narration and rhythm to sound, rights and technical quality.
+- **Rule format.** Each rule has a stable id (`RHY-03`), a severity (`bloquant` / `avertissement` / `conseil`) and an enforcement mode:
+  - `AUTO`: deterministic check;
+  - `HEUR`: approximate check, never blocking;
+  - `REVUE`: AI critic or human.
+- `src/bible/parse.ts` parses the markdown. `src/bible/rules.generated.ts` is generated from it (`npm run bible -w @studio-engine/scene-engine`), and `tests/bible.test.ts` fails when the two diverge or when the markdown breaks the format (sequential ids per domain, prefix matching its section, no blocking heuristic).
+- Validation issues carry `rule` (`ISSUE_CODE_RULES`; structural errors fall under `TECH-02`). The studio shows it as a badge whose tooltip is the rule text. `formatIssues` includes it, so an AI repair loop receives the rule with the error.
+- Checked in code today:
+  - RHY-01, RHY-03;
+  - DIR-03;
+  - TRANS-02, TRANS-04 to TRANS-07;
+  - TYPO-04;
+  - TECH-01, TECH-02.
+
+  The other `AUTO` and `HEUR` rules arrive with the phases that introduce their data (editorial plan, rhythm engine, sound design, QC).
+
+---
+
+## 20. Performance
 
 - Timeline resolution is O(scenes + layers + audio); scene lookup is O(log n); keyframe sampling is O(log k).
 - Compile once, sample per frame: per-frame work is proportional to the layers of the visible scene(s) only.
@@ -673,10 +693,10 @@ SFX     │◆impact        ◆impact               SFX events, draggable
 
 ---
 
-## 20. Testing
+## 21. Testing
 
 ```
-npm test          # 234 engine tests + 25 studio tests (Vitest)
+npm test          # 240 engine tests + 25 studio tests (Vitest)
 npm run e2e -w @studio-engine/studio   # browser smoke test (after npm run build -w @studio-engine/studio)
 npm run check     # typecheck + build + tests, all workspaces
 ```
@@ -685,7 +705,7 @@ Covered: scene/layer creation and registries, validation (~50 targeted error/war
 
 ---
 
-## 21. Known limitations and next steps
+## 22. Known limitations and next steps
 
 - **Non-CSS effects** (grain, vignette, color grade, LUT, chromatic aberration, pixelate) are modeled and validated but the reference Remotion renderer does not draw them yet (needs shaders / SVG filters).
 - **Graphic kinds**: the reference renderer draws `counter`, `statCard`, `barChart`, `lineChart`, `pieChart`, `comparison` and `map`; `progress`, `icon`, `svg`, `lowerThird` and `custom` have no component (no available skill produces them).
