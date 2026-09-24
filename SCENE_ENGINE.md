@@ -630,13 +630,40 @@ npm run studio            # http://localhost:5173
 - An invalid edit never blanks the preview: the last valid version stays on screen while the errors are listed.
 - Media the browser cannot decode (e.g. H.264 in an open-source Chromium) is replaced by a "Media unavailable" placeholder instead of breaking the preview.
 - Export plan / Timeline JSON.
-- Editing logic lives in `src/state/plan.ts` as pure, unit-tested functions; `e2e/smoke.mjs` drives the built app in Chromium (`playwright-core`) and checks rendering, seeking, live edits, warnings, shot looping and console errors.
-
-The UI is deliberately plain: the design system (21st.dev components, Motion for UI motion) comes with the Timeline UI phase.
+- Editing logic lives in `src/state/plan.ts` as pure, unit-tested functions; `e2e/smoke.mjs` drives the built app in Chromium (`playwright-core`) and checks rendering, seeking, live edits, warnings, shot looping, every timeline gesture and console errors.
 
 ---
 
-## 18. Performance
+## 18. Timeline editor (`packages/studio`)
+
+A horizontal timeline under the preview, built for **narration-locked documentary editing** rather than free NLE editing (no Editor Starter: its free-layer model does not match a ShotPlan, see the Phase 5 decision).
+
+```
+Ruler   │0:00      0:05      0:10 ...          click/drag = seek, the shot under the playhead is selected
+Video   │[hook][counter ▨kitchen][stat] ...    blocks = shots (thumbnail, label, skill, ⚠ sync), ▨ = transition overlap
+Voice   │▁▃▅▇▅▃ McDonald's isn't a burger ...  narration waveform + transcript words (zoomed in)
+Music   │▁▂▁▂▁▂ ───────────── (yellow)         music waveform + real gain envelope in dB (fades, ducking)
+SFX     │◆impact        ◆impact               SFX events, draggable
+```
+
+- **Everything is derived from the ShotPlan** (`src/state/timeline.ts`, pure and unit-tested): start frames and overlaps from `toTimeline` / `resolveShotTransitions`, skill events (keyword spoken, number landed…) from the compiled scenes, the music envelope from `audioVolumeAt` on the same Remotion audio plan as the render. The timeline cannot drift from what renders.
+- **Trim = roll edit by default.** The voice-over is one continuous file starting at frame 0 and shots are cut against it, so dragging a cut moves the boundary between two shots and **everything after it stays in sync with the voice** (episode length unchanged). **Alt+drag = ripple** (the shot changes length and pushes the rest). The last shot always ripples. Minimum shot length 0.5 s. The drag shows `+0.67 s · roll`.
+- **Snapping** (toggle) to shot edges and **narration word starts**, so a cut lands on a spoken word.
+- **Voice-sync check**: a block shows `⚠ sync` when one of its highlighted words is not spoken during the shot (e.g. after a reorder or a ripple).
+- **Reorder** by dragging a block (insertion line), **duplicate** (Ctrl+D), **delete** (Del), **SFX**: drag in time (re-attached to the shot it lands on), double-click the SFX lane or "+ SFX at playhead" to add, Del to remove.
+- **Motion skill drop target**: dropping `application/x-motion-skill` data on a block applies the skill if it is available for that shot type, otherwise a message explains why (used by the Motion Library, Phase 6).
+- **Undo / redo** (Ctrl+Z, Ctrl+Shift+Z / Ctrl+Y) for every plan change; one drag or one burst of typing in a field is one step (`src/state/history.ts`, bounded to 200 steps).
+- **Keyboard**: Space play/pause · ←/→ one frame · Shift+←/→ one second · ↑/↓ previous/next shot.
+- **Zoom**: slider, +/−, Ctrl+wheel (anchored under the mouse), Fit.
+- **Performance**:
+  - waveforms are decoded once per file with the Web Audio API (no extra dependency) into 100 peaks/s and drawn only for the visible window (viewport-sized sticky canvas);
+  - blocks, ticks and words outside the view are not rendered;
+  - thumbnails are real frames of the composition (`<Thumbnail>` from `@remotion/player`), each rendering a one-scene project memoised on that scene's content and debounced, so editing a shot never re-renders the other thumbnails.
+  - Measured edit → preview latency: 15–30 ms with or without the timeline mounted. Before memoising the thumbnails it was ~80 ms, with multi-second spikes.
+
+---
+
+## 19. Performance
 
 - Timeline resolution is O(scenes + layers + audio); scene lookup is O(log n); keyframe sampling is O(log k).
 - Compile once, sample per frame: per-frame work is proportional to the layers of the visible scene(s) only.
@@ -646,10 +673,10 @@ The UI is deliberately plain: the design system (21st.dev components, Motion for
 
 ---
 
-## 19. Testing
+## 20. Testing
 
 ```
-npm test          # 234 engine tests + 6 studio tests (Vitest)
+npm test          # 234 engine tests + 25 studio tests (Vitest)
 npm run e2e -w @studio-engine/studio   # browser smoke test (after npm run build -w @studio-engine/studio)
 npm run check     # typecheck + build + tests, all workspaces
 ```
@@ -658,7 +685,7 @@ Covered: scene/layer creation and registries, validation (~50 targeted error/war
 
 ---
 
-## 20. Known limitations and next steps
+## 21. Known limitations and next steps
 
 - **Non-CSS effects** (grain, vignette, color grade, LUT, chromatic aberration, pixelate) are modeled and validated but the reference Remotion renderer does not draw them yet (needs shaders / SVG filters).
 - **Graphic kinds**: the reference renderer draws `counter`, `statCard`, `barChart`, `lineChart`, `pieChart`, `comparison` and `map`; `progress`, `icon`, `svg`, `lowerThird` and `custom` have no component (no available skill produces them).
@@ -667,4 +694,6 @@ Covered: scene/layer creation and registries, validation (~50 targeted error/war
 - **Remotion shader transitions** require Chrome ≥ 148 with HTML-in-Canvas; off by default.
 - **Media probing**: `asset.durationInSeconds` must be provided at ingest (e.g. with Remotion's `parseMedia`); it is not detected by the engine.
 - **Caption alignment**: without word timings from a transcription / alignment step, word timings are estimates.
-- Not in scope by design: the editor UI and the AI model itself.
+- **Music ducking follows the whole narration file**, not its pauses: with one continuous voice-over the music stays ducked for the entire episode (visible on the timeline's music envelope). Speech-driven ducking from the transcript belongs to the sound-design phase.
+- **Shot split** (cut a shot in two at the playhead) is not implemented: it needs a media in-point on shots (`Shot` has no trim field yet).
+- Not in scope by design: the AI model itself.

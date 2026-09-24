@@ -14,30 +14,31 @@ import {
   updateShot,
 } from '../state/plan';
 
-type Props = { plan: ShotPlan; shot: Shot; onChange: (plan: ShotPlan) => void };
+/** `group` merges consecutive edits of one field (typing) into one undo step. */
+type Props = { plan: ShotPlan; shot: Shot; onChange: (plan: ShotPlan, group?: string) => void; onSeal?: () => void };
 
-export function ShotInspector({ plan, shot, onChange }: Props) {
+export function ShotInspector({ plan, shot, onChange, onSeal }: Props) {
   const media = mediaOptions(plan, shot.type);
   const skills = skillOptions(shot.type);
   const sfx = shot.sfx ?? [];
   const sfxChoices = sfxOptions(plan);
   return (
-    <form className="inspector-form" onSubmit={(e) => e.preventDefault()} data-testid="inspector">
+    <form className="inspector-form" onSubmit={(e) => e.preventDefault()} onBlur={onSeal} data-testid="inspector">
       <h2>
         {shot.id} <span className="muted">{shot.type}</span>
       </h2>
 
       <label>
         Text
-        <textarea data-testid="field-text" value={shot.text ?? ''} rows={3} onChange={(e) => onChange(updateShot(plan, shot.id, { text: e.target.value }))} />
+        <textarea data-testid="field-text" value={shot.text ?? ''} rows={3} onChange={(e) => onChange(updateShot(plan, shot.id, { text: e.target.value }), `text:${shot.id}`)} />
       </label>
       <label>
         Highlighted words
-        <input data-testid="field-highlights" value={(shot.highlightedWords ?? []).join(', ')} onChange={(e) => onChange(setHighlightedWords(plan, shot.id, e.target.value))} />
+        <input data-testid="field-highlights" value={(shot.highlightedWords ?? []).join(', ')} onChange={(e) => onChange(setHighlightedWords(plan, shot.id, e.target.value), `highlights:${shot.id}`)} />
       </label>
       <label>
         Duration (s)
-        <input data-testid="field-duration" type="number" step={0.1} min={0.5} value={(shot.durationInFrames / plan.fps).toFixed(1)} onChange={(e) => onChange(setShotSeconds(plan, shot.id, Number(e.target.value)))} />
+        <input data-testid="field-duration" type="number" step={0.1} min={0.5} value={(shot.durationInFrames / plan.fps).toFixed(1)} onChange={(e) => onChange(setShotSeconds(plan, shot.id, Number(e.target.value)), `duration:${shot.id}`)} />
       </label>
 
       {media.length > 0 ? (
@@ -69,7 +70,7 @@ export function ShotInspector({ plan, shot, onChange }: Props) {
       {shot.map ? (
         <label>
           Map zoom
-          <input data-testid="field-zoom" type="range" min={0} max={8} step={0.1} value={shot.map.zoom ?? 0} onChange={(e) => onChange(setMapZoom(plan, shot.id, Number(e.target.value)))} />
+          <input data-testid="field-zoom" type="range" min={0} max={8} step={0.1} value={shot.map.zoom ?? 0} onChange={(e) => onChange(setMapZoom(plan, shot.id, Number(e.target.value)), `zoom:${shot.id}`)} />
         </label>
       ) : null}
 

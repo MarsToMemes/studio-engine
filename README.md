@@ -7,7 +7,7 @@ packages/
 ├── engine/     @studio-engine/scene-engine — typed scene model, validation, timing, animation, transitions,
 │               presets, serialization, framework-agnostic renderer, Remotion plan, AI blueprint. Zero runtime deps.
 ├── remotion/   @studio-engine/remotion — Remotion composition and render (@remotion/renderer).
-└── studio/     @studio-engine/studio — live preview app (@remotion/player) with inline ShotPlan editing.
+└── studio/     @studio-engine/studio — live preview (@remotion/player), shot inspector and timeline editor.
 .claude/skills/ Official Remotion Agent Skills (remotion-dev/skills), pinned in skills-lock.json.
 ```
 
