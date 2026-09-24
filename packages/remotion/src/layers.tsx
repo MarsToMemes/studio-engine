@@ -27,6 +27,33 @@ import { assetSrc, resolveSrc } from './assets';
 import { GRAPHIC_COMPONENTS, type GraphicProps } from './graphics';
 
 type CSS = React.CSSProperties;
+
+/**
+ * Video that degrades gracefully: if the browser cannot decode the file (e.g.
+ * H.264 in an open-source Chromium) the preview shows a placeholder instead of
+ * failing. Quality control reports such media before the final render.
+ */
+const SafeVideo: React.FC<{ src: string; assetId: string; style: CSS } & Omit<React.ComponentProps<typeof OffthreadVideo>, 'src' | 'style' | 'onError'>> = ({ src, assetId, style, ...props }) => {
+  const [failed, setFailed] = useState(false);
+  if (failed) {
+    return (
+      <div style={{ ...style, background: 'repeating-linear-gradient(45deg,#1b1b1b 0 24px,#232323 24px 48px)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#9a9a9a', fontFamily: 'Arial', fontSize: 36 }}>
+        Media unavailable: {assetId}
+      </div>
+    );
+  }
+  return (
+    <OffthreadVideo
+      {...props}
+      src={src}
+      style={style}
+      onError={(e) => {
+        console.warn(`[studio-engine] cannot play "${assetId}": ${e.message}`);
+        setFailed(true);
+      }}
+    />
+  );
+};
 const css = (s: Record<string, string | number>) => s as CSS;
 
 export const BackgroundView: React.FC<{ background: Background; assets: AssetRegistry }> = ({ background, assets }) => {
@@ -48,7 +75,7 @@ export const BackgroundView: React.FC<{ background: Background; assets: AssetReg
       const style: CSS = { width: '100%', height: '100%', objectFit: background.fit ?? 'cover', filter: background.blur ? `blur(${background.blur}px)` : undefined };
       return (
         <AbsoluteFill>
-          {background.type === 'image' ? <Img src={src} style={style} /> : <OffthreadVideo src={src} muted style={style} trimBefore={background.trim?.startFrom} trimAfter={background.trim?.endAt} />}
+          {background.type === 'image' ? <Img src={src} style={style} /> : <SafeVideo src={src} assetId={background.assetId} muted style={style} trimBefore={background.trim?.startFrom} trimAfter={background.trim?.endAt} />}
           {background.dim ? <AbsoluteFill style={{ backgroundColor: `rgba(0,0,0,${background.dim})` }} /> : null}
         </AbsoluteFill>
       );
@@ -231,7 +258,7 @@ export const LayerView: React.FC<{ frame: LayerFrame; scene: CompiledScene; scen
       // Inside the scene, a Sequence starting at the layer start makes the clip time = layer local frame.
       content = src ? (
         <Sequence from={frame.compiled.localStartFrame} layout="none">
-          <OffthreadVideo src={src} muted={m.muted} volume={m.volume} playbackRate={m.playbackRate} trimBefore={m.startFrom} trimAfter={m.endAt} style={{ width: '100%', height: '100%', objectFit: layer.fit }} />
+          <SafeVideo src={src} assetId={layer.assetId} muted={m.muted} volume={m.volume} playbackRate={m.playbackRate} trimBefore={m.startFrom} trimAfter={m.endAt} style={{ width: '100%', height: '100%', objectFit: layer.fit }} />
         </Sequence>
       ) : null;
       break;

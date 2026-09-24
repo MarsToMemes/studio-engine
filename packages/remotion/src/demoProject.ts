@@ -7,7 +7,7 @@ import { compileBlueprint, createLayer, sequentialIds, type AssetRegistry, type 
 export const demoAssets: AssetRegistry = {
   narration: { id: 'narration', kind: 'audio', src: 'narration.wav', durationInSeconds: 40 },
   music: { id: 'music', kind: 'audio', src: 'music.wav', durationInSeconds: 30 },
-  clip: { id: 'clip', kind: 'video', src: 'clip.mp4', durationInSeconds: 6, width: 640, height: 360, fps: 30 },
+  clip: { id: 'clip', kind: 'video', src: 'clip.webm', durationInSeconds: 6, width: 640, height: 360, fps: 30 },
   landscape: { id: 'landscape', kind: 'image', src: 'landscape.png', width: 1280, height: 720 },
   pulse: { id: 'pulse', kind: 'lottie', src: 'pulse.json', fps: 30 },
 };

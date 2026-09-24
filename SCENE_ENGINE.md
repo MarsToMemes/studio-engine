@@ -616,7 +616,27 @@ Adding a skill: `defineSkill({ id, name, category, description, intensity, durat
 
 ---
 
-## 17. Performance
+## 17. Live preview (`packages/studio`)
+
+A Vite + React app plays the compiled ShotPlan with **`@remotion/player`**, using exactly the composition of the final render (`EngineComposition` from `@studio-engine/remotion`): what you preview is what renders, and no MP4 export is needed to see a change.
+
+```bash
+npm run studio            # http://localhost:5173
+```
+
+- Shot list (type, start, duration, skill, transition, intensity) · Player · inspector of the selected shot · live issues panel (errors, editorial warnings, fallback notes, compile time).
+- Editable: text, highlighted words, duration, media (only compatible assets), motion skill (only skills available for the shot type), intensity, map zoom, transition in, SFX events. Every change recompiles the plan (1–3 ms for 12 shots) and the preview updates in ~40 ms.
+- After an edit or a selection the preview jumps to the shot's **poster frame** (after its incoming transition and its skill's last event, e.g. the spoken keyword) and loops the shot (`inFrame`/`outFrame`), so the result is visible immediately. The loop can be turned off.
+- An invalid edit never blanks the preview: the last valid version stays on screen while the errors are listed.
+- Media the browser cannot decode (e.g. H.264 in an open-source Chromium) is replaced by a "Media unavailable" placeholder instead of breaking the preview.
+- Export plan / Timeline JSON.
+- Editing logic lives in `src/state/plan.ts` as pure, unit-tested functions; `e2e/smoke.mjs` drives the built app in Chromium (`playwright-core`) and checks rendering, seeking, live edits, warnings, shot looping and console errors.
+
+The UI is deliberately plain: the design system (21st.dev components, Motion for UI motion) comes with the Timeline UI phase.
+
+---
+
+## 18. Performance
 
 - Timeline resolution is O(scenes + layers + audio); scene lookup is O(log n); keyframe sampling is O(log k).
 - Compile once, sample per frame: per-frame work is proportional to the layers of the visible scene(s) only.
@@ -626,10 +646,11 @@ Adding a skill: `defineSkill({ id, name, category, description, intensity, durat
 
 ---
 
-## 18. Testing
+## 19. Testing
 
 ```
-npm test          # 234 tests (Vitest)
+npm test          # 234 engine tests + 6 studio tests (Vitest)
+npm run e2e -w @studio-engine/studio   # browser smoke test (after npm run build -w @studio-engine/studio)
 npm run check     # typecheck + build + tests, all workspaces
 ```
 
@@ -637,7 +658,7 @@ Covered: scene/layer creation and registries, validation (~50 targeted error/war
 
 ---
 
-## 19. Known limitations and next steps
+## 20. Known limitations and next steps
 
 - **Non-CSS effects** (grain, vignette, color grade, LUT, chromatic aberration, pixelate) are modeled and validated but the reference Remotion renderer does not draw them yet (needs shaders / SVG filters).
 - **Graphic kinds**: the reference renderer draws `counter`, `statCard`, `barChart`, `lineChart`, `pieChart`, `comparison` and `map`; `progress`, `icon`, `svg`, `lowerThird` and `custom` have no component (no available skill produces them).

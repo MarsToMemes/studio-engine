@@ -26,7 +26,7 @@ export const shotPlanDemo: ShotPlan = {
     narration: { id: 'narration', kind: 'audio', src: 'narration.wav', durationInSeconds: 40 },
     music: { id: 'music', kind: 'audio', src: 'music.wav', durationInSeconds: 30 },
     landscape: { id: 'landscape', kind: 'image', src: 'landscape.png', width: 1280, height: 720 },
-    clip: { id: 'clip', kind: 'video', src: 'clip.mp4', durationInSeconds: 6, width: 640, height: 360, fps: 30 },
+    clip: { id: 'clip', kind: 'video', src: 'clip.webm', durationInSeconds: 6, width: 640, height: 360, fps: 30 },
     report: { id: 'report', kind: 'image', src: 'report.png', width: 1000, height: 1400 },
     'sfx-impact': { id: 'sfx-impact', kind: 'audio', src: 'sfx/impact.wav', durationInSeconds: 0.8 },
     'sfx-glitch': { id: 'sfx-glitch', kind: 'audio', src: 'sfx/glitch.wav', durationInSeconds: 0.5 },

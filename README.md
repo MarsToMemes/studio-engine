@@ -6,7 +6,8 @@ AI-first documentary video engine: **script + voiceover + assets → scenes → 
 packages/
 ├── engine/     @studio-engine/scene-engine — typed scene model, validation, timing, animation, transitions,
 │               presets, serialization, framework-agnostic renderer, Remotion plan, AI blueprint. Zero runtime deps.
-└── remotion/   @studio-engine/remotion — Remotion composition, preview (@remotion/player) and render (@remotion/renderer).
+├── remotion/   @studio-engine/remotion — Remotion composition and render (@remotion/renderer).
+└── studio/     @studio-engine/studio — live preview app (@remotion/player) with inline ShotPlan editing.
 .claude/skills/ Official Remotion Agent Skills (remotion-dev/skills), pinned in skills-lock.json.
 ```
 
@@ -14,7 +15,8 @@ packages/
 
 ```bash
 npm install              # npm workspaces
-npm run check            # engine typecheck + build + remotion typecheck + tests
+npm run check            # typecheck (engine, remotion, studio) + build + tests
+npm run studio           # live preview: http://localhost:5173
 
 cd packages/remotion
 npm run assets           # generates offline test media into public/

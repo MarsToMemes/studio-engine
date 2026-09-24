@@ -1,0 +1,51 @@
+/* Phase 4 scaffold styling. The real design system comes with the Timeline UI (Phase 5). */
+:root {
+  color-scheme: dark;
+  --bg: #121212;
+  --panel: #1b1b1b;
+  --line: #2c2c2c;
+  --text: #f2f2f2;
+  --muted: #9a9a9a;
+  --accent: #ffc72c;
+  --alert: #da291c;
+  font-family: Inter, 'Helvetica Neue', Arial, sans-serif;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--text); font-size: 13px; }
+button, input, select, textarea { font: inherit; color: inherit; }
+button { background: #262626; border: 1px solid var(--line); border-radius: 6px; padding: 6px 10px; cursor: pointer; }
+button:hover { border-color: var(--accent); }
+.app { display: grid; grid-template-columns: 280px 1fr 320px; grid-template-rows: auto 1fr; height: 100vh; }
+.toolbar { grid-column: 1 / -1; display: flex; gap: 10px; align-items: center; padding: 10px 14px; border-bottom: 1px solid var(--line); }
+.spacer { flex: 1; }
+.muted { color: var(--muted); font-weight: 400; }
+.shots, .inspector { overflow: auto; background: var(--panel); }
+.shots { border-right: 1px solid var(--line); }
+.inspector { border-left: 1px solid var(--line); padding: 14px; }
+.stage { padding: 16px; overflow: auto; display: flex; flex-direction: column; gap: 12px; }
+.player { background: #000; border-radius: 8px; overflow: hidden; }
+.empty { padding: 40px; text-align: center; color: var(--muted); }
+.shot-list { list-style: none; margin: 0; padding: 8px; display: flex; flex-direction: column; gap: 6px; }
+.shot { width: 100%; display: flex; gap: 10px; text-align: left; background: transparent; }
+.shot.selected { border-color: var(--accent); background: #232016; }
+.index { color: var(--muted); width: 18px; }
+.body { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+.title { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 600; }
+.meta { color: var(--muted); font-size: 12px; }
+.tags { display: flex; gap: 4px; flex-wrap: wrap; }
+.tag { background: #3a3218; color: var(--accent); border-radius: 4px; padding: 1px 6px; font-size: 11px; }
+.tag.alt { background: #1d2a3a; color: #8ec5ff; }
+.tag.dim { background: #2a2a2a; color: var(--muted); }
+.inspector-form { display: flex; flex-direction: column; gap: 12px; }
+.inspector-form h2 { margin: 0 0 4px; font-size: 15px; }
+label { display: flex; flex-direction: column; gap: 4px; color: var(--muted); }
+input, select, textarea { background: #111; border: 1px solid var(--line); border-radius: 6px; padding: 6px 8px; color: var(--text); }
+fieldset { border: 1px solid var(--line); border-radius: 6px; display: flex; flex-direction: column; gap: 6px; }
+legend { color: var(--muted); }
+.row { display: grid; grid-template-columns: 1fr 64px auto; gap: 6px; }
+.issues { display: flex; flex-direction: column; gap: 4px; font-size: 12px; }
+.issues.ok { color: #7bd88f; }
+.issue.error { color: #ff6b6b; }
+.issue.warning { color: var(--accent); }
+.issue.note { color: var(--muted); }
+.toggle { flex-direction: row; align-items: center; gap: 6px; color: var(--muted); }

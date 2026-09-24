@@ -105,11 +105,18 @@ writeFileSync(join(pub, 'pulse.json'), JSON.stringify({
       return band ? [30, 120, 200] : [60, 160, 230];
     }));
   }
-  try {
-    execFileSync('npx', ['remotion', 'ffmpeg', '-y', '-f', 'image2pipe', '-c:v', 'png', '-framerate', '30', '-i', '-', '-pix_fmt', 'yuv420p', '-c:v', 'libx264', join(pub, 'clip.mp4')], { input: Buffer.concat(pngs), stdio: ['pipe', 'pipe', 'pipe'], maxBuffer: 1 << 26 });
-    console.log('clip.mp4 generated');
-  } catch (e) {
-    console.warn('Could not generate clip.mp4; the demo will skip video.', String(e.stderr ?? e).slice(-400));
+  // WebM/VP9 is decodable everywhere (open-source Chromium has no H.264); MP4/H.264 is kept for render tests.
+  const encodings = [
+    ['clip.webm', ['-c:v', 'libvpx-vp9', '-b:v', '800k', '-pix_fmt', 'yuv420p']],
+    ['clip.mp4', ['-c:v', 'libx264', '-pix_fmt', 'yuv420p']],
+  ];
+  for (const [name, codec] of encodings) {
+    try {
+      execFileSync('npx', ['remotion', 'ffmpeg', '-y', '-f', 'image2pipe', '-c:v', 'png', '-framerate', '30', '-i', '-', ...codec, join(pub, name)], { input: Buffer.concat(pngs), stdio: ['pipe', 'pipe', 'pipe'], maxBuffer: 1 << 26 });
+      console.log(`${name} generated`);
+    } catch (e) {
+      console.warn(`Could not generate ${name}.`, String(e.stderr ?? e).slice(-400));
+    }
   }
 }
 console.log('assets written to', pub);
