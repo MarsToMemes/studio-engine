@@ -22,7 +22,8 @@ import type { ValidationIssue, ValidationResult } from '../validation/issues.js'
 import { validateProject } from '../validation/validate.js';
 import { defaultMotionSkillRegistry } from '../skills/index.js';
 import { applyFraming, applyShotCamera, type CameraSkillSource } from '../skills/camera.js';
-import { resolveNarration, resolveSilences } from './editorial.js';
+import { deriveMusicCues, resolveNarration, resolveSilences } from './editorial.js';
+import { ambienceAutomation, inSilence, musicAutomation, silenceWindows } from './sound.js';
 import { DOCUMENTARY_THEME, type DocumentaryTheme } from './theme.js';
 import { getShotStartFrames, resolveShotTransitions } from './timeline.js';
 import type { Shot, ShotPlan, TranscriptWord } from './types.js';
@@ -355,6 +356,8 @@ export function compileShotPlan(plan: ShotPlan, options: CompileShotPlanOptions 
   const starts = getShotStartFrames(plan, registry);
   // Where the voice really plays (segments), with words in timeline time.
   const narration = resolveNarration(plan);
+  // Controlled silences, rendered (bible §13).
+  const silences = silenceWindows(resolveSilences(plan, starts));
   const captionStyle = plan.captions?.enabled ? presets.apply('caption', plan.captions.style ?? 'caption-bold-pop', { fps: plan.fps, canvas }) : undefined;
   if (captionStyle?.activeWord) captionStyle.activeWord = { ...captionStyle.activeWord, color: theme.accent };
 
@@ -392,6 +395,10 @@ export function compileShotPlan(plan: ShotPlan, options: CompileShotPlanOptions 
       const assetId = resolveSfx(e.sfx);
       if (!assetId) {
         notes.push(`${shot.id}: sfx "${e.sfx}" unresolved, skipped`);
+        return;
+      }
+      if (inSilence(starts[i]! + (e.at ?? 0), silences, 'sfx_drop')) {
+        notes.push(`${shot.id}: sfx "${e.sfx}" falls in a controlled silence (sfx_drop), skipped`);
         return;
       }
       audio.push({ id: `${shot.id}:sfx-${k}`, assetId, role: 'sfx', startFrame: e.at ?? 0, volume: Math.min(1, dbToGain(e.gainDb ?? -6)) });
@@ -455,21 +462,37 @@ export function compileShotPlan(plan: ShotPlan, options: CompileShotPlanOptions 
       project.audio.push({ id: `narration:${v.id}`, assetId: plan.narration.assetId, role: 'voiceover', startFrame: v.startFrame, durationInFrames: v.durationInFrames, trim: { startFrom: v.sourceStartFrame, endAt: v.sourceStartFrame + v.durationInFrames }, volume });
     }
   }
-  if (plan.music?.cues?.length || plan.shots.some((s) => s.musicState)) notes.push('music cues are part of the Timeline JSON but not rendered yet (sound design phase): the music keeps one level with ducking');
-  if (resolveSilences(plan, starts).length) notes.push('controlled silences are validated but not rendered yet (sound design phase)');
   if (plan.music) {
+    const bedDb = plan.music.gainDb ?? -18;
+    const automation = musicAutomation(deriveMusicCues(plan, starts), silences, { fps: plan.fps, bedDb });
     project.audio.push({
       id: 'music',
       assetId: plan.music.assetId,
       role: 'music',
       startFrame: 0,
       loop: true,
-      volume: dbToGain(plan.music.gainDb ?? -18),
+      volume: dbToGain(bedDb),
       fadeInFrames: Math.round(plan.fps * 0.5),
       fadeOutFrames: Math.round(plan.fps * 1.5),
       ...(plan.narration ? { ducking: { amount: dbToGain(plan.music.duckDb ?? -6), attackFrames: Math.round(plan.fps * 0.2), releaseFrames: Math.round(plan.fps * 0.5) } } : {}),
+      ...(automation.length ? { automation } : {}),
     });
   }
+  if (plan.ambience) {
+    const automation = ambienceAutomation(silences, plan.fps);
+    project.audio.push({
+      id: 'ambience',
+      assetId: plan.ambience.assetId,
+      role: 'ambience',
+      startFrame: 0,
+      loop: true,
+      volume: dbToGain(plan.ambience.gainDb ?? -28),
+      fadeInFrames: Math.round(plan.fps * 1),
+      fadeOutFrames: Math.round(plan.fps * 1.5),
+      ...(automation.length ? { automation } : {}),
+    });
+  }
+  if (silences.some((w) => w.kinds.includes('ambient_drop')) && !plan.ambience) notes.push('ambient_drop silence without an ambience bed: nothing to drop');
 
   const validation = validateProject(project);
   if (!validation.valid) return { ok: false, errors: validation.errors, warnings: [...pre.warnings, ...validation.warnings] };

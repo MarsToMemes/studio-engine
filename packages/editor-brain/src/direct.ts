@@ -218,8 +218,10 @@ export function directFromStory(input: BrainInput, story: Story): BrainResult {
     const i = firstShotOfUnit.get(uid)!;
     if (i === 0) continue;
     drafts[i - 1]!.tail += silenceFrames;
-    silences.push({ id: `silence-${uid}`, beforeShotId: drafts[i]!.shot.id, durationInFrames: silenceFrames, kinds: ['music_drop'] });
-    decisions.push(`${uid}: ${SILENCE_SECONDS} s of silence before the revelation (music drop)`);
+    // Everything drops, so the hit lands in real silence (SIL-04).
+    const kinds: ControlledSilence['kinds'] = ['music_drop', 'sfx_drop', ...(input.ambience ? (['ambient_drop'] as const) : [])];
+    silences.push({ id: `silence-${uid}`, beforeShotId: drafts[i]!.shot.id, durationInFrames: silenceFrames, kinds });
+    decisions.push(`${uid}: ${SILENCE_SECONDS} s of silence before the revelation (${kinds.join(', ')})`);
   }
   drafts.forEach((d, i) => {
     const td = d.shot.transitionDurationInFrames;
@@ -275,6 +277,7 @@ export function directFromStory(input: BrainInput, story: Story): BrainResult {
     assets: { ...input.assets },
     ...(input.narration ? { narration: { assetId: input.narration.assetId, words: input.narration.words, ...(input.narration.gainDb !== undefined ? { gainDb: input.narration.gainDb } : {}), segments } } : {}),
     ...(input.music ? { music: { assetId: input.music.assetId, gainDb: input.music.gainDb ?? -18, duckDb: input.music.duckDb ?? -6 } } : {}),
+    ...(input.ambience ? { ambience: { assetId: input.ambience.assetId, gainDb: input.ambience.gainDb ?? -28 } } : {}),
     ...(input.captions !== false && input.narration ? { captions: { enabled: true, style: 'caption-bold-pop', wordsPerCue: 3 } } : {}),
     chapters: structure.chapters.map((c) => ({ id: c.id, title: c.title, ...(c.question ? { question: c.question } : {}) })),
     scenes: structure.scenes.map((s) => ({ id: s.id, chapterId: s.chapterId, purpose: s.purpose, ...(visual.motif && motifScenes.has(s.id) ? { motifs: ['motif-1'] } : {}) })),

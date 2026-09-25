@@ -68,6 +68,8 @@ export interface BrainInput {
   /** Narration FILE and its word timings (milliseconds of the file). Without it, timing is estimated. */
   narration?: { assetId: string; words: TranscriptWord[]; gainDb?: number };
   music?: { assetId: string; gainDb?: number; duckDb?: number };
+  /** Ambience bed (room tone, city…), looped at -28 dB by default; it drops with the music before a revelation. */
+  ambience?: { assetId: string; gainDb?: number };
   /** Sound library: asset ids by category. */
   sfx?: Partial<Record<SfxCategory, string[]>>;
   captions?: boolean;

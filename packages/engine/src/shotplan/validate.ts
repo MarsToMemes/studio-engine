@@ -116,6 +116,7 @@ function collectShotPlanIssues(input: unknown, options: ShotPlanValidationOption
     }
   }
   if (isObject(plan.music)) checkAsset(plan.music.assetId, 'music.assetId', ['audio']);
+  if (isObject(plan.ambience)) checkAsset(plan.ambience.assetId, 'ambience.assetId', ['audio']);
 
   if (!Array.isArray(plan.shots) || plan.shots.length === 0) {
     issues.error('shots', 'plan.shots', 'shots must be a non-empty array');

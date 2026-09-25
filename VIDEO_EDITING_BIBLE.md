@@ -306,6 +306,7 @@ Le sound design n'est pas optionnel, et la retenue est la règle.
 - **MUS-06** · avertissement · AUTO — Le ducking suit les segments de parole réels, pas la durée du fichier de narration.
 - **MUS-07** · conseil · REVUE — On change de morceau au plus aux chapitres ; une boucle n'est jamais audible (bouclage sur la mesure ou fondu).
 - **MUS-08** · bloquant · AUTO — Chaque musique a une licence enregistrée.
+- **MUS-09** · avertissement · AUTO — Le mix final vise −14 LUFS intégrés (±1 LU), avec un true peak ≤ −1 dBTP : c'est la référence de lecture de YouTube, qui baisse un mix plus fort et ne remonte pas un mix plus faible.
 
 ---
 

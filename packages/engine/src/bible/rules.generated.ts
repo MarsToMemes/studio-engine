@@ -83,6 +83,7 @@ export const BIBLE_RULES: readonly BibleRule[] = [
   {"id":"MUS-06","domain":"MUS","section":"Musique","severity":"warning","enforcement":"auto","text":"Le ducking suit les segments de parole réels, pas la durée du fichier de narration."},
   {"id":"MUS-07","domain":"MUS","section":"Musique","severity":"advice","enforcement":"review","text":"On change de morceau au plus aux chapitres ; une boucle n'est jamais audible (bouclage sur la mesure ou fondu)."},
   {"id":"MUS-08","domain":"MUS","section":"Musique","severity":"blocking","enforcement":"auto","text":"Chaque musique a une licence enregistrée."},
+  {"id":"MUS-09","domain":"MUS","section":"Musique","severity":"warning","enforcement":"auto","text":"Le mix final vise −14 LUFS intégrés (±1 LU), avec un true peak ≤ −1 dBTP : c'est la référence de lecture de YouTube, qui baisse un mix plus fort et ne remonte pas un mix plus faible."},
   {"id":"SIL-01","domain":"SIL","section":"Silence","severity":"advice","enforcement":"review","text":"Le silence contrôlé (`music_drop`, `sfx_drop`, `ambient_drop`) sert à préparer une révélation majeure, rien d'autre."},
   {"id":"SIL-02","domain":"SIL","section":"Silence","severity":"warning","enforcement":"auto","text":"Un silence contrôlé dure de 0,3 à 0,6 s (1 s au plus)."},
   {"id":"SIL-03","domain":"SIL","section":"Silence","severity":"warning","enforcement":"auto","text":"Au plus un silence contrôlé par chapitre, jamais deux à moins de 60 s d'écart."},

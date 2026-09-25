@@ -130,7 +130,7 @@ describe('directEpisode: the McDonald’s episode', () => {
   });
 
   it('prepares the revelation: build, silence, reveal, aftermath', () => {
-    expect(plan.silences).toEqual([{ id: 'silence-u7', beforeShotId: 'u7', durationInFrames: 12, kinds: ['music_drop'] }]);
+    expect(plan.silences).toEqual([{ id: 'silence-u7', beforeShotId: 'u7', durationInFrames: 12, kinds: ['music_drop', 'sfx_drop'] }]);
     const states = plan.shots.map((s) => s.musicState);
     const reveal = plan.shots.findIndex((s) => s.id === 'u7');
     expect(states[reveal - 1]).toBe('build');

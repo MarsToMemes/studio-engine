@@ -461,6 +461,16 @@ function checkAudioTrack(ctx: Ctx, t: unknown, path: string, ownerDuration: numb
   checkFrameField(ctx, t, 'fadeInFrames', path);
   checkFrameField(ctx, t, 'fadeOutFrames', path);
   if (t.volume !== undefined && !(isFiniteNumber(t.volume) && t.volume >= 0 && t.volume <= 1)) ctx.issues.error(`${path}.volume`, 'audio.volume.invalid', 'volume must be in [0, 1]');
+  if (t.automation !== undefined) {
+    if (!Array.isArray(t.automation)) ctx.issues.error(`${path}.automation`, 'audio.automation.invalid', 'automation must be an array of gain points');
+    else
+      t.automation.forEach((p, i) => {
+        const at = `${path}.automation[${i}]`;
+        if (!isObject(p) || !isNonNegativeInteger(p.frame)) ctx.issues.error(at, 'audio.automation.invalid', 'a gain point needs a frame (integer ≥ 0)');
+        else if (!(isFiniteNumber(p.gain) && p.gain >= 0 && p.gain <= 4)) ctx.issues.error(`${at}.gain`, 'audio.automation.invalid', 'gain must be in [0, 4]');
+        else if (p.rampFrames !== undefined && !isNonNegativeInteger(p.rampFrames)) ctx.issues.error(`${at}.rampFrames`, 'audio.automation.invalid', 'rampFrames must be an integer ≥ 0');
+      });
+  }
   if (ownerDuration !== undefined && isNonNegativeInteger(t.startFrame) && t.startFrame >= ownerDuration) ctx.issues.warn(`${path}.startFrame`, 'audio.never.plays', 'audio starts after its owner ends');
 }
 

@@ -28,6 +28,7 @@ cd packages/remotion
 npm run assets           # generates offline test media into public/
 npm run render -- --scale=0.5   # → out/demo.mp4 (540p preview); omit --scale for 1080p
 npm run previews         # → motion-library/previews/*.jpg + catalog.json
+npm run loudness -- out/demo.mp4 --fix=out/final.mp4   # → −14 LUFS (MUS-09), two linear passes
 ```
 
 Restore the agent skills on a fresh machine: `npx skills experimental_install`.

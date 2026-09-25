@@ -8,7 +8,8 @@
     "typecheck": "tsc --noEmit",
     "studio": "remotion studio src/index.ts",
     "render": "node scripts/render.mjs",
-    "previews": "node scripts/previews.mjs"
+    "previews": "node scripts/previews.mjs",
+    "loudness": "node scripts/loudness.mjs"
   },
   "dependencies": {
     "@remotion/bundler": "4.0.528",

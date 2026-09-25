@@ -777,14 +777,14 @@ SFX     │◆impact        ◆impact               SFX events, draggable
 
 ## 19. Editorial bible (`VIDEO_EDITING_BIBLE.md`)
 
-- **Single source of truth.** The editorial rules live in `VIDEO_EDITING_BIBLE.md` at the repository root: 147 rules in 26 domains, from narration and rhythm to sound, rights and technical quality.
+- **Single source of truth.** The editorial rules live in `VIDEO_EDITING_BIBLE.md` at the repository root: 148 rules in 26 domains, from narration and rhythm to sound, rights and technical quality.
 - **Rule format.** Each rule has a stable id (`RHY-03`), a severity (`bloquant` / `avertissement` / `conseil`) and an enforcement mode:
   - `AUTO`: deterministic check;
   - `HEUR`: approximate check, never blocking;
   - `REVUE`: AI critic or human.
 - `src/bible/parse.ts` parses the markdown. `src/bible/rules.generated.ts` is generated from it (`npm run bible -w @studio-engine/scene-engine`), and `tests/bible.test.ts` fails when the two diverge or when the markdown breaks the format (sequential ids per domain, prefix matching its section, no blocking heuristic).
 - Validation issues carry `rule` (`ISSUE_CODE_RULES`; structural errors fall under `TECH-02`). The studio shows it as a badge whose tooltip is the rule text. `formatIssues` includes it, so an AI repair loop receives the rule with the error.
-- **Checked in code today: 45 rules** (`enforcedRuleIds()`), out of 104 automatable rules (`AUTO` + `HEUR`) and 147 in total. `ISSUE_CODE_RULES` gives the exact mapping. The `REVUE` rules belong to the AI critic and the human; the remaining automatable ones arrive with sound design (LUFS, silences rendered), QC on the render (black frames, clipping, fonts) and the LLM layer.
+- **Checked in code today: 47 rules** (`enforcedRuleIds()`), out of 105 automatable rules (`AUTO` + `HEUR`) and 148 in total. `ISSUE_CODE_RULES` gives the exact mapping. The `REVUE` rules belong to the AI critic and the human; the remaining automatable ones arrive with QC on the render (black frames, clipping, fonts, loudness in the QC report) and the LLM layer.
 
 ---
 
@@ -889,7 +889,49 @@ The rules below keep a video from feeling algorithmic. They apply to every plan 
 
 ---
 
-## 22. Performance
+## 22. Sound design at render
+
+The music states, cues and controlled silences decided in the plan (bible §12, §13) are heard in the render.
+
+- **Volume automation.**
+  - `AudioTrack.automation` is a gain curve applied on top of `volume`, the fades and the ducking. It is a list of `{ frame, gain, rampFrames? }` points.
+  - Each point ramps from the value reached so far. `rampFrames: 0` is a cut.
+  - `audioVolumeAt` applies it, so the Remotion render, `@remotion/player` and the bench timeline envelope hear the same thing. `automationGainAt(points, frame)` reads it alone.
+- **Music cues.**
+  - `compileShotPlan` turns the cues (explicit `music.cues`, or derived from the shots' `musicState`) into automation on the music bed.
+  - Levels are relative to the bed (`music.gainDb`, default −18 dB), in `MUSIC_STATE_LEVELS`:
+
+    | State | Level | Ramp |
+    |---|---|---|
+    | `calm` | 0 dB | 1.5 s |
+    | `build` | +2 dB | 4 s (rises through the scene) |
+    | `tension` | +1 dB | 1 s |
+    | `reveal` | +3 dB | 0.1 s (a hit) |
+    | `aftermath` | −4 dB | 1.5 s (withdraws, MUS-04) |
+
+  - The first cue applies at once; the music's fade-in brings it in. A cue's own `gainDb` (absolute dB of the music) and `fadeInFrames` win.
+- **Controlled silences** (`plan.silences`):
+  - `music_drop` cuts the music in 0.12 s at the start of the window, and gives it back at the level of its cue on the revelation's first frame;
+  - `sfx_drop` removes the SFX events that fall in the window, with a note; the hit at its end stays;
+  - `ambient_drop` cuts the ambience bed.
+  - The brain's silence before a major revelation drops music and SFX, and the ambience when there is one.
+- **Ambience bed** (`plan.ambience { assetId, gainDb = -28 }`, `BrainInput.ambience`): looped under everything, not ducked.
+- **Loudness** (`mix/loudness.ts`, bible MUS-01 and MUS-09).
+  - `LOUDNESS_TARGETS.master` is −14 LUFS ±1 with a true peak ≤ −1 dBTP (YouTube's playback reference). `LOUDNESS_TARGETS.voice` is −16 LUFS ±1.
+  - `parseLoudnorm` reads FFmpeg's `loudnorm` measure. `judgeLoudness` gives the verdict with issues citing the rule (`mix.loudness`, `mix.truePeak`, `voice.loudness`). `loudnormSecondPass` builds the linear second pass.
+  - Linear means a single gain: the silences and the dynamics survive the normalisation.
+  - `npm run loudness -w @studio-engine/remotion -- out/episode.mp4 [--fix=out/final.mp4] [--preset=voice] [--json]` measures, and with `--fix` normalises. The video stream is copied.
+  - It uses FFmpeg on the PATH, else Remotion's bundled FFmpeg, which has `loudnorm` but not `ebur128`.
+
+Verified on a real render (`BrainDemo`, 34 s):
+
+- around the silence before the revelation: about −21 dBFS just before, **−68.8 dBFS** during it, −20.5 dBFS on the hit;
+- the music levels between states follow the table within about 1 dB (music-only render compared with the source file);
+- the mix measured −16.7 LUFS, and −14.0 LUFS / −4.8 dBTP after `--fix`.
+
+---
+
+## 23. Performance
 
 - Timeline resolution is O(scenes + layers + audio); scene lookup is O(log n); keyframe sampling is O(log k).
 - Compile once, sample per frame: per-frame work is proportional to the layers of the visible scene(s) only.
@@ -899,10 +941,10 @@ The rules below keep a video from feeling algorithmic. They apply to every plan 
 
 ---
 
-## 23. Testing
+## 24. Testing
 
 ```
-npm test          # 313 engine + 34 editor-brain + 25 studio tests (Vitest)
+npm test          # 323 engine + 34 editor-brain + 25 studio tests (Vitest)
 npm run e2e -w @studio-engine/studio   # browser smoke test (after npm run build -w @studio-engine/studio)
 npm run check     # typecheck + build + tests, all workspaces
 ```
@@ -911,7 +953,7 @@ Covered: scene/layer creation and registries, validation (~50 targeted error/war
 
 ---
 
-## 24. Known limitations and next steps
+## 25. Known limitations and next steps
 
 - **Non-CSS effects** (grain, vignette, color grade, LUT, chromatic aberration, pixelate) are modeled and validated but the reference Remotion renderer does not draw them yet (needs shaders / SVG filters).
 - **Graphic kinds**: the reference renderer draws `counter`, `statCard`, `barChart`, `lineChart`, `pieChart`, `comparison`, `map`, `mapTiles`, `progress` and `timeline`; `icon`, `svg`, `lowerThird` and `custom` have no component (no available skill produces them).
@@ -922,6 +964,8 @@ Covered: scene/layer creation and registries, validation (~50 targeted error/war
 - **Remotion shader transitions** require Chrome ≥ 148 with HTML-in-Canvas; off by default.
 - **Media probing**: `asset.durationInSeconds` must be provided at ingest (e.g. with Remotion's `parseMedia`); it is not detected by the engine.
 - **Caption alignment**: without word timings from a transcription / alignment step, word timings are estimates.
-- **Music ducking follows the whole narration file**, not its pauses: with one continuous voice-over the music stays ducked for the entire episode (visible on the timeline's music envelope). Speech-driven ducking from the transcript belongs to the sound-design phase.
+- **Music ducking without narration segments** follows the whole narration file: with one continuous voice-over (a v1 plan) the music stays ducked for the entire episode. With segments (every plan from the brain), it follows the sentences (MUS-06).
+- **One music track per episode**: changing the track at chapters (MUS-07) and loop points on the bar are not handled; a looped file restarts from its beginning, audibly unless it was cut to loop.
+- **Loudness is measured on the render**, not in the preview. A mono music file comes out about 3 dB lower in Remotion's stereo mix; the loudness pass absorbs it, but the levels of `MUSIC_STATE_LEVELS` are relative, not absolute dBFS.
 - **Shot split** (cut a shot in two at the playhead) is not implemented: it needs a media in-point on shots (`Shot` has no trim field yet).
 - Not in scope by design: the AI model itself.

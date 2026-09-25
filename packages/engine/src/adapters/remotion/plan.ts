@@ -61,6 +61,8 @@ export interface VolumeEnvelope {
   fadeOutFrames: number;
   /** Absolute frame windows where the track is ducked, with the target multiplier. */
   ducking: Array<{ startFrame: number; endFrame: number; amount: number; attackFrames: number; releaseFrames: number }>;
+  /** Gain automation in absolute frames, sorted (music cues, controlled silences). */
+  automation: Array<{ frame: number; gain: number; rampFrames: number }>;
 }
 
 export interface RemotionAudioItem {
@@ -159,6 +161,7 @@ export function buildRemotionPlan(project: VideoProject, options: BuildPlanOptio
   const toItem = (a: ResolvedAudio): RemotionAudioItem => {
     const t = trackById.get(a.id) ?? {};
     const duck = t.ducking;
+    const origin = a.startFrame - (t.startFrame ?? 0); // owner start: automation frames are owner-relative
     return {
       id: a.id,
       role: a.role,
@@ -181,6 +184,7 @@ export function buildRemotionPlan(project: VideoProject, options: BuildPlanOptio
                 .filter((v) => v.endFrame > a.startFrame && v.startFrame < a.startFrame + a.durationInFrames)
                 .map((v) => ({ startFrame: v.startFrame, endFrame: v.endFrame, amount: duck.amount, attackFrames: duck.attackFrames ?? 6, releaseFrames: duck.releaseFrames ?? 12 }))
             : [],
+        automation: (t.automation ?? []).map((p) => ({ frame: origin + p.frame, gain: p.gain, rampFrames: p.rampFrames ?? 0 })).sort((x, y) => x.frame - y.frame),
       },
     };
   };
@@ -231,5 +235,18 @@ export function audioVolumeAt(item: Pick<RemotionAudioItem, 'from' | 'durationIn
     else if (abs >= w.endFrame && abs < w.endFrame + w.releaseFrames) k = 1 - (abs - w.endFrame) / w.releaseFrames;
     duck = Math.min(duck, 1 - k * (1 - w.amount));
   }
-  return Math.max(0, Math.min(1, v * duck));
+  return Math.max(0, Math.min(1, v * duck * automationGainAt(e.automation ?? [], abs)));
+}
+
+/** Gain of an automation curve (sorted, absolute frames) at an absolute frame. A new point ramps from the value reached so far. */
+export function automationGainAt(points: ReadonlyArray<{ frame: number; gain: number; rampFrames: number }>, frame: number): number {
+  let from = 1;
+  let prev: { frame: number; gain: number; rampFrames: number } | undefined;
+  const valueAt = (p: typeof prev, start: number, f: number) => (!p ? 1 : p.rampFrames <= 0 || f >= p.frame + p.rampFrames ? p.gain : start + (p.gain - start) * ((f - p.frame) / p.rampFrames));
+  for (const p of points) {
+    if (p.frame > frame) break;
+    from = valueAt(prev, from, p.frame);
+    prev = p;
+  }
+  return valueAt(prev, from, frame);
 }

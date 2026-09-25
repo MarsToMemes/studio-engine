@@ -259,11 +259,6 @@ describe('shot camera and framing', () => {
     expect(reveal.metadata!.extra).toMatchObject({ appliedSkill: 'blackout_reveal', camera: 'punch_in' });
   });
 
-  it('reports what is not rendered yet instead of silently ignoring it', () => {
-    const notes = compiled().notes.join('\n');
-    expect(notes).toContain('music cues are part of the Timeline JSON but not rendered yet');
-    expect(notes).toContain('controlled silences are validated but not rendered yet');
-  });
 });
 
 describe('Timeline JSON v2', () => {

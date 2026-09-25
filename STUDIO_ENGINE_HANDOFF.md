@@ -23,7 +23,7 @@ SCRIPT + VOIX (transcrite) + VISUELS + DOCUMENTS + MUSIQUE + SFX + DROITS
  editor-brain ─ ANALYSE ÉDITORIALE → STRUCTURE DU RÉCIT → PLAN DE PLANS → HIÉRARCHIE VISUELLE → CAMÉRA
  (le réalisateur)   → MOTION DESIGN → SOUND DESIGN → TRANSITIONS → SOUS-TITRES   (chaque décision justifiée)
         │
-        ▼  ShotPlan v2 (JSON)  ◄─── validé contre VIDEO_EDITING_BIBLE.md (147 règles numérotées)
+        ▼  ShotPlan v2 (JSON)  ◄─── validé contre VIDEO_EDITING_BIBLE.md (148 règles numérotées)
         │
  engine ─ compilation déterministe → VideoProject (scènes, calques, animations, audio)
  (l'exécutant)
@@ -76,7 +76,7 @@ cd packages/remotion && npm run assets   # médias de test synthétiques dans pu
 
 ```
 studio-engine/
-├── VIDEO_EDITING_BIBLE.md        la référence éditoriale : 147 règles (ID · sévérité · mode de contrôle)
+├── VIDEO_EDITING_BIBLE.md        la référence éditoriale : 148 règles (ID · sévérité · mode de contrôle)
 ├── SCENE_ENGINE.md               documentation technique complète (API, formats, choix)
 ├── LOCAL_ENGINE_INTEGRATION.md   contrat moteur local ↔ studio-engine (qui fait quoi)
 ├── STUDIO_ENGINE_HANDOFF.md      ce document
@@ -107,7 +107,7 @@ studio-engine/
 
 ### 4.1 La bible (`VIDEO_EDITING_BIBLE.md`)
 
-- **Contenu** : 147 règles en 26 domaines. Narration, scènes, grammaire, rythme, hiérarchie visuelle, caméra, typographie, motion, transitions, sound design, musique, silence, documents, graphiques, cartes, sous-titres, couleur, répétitions, contraste, rappels visuels, escalade, révélations, chapitres, droits, technique.
+- **Contenu** : 148 règles en 26 domaines. Narration, scènes, grammaire, rythme, hiérarchie visuelle, caméra, typographie, motion, transitions, sound design, musique, silence, documents, graphiques, cartes, sous-titres, couleur, répétitions, contraste, rappels visuels, escalade, révélations, chapitres, droits, technique.
 - **Format** d'une règle : `RHY-03 · avertissement · AUTO — …`.
   - Sévérité : `bloquant`, `avertissement` ou `conseil`.
   - Contrôle : `AUTO` (code), `HEUR` (automatique mais approximatif) ou `REVUE` (IA critique ou humain).
@@ -131,6 +131,11 @@ studio-engine/
 - **Compilation** : `compileShotPlan()` donne un `VideoProject` rendu par Remotion.
   - Les skills passent par le registre, avec repli.
   - Il y a une piste voix par segment, donc **la musique baisse sous chaque phrase et remonte dans les pauses**.
+  - **Sound design audible** :
+    - la musique suit son état (`calm` 0 dB, `build` +2 dB en montée lente, `tension` +1, `reveal` +3, `aftermath` −4, relatifs au niveau de base) ;
+    - le silence contrôlé coupe vraiment la musique, les SFX et l'ambiance, puis la musique revient sur la révélation ;
+    - l'ambiance (`ambience`) boucle à −28 dB.
+    - Vérifié sur un vrai rendu : −68,8 dBFS pendant le silence, contre −21 dBFS juste avant.
   - Les sous-titres sont synchronisés mot à mot, omis quand le texte à l'écran dit déjà la même chose, et ne chevauchent jamais deux phrases.
 - **Caméra séparée du motion skill.**
   - Push ou pull de 5 à 10 %, pans, tilts, punch, parallaxe, tremblement.
@@ -212,6 +217,7 @@ C'est ce que le moteur local doit produire depuis `projet.yaml`. Exemple complet
   ],
   "narration": { "assetId": "narration", "words": [{ "text": "McDonald's", "startMs": 200, "endMs": 700 }] },
   "music": { "assetId": "music", "gainDb": -18, "duckDb": -6 },
+  "ambience": { "assetId": "room-tone", "gainDb": -28 },    // facultatif : ambiance en boucle, coupée par le silence avant une révélation
   "sfx": { "impact": ["sfx-impact"], "glitch": ["sfx-glitch"], "whoosh": [], "pop": [] },
   "pacing": "standard"                                // calm | standard | dynamic
 }
@@ -275,6 +281,11 @@ npx remotion render src/index.ts EngineDemo out/preview.mp4 --props=props.json -
 # Médias de démo + worker MapLibre (public/maplibre/), et les aperçus de la Motion Library
 npm run assets
 npm run previews -- --browser=/chemin/vers/chrome      # motion-library/previews/*.jpg + catalog.json
+
+# Loudness : mesure du mix (−14 LUFS, true peak ≤ −1 dBTP, règle MUS-09), code 1 si hors cible
+npm run loudness -- out/episode.mp4
+npm run loudness -- out/episode.mp4 --fix=out/final.mp4     # deux passes linéaires, image copiée
+npm run loudness -- voix.wav --preset=voice                 # la voix seule, −16 LUFS (MUS-01)
 ```
 
 ---
@@ -293,9 +304,25 @@ def ffprobe(path):
                           "-of", "json", str(path)], capture_output=True, text=True, check=True)
     return json.loads(out.stdout)
 
+def loudnorm_two_pass(src, dst, I, TP, LRA, extra=()):
+    # Deux passes, mode linéaire : un seul gain, donc les silences et la dynamique sont conservés.
+    # (Une seule passe = mode dynamique, qui compresse.)
+    af = f"loudnorm=I={I}:TP={TP}:LRA={LRA}:print_format=json"
+    err = subprocess.run(["ffmpeg", "-hide_banner", "-nostats", "-i", str(src), "-vn", "-af", af, "-f", "null", "-"],
+                         capture_output=True, text=True, check=True).stderr
+    m = json.loads(err[err.rindex("{"):err.rindex("}") + 1])
+    second = (f"{af}:measured_I={m['input_i']}:measured_TP={m['input_tp']}:measured_LRA={m['input_lra']}"
+              f":measured_thresh={m['input_thresh']}:offset={m['target_offset']}:linear=true")
+    subprocess.run(["ffmpeg", "-y", "-i", str(src), *extra, "-af", second, "-ar", "48000", str(dst)], check=True)
+
 def normalize_voice(src, dst):
-    # Voix à -16 LUFS, true peak -1 dBTP (bible MUS-01 / TECH-05). Idéalement deux passes (mesure puis correction).
-    subprocess.run(["ffmpeg", "-y", "-i", str(src), "-af", "loudnorm=I=-16:TP=-1:LRA=11", "-ar", "48000", str(dst)], check=True)
+    loudnorm_two_pass(src, dst, I=-16, TP=-1.5, LRA=7)          # bible MUS-01
+
+def master(episode, final):
+    # Mix final à -14 LUFS, true peak <= -1 dBTP (bible MUS-09), image copiée telle quelle.
+    loudnorm_two_pass(episode, final, I=-14, TP=-1, LRA=11, extra=("-c:v", "copy", "-c:a", "aac", "-b:a", "320k"))
+    # Équivalent côté studio-engine, avec rapport et règle citée :
+    #   node packages/remotion/scripts/loudness.mjs episode.mp4 --fix=final.mp4 --json
 
 def transcribe_words(voice):
     # Whisper local (faster-whisper) avec horodatage par mot → millisecondes.
@@ -324,6 +351,7 @@ def direct_and_render(brain_input, workdir, use_llm=False):
     (workdir / "props.json").write_text(json.dumps({"project": project}))
     subprocess.run(["npx", "remotion", "render", "src/index.ts", "EngineDemo", str(workdir / "episode.mp4"),
                     f"--props={workdir / 'props.json'}"], cwd=STUDIO / "packages/remotion", check=True)
+    master(workdir / "episode.mp4", workdir / "final.mp4")
 ```
 
 **Qui fait quoi**
@@ -332,11 +360,12 @@ def direct_and_render(brain_input, workdir, use_llm=False):
 |---|---|
 | Lire `projet.yaml`, organiser les médias | Décisions éditoriales, plan, timeline |
 | `ffprobe` (durées, tailles, fps) | Motion, caméra, transitions, sous-titres |
-| Voix à −16 LUFS, pic vrai ≤ −1 dBTP | Validation contre la bible |
+| Voix à −16 LUFS (deux passes, linéaire) | Validation contre la bible |
 | Transcription mot à mot (Whisper ou ElevenLabs) | Rendu Remotion |
 | Conversion des médias en formats lisibles par le navigateur | Aperçu (via l'interface Claude Design) |
 | Droits des assets (`source`) | |
-| Rendu FFmpeg de secours, mixage final si besoin | |
+| Rendu FFmpeg de secours | Sound design : niveaux musicaux par état, silences, ambiance, SFX |
+| Mastering final à −14 LUFS (ou `loudness.mjs --fix`) | Mesure et verdict de loudness (`loudness.mjs`) |
 
 ---
 
@@ -346,22 +375,20 @@ def direct_and_render(brain_input, workdir, use_llm=False):
 
 | Brique | Statut |
 |---|---|
-| Bible du montage (147 règles, 45 vérifiées par le code) | ✅ |
+| Bible du montage (148 règles, 47 vérifiées par le code) | ✅ |
 | ShotPlan v2, Timeline JSON v2, narration segmentée, droits des assets | ✅ |
 | Moteur Remotion (composition, graphiques, cartes, documents, sous-titres, rendu MP4) | ✅ |
 | Motion Skill Registry v2 (65 skills, API, familles, repli sûr, MapLibre, aperçus, manifeste d'assets) | ✅ (tuiles réelles non testées) |
+| Sound design au rendu (états musicaux, silences, ambiance, loudness −14 LUFS) | ✅ vérifié sur rendu |
 | Cerveau éditorial déterministe (analyse → plan complet justifié) | ✅ |
 | Cerveau LLM (Claude, validé et réparé par les règles, repli heuristique) | ✅ (non testé avec une vraie clé) |
 | CLI pour le moteur local (`editor-brain`, `shotplan`), rendu d'un plan par `--props` | ✅ vérifié |
 
 **Pas encore fait** (dans l'ordre prévu)
-1. **Sound design au rendu.**
-   - Les états musicaux et les silences sont **décidés et validés mais pas encore audibles** : la musique joue à un niveau constant, avec ducking par phrase.
-   - La mesure LUFS se fera avec le FFmpeg local.
-2. **Contrôle qualité sur le rendu** : images noires, saturation audio, polices, `QC_REPORT.json`, et critique éditoriale par IA (règles REVUE).
-3. **`RenderEngine`** : `RemotionRenderer` / `FFmpegRenderer` (branché sur `montage.py`), cache de rendu.
-4. **Commandes en langage naturel** (« rends cette révélation plus forte ») : des opérations sur le plan, avec diff et annulation.
-5. **Épisode test professionnel** : vraie voix, vrais médias sous licence.
+1. **Contrôle qualité sur le rendu** : images noires, saturation audio, polices, `QC_REPORT.json`, et critique éditoriale par IA (règles REVUE).
+2. **`RenderEngine`** : `RemotionRenderer` / `FFmpegRenderer` (branché sur `montage.py`), cache de rendu.
+3. **Commandes en langage naturel** (« rends cette révélation plus forte ») : des opérations sur le plan, avec diff et annulation.
+4. **Épisode test professionnel** : vraie voix, vrais médias sous licence.
 
 **Limites connues**
 - Le cerveau heuristique :

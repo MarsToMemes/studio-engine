@@ -254,6 +254,12 @@ export interface ShotPlan {
     /** Explicit music cues. Default: derived from the shots' `musicState`. */
     cues?: MusicCue[];
   };
+  /** Ambience bed (room tone, city, wind…), looped under everything; cut by `ambient_drop` silences. */
+  ambience?: {
+    assetId: string;
+    /** Default -28 dB. */
+    gainDb?: number;
+  };
   captions?: {
     enabled: boolean;
     /** Caption preset id. Default `caption-bold-pop`. */

@@ -29,7 +29,21 @@ export interface AudioTrack {
    * multiplier while ducked (0.25 = 25% of the normal volume).
    */
   ducking?: { amount: number; attackFrames?: Frames; releaseFrames?: Frames };
+  /**
+   * Volume automation (music cues, controlled silences): a gain multiplier
+   * curve, applied on top of `volume`, fades and ducking. Frames are relative
+   * to the owner, like `startFrame`. The gain is 1 before the first point.
+   */
+  automation?: GainPoint[];
   muted?: boolean;
+}
+
+/** From `frame`, the gain moves linearly to `gain` over `rampFrames` (0 = a cut), then holds. */
+export interface GainPoint {
+  frame: Frames;
+  /** Multiplier, 0 (silent) to 4 (+12 dB). */
+  gain: number;
+  rampFrames?: Frames;
 }
 
 /**

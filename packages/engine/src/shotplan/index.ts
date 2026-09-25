@@ -9,3 +9,4 @@ export * from './vocabulary.js';
 export * from './editorial.js';
 export * from './validate-editorial.js';
 export * from './grammar.js';
+export * from './sound.js';
