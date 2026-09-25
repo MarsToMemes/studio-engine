@@ -84,7 +84,8 @@ studio-engine/
     ├── engine/        @studio-engine/scene-engine   moteur pur, zéro dépendance
     │   ├── src/model/          modèle de données : scènes, calques, animations, audio, sous-titres, assets (+ droits)
     │   ├── src/shotplan/       ShotPlan v1/v2, Timeline JSON, validation éditoriale, grammaire, compilation, CLI
-    │   ├── src/skills/         Motion Skill Registry (49 skills), caméra de plan, replis
+    │   ├── src/skills/         Motion Skill Registry (65 skills), caméra de plan, replis
+    │   ├── src/qc/             contrôle qualité (QC_REPORT.json) · src/mix/ loudness · src/render/ découpage et clés de cache
     │   ├── src/bible/          règles de la bible sous forme de données (générées depuis le .md)
     │   ├── src/transitions/    transitions éditoriales (coupe franche par défaut) → Remotion
     │   ├── src/adapters/remotion/  plan Remotion (séquences, audio, ducking, sous-titres)
@@ -94,9 +95,11 @@ studio-engine/
     │   ├── src/llm/                     couche LLM (Claude via SDK officiel), validation, réparation, repli
     │   ├── src/examples/mcdonalds.ts    exemple complet du format d'entrée
     │   └── bin/editor-brain.mjs         CLI : direct [--plan] [--llm]
-    ├── remotion/      @studio-engine/remotion       composition Remotion, graphiques, cartes, rendu
-    │   ├── src/index.ts                 point d'entrée Remotion (compositions EngineDemo, ShotPlanDemo, BrainDemo)
-    │   └── scripts/render.mjs           rendu des compositions de démo
+    ├── render/        @studio-engine/render         ce que montage.py appelle : CLI studio-render
+    │   └── bin/studio-render.mjs        render (Remotion par morceaux en cache, ou brouillon FFmpeg) · qc · loudness · cache
+    ├── remotion/      @studio-engine/remotion       composition Remotion, graphiques, cartes, polices
+    │   ├── src/index.ts                 point d'entrée Remotion (compositions EngineDemo, ShotPlanDemo, BrainDemo, MotionLibrary)
+    │   └── scripts/                     médias de démo, aperçus de la Motion Library
     └── studio/        banc de test technique (aperçu @remotion/player + tests navigateur).
                        L'interface produit n'est PAS ici : elle est faite par Claude Design.
 ```
@@ -204,6 +207,25 @@ studio-engine/
   - Sans clé, la critique reste « à faire » et le rapport liste les 43 règles à relire à la main.
 - **Validé sur un rendu volontairement cassé** (image noire, phrase muette, son saturé) : les 4 défauts sont trouvés, rien d'autre. Sur le rendu normal : 0 échec.
 
+### 4.6 Le rendu (`packages/render`, commande `studio-render`)
+
+- **`studio-render render plan.json final.mp4 --fallback`** fait tout le rendu, dans cet ordre :
+  1. **Remotion par morceaux d'environ 3 scènes, avec un cache** (`.studio-cache/`). Seuls les morceaux dont le contenu a changé sont re-rendus.
+     - Exemple mesuré sur la démo de 34 s : 85 s la première fois, 13 s si rien n'a changé, 22 s après la modification d'un texte.
+     - Le résultat est identique à un rendu d'une traite : 0,05 % d'écart maximum aux jonctions.
+  2. **Le son est mixé en JavaScript**, avec exactement les mêmes courbes de volume que l'aperçu : écart médian de 0,06 dB avec l'audio de Remotion.
+     - Chaque son est placé à l'échantillon près.
+     - Il corrige un défaut de Remotion : quand une musique en boucle redémarre, Remotion crée un trou et oublie ensuite les fondus.
+  3. **Master à −14 LUFS**, image copiée.
+- **Code de sortie** : 0 = rendu final, **1 = Remotion a échoué et c'est un BROUILLON FFmpeg qui a été rendu** (avec `--fallback`), 2 = erreur.
+- **Brouillon FFmpeg** (`--engine=ffmpeg`, ou repli automatique) :
+  - images avec zoom lent, vidéos, textes en Inter, sous-titres, vrai son ;
+  - pas de motion skills, ni de graphiques ou cartes animés : ils sont remplacés par leurs mots ;
+  - marqué « DRAFT » sur chaque image, **jamais pour publier** ;
+  - il lui faut un FFmpeg complet (celui de ta machine, pas celui fourni avec Remotion) ;
+  - 29 s pour les 34 s de la démo en 1080p.
+- **Cache** : `studio-render cache --prune=20` garde les 20 Go les plus récemment utilisés. Compte environ 1–2 Go par épisode en 1080p.
+
 ---
 
 ## 5. Formats d'échange
@@ -310,6 +332,11 @@ npm run loudness -- voix.wav --preset=voice                 # la voix seule, −
 npm run qc -- plan.json out/final.mp4 --frames-dir=out/stills
 node ../editor-brain/bin/editor-brain.mjs critique plan.json --stills=out/stills > review.json   # critique IA (ANTHROPIC_API_KEY)
 npm run qc -- plan.json out/final.mp4 --review=review.json                                       # rapport avec la critique
+
+# Rendu complet depuis la racine (remplace les étapes 3 et le master) : morceaux en cache + mix + −14 LUFS
+node packages/render/bin/studio-render.mjs render plan.json out/final.mp4 --fallback [--scale=0.5] [--public=<dossier des médias>]
+node packages/render/bin/studio-render.mjs render plan.json out/brouillon.mp4 --engine=ffmpeg      # brouillon rapide
+node packages/render/bin/studio-render.mjs cache --prune=20                                        # nettoyage du cache (Go)
 ```
 
 ---
@@ -345,8 +372,8 @@ def normalize_voice(src, dst):
 def master(episode, final):
     # Mix final à -14 LUFS, true peak <= -1 dBTP (bible MUS-09), image copiée telle quelle.
     loudnorm_two_pass(episode, final, I=-14, TP=-1, LRA=11, extra=("-c:v", "copy", "-c:a", "aac", "-b:a", "320k"))
-    # Équivalent côté studio-engine, avec rapport et règle citée :
-    #   node packages/remotion/scripts/loudness.mjs episode.mp4 --fix=final.mp4 --json
+    # studio-render le fait déjà à la fin de `render` ; équivalent seul, avec rapport et règle citée :
+    #   node packages/render/bin/studio-render.mjs loudness episode.mp4 --fix=final.mp4 --json
 
 def transcribe_words(voice):
     # Whisper local (faster-whisper) avec horodatage par mot → millisecondes.
@@ -369,26 +396,30 @@ def direct_and_render(brain_input, workdir, use_llm=False):
     (workdir / "plan.json").write_text(r.stdout)
     if r.returncode != 0:
         raise RuntimeError("plan non valide en final : voir qc / demandes d'assets")
-    subprocess.run(["node", str(STUDIO / "packages/engine/bin/shotplan.mjs"), "compile", str(workdir / "plan.json")],
-                   stdout=open(workdir / "project.json", "w"), check=True)
-    project = json.loads((workdir / "project.json").read_text())["project"]
-    (workdir / "props.json").write_text(json.dumps({"project": project}))
-    subprocess.run(["npx", "remotion", "render", "src/index.ts", "EngineDemo", str(workdir / "episode.mp4"),
-                    f"--props={workdir / 'props.json'}"], cwd=STUDIO / "packages/remotion", check=True)
-    master(workdir / "episode.mp4", workdir / "final.mp4")
+    # Rendu : Remotion par morceaux en cache + mix + master -14 LUFS. Repli brouillon FFmpeg si Remotion échoue.
+    render = STUDIO / "packages/render/bin/studio-render.mjs"
+    r = subprocess.run(["node", str(render), "render", str(workdir / "plan.json"), str(workdir / "final.mp4"), "--fallback",
+                        f"--cache={STUDIO_CACHE}"], capture_output=True, text=True)
+    print(r.stdout, r.stderr)
+    if r.returncode == 2:
+        raise RuntimeError("rendu impossible : voir stderr")
+    if r.returncode == 1:
+        print("ATTENTION : Remotion a échoué, final.mp4 est un BROUILLON FFmpeg (ne pas publier)")
     return quality_control(workdir)
 
+STUDIO_CACHE = pathlib.Path("~/.studio-cache").expanduser()   # partagé entre épisodes ; `studio-render cache --prune=20`
+
 def quality_control(workdir):
-    remotion = STUDIO / "packages/remotion"
+    render = STUDIO / "packages/render/bin/studio-render.mjs"
     stills, plan, final = workdir / "stills", workdir / "plan.json", workdir / "final.mp4"
-    subprocess.run(["node", "scripts/qc.mjs", str(plan), str(final), f"--frames-dir={stills}",
-                    f"--out={workdir / 'QC_REPORT.json'}"], cwd=remotion)
+    subprocess.run(["node", str(render), "qc", str(plan), str(final), f"--frames-dir={stills}",
+                    f"--out={workdir / 'QC_REPORT.json'}"])
     # Critique IA des règles REVUE (sans clé : "pending", le pipeline continue).
     with open(workdir / "review.json", "w") as out:
         subprocess.run(["node", str(STUDIO / "packages/editor-brain/bin/editor-brain.mjs"), "critique", str(plan),
                         f"--stills={stills}"], stdout=out)
-    r = subprocess.run(["node", "scripts/qc.mjs", str(plan), str(final), f"--review={workdir / 'review.json'}",
-                        f"--out={workdir / 'QC_REPORT.json'}"], cwd=remotion)
+    r = subprocess.run(["node", str(render), "qc", str(plan), str(final), f"--review={workdir / 'review.json'}",
+                        f"--out={workdir / 'QC_REPORT.json'}"])
     report = json.loads((workdir / "QC_REPORT.json").read_text())
     # report["attributions"] → description YouTube ; report["disclosures"] → case « contenu altéré ou synthétique »
     return r.returncode == 0, report
@@ -421,14 +452,14 @@ def quality_control(workdir):
 | Motion Skill Registry v2 (65 skills, API, familles, repli sûr, MapLibre, aperçus, manifeste d'assets) | ✅ (tuiles réelles non testées) |
 | Sound design au rendu (états musicaux, silences, ambiance, loudness −14 LUFS) | ✅ vérifié sur rendu |
 | Contrôle qualité (`QC_REPORT.json`), polices embarquées, critique éditoriale IA | ✅ vérifié sur rendu (critique IA non testée avec une vraie clé) |
+| Rendu : `studio-render` (Remotion par morceaux en cache, mixeur audio, master, brouillon FFmpeg, repli) | ✅ vérifié (identique au rendu d'une traite) |
 | Cerveau éditorial déterministe (analyse → plan complet justifié) | ✅ |
 | Cerveau LLM (Claude, validé et réparé par les règles, repli heuristique) | ✅ (non testé avec une vraie clé) |
 | CLI pour le moteur local (`editor-brain`, `shotplan`), rendu d'un plan par `--props` | ✅ vérifié |
 
 **Pas encore fait** (dans l'ordre prévu)
-1. **`RenderEngine`** : `RemotionRenderer` / `FFmpegRenderer` (branché sur `montage.py`), cache de rendu.
-2. **Commandes en langage naturel** (« rends cette révélation plus forte ») : des opérations sur le plan, avec diff et annulation.
-3. **Épisode test professionnel** : vraie voix, vrais médias sous licence.
+1. **Commandes en langage naturel** (« rends cette révélation plus forte ») : des opérations sur le plan, avec diff et annulation.
+2. **Épisode test professionnel** : vraie voix, vrais médias sous licence.
 
 **Limites connues**
 - Le cerveau heuristique :
@@ -439,6 +470,9 @@ def quality_control(workdir):
 - **L'alignement** script/transcription gère jusqu'à environ 20 minutes de texte d'un coup.
 - **`city_zoom` avec de vraies tuiles** n'a pas été rendu ici : le réseau du conteneur bloque les serveurs de tuiles. Seul le style hors ligne (pays) est vérifié.
 - **Un cadrage serré sur une image basse résolution** l'agrandit et la rend floue. La validation le signale au-delà de 1,5× (TECH-09), mais le cerveau ne choisit pas encore un cadrage plus large à la place.
+- **Rendu** :
+  - Remotion recopie le dossier `--public` à chaque rendu : pour des médias lourds, sers-les en http plutôt que de pointer `--public` sur le dossier de l'épisode ;
+  - le brouillon FFmpeg ne sait pas faire les motion skills, les graphiques et les cartes.
 - **Angles morts du contrôle qualité** :
   - une image manquante sous des sous-titres n'est pas détectée ;
   - les seuils sont réglés sur la démo, pas sur un vrai épisode.
@@ -471,6 +505,6 @@ def quality_control(workdir):
 >    - voix normalisée à −16 LUFS et transcrite mot à mot ;
 >    - musique, sons par catégorie.
 > 4. Sers les médias en http (ou copie-les dans `packages/remotion/public/`).
-> 5. Lance `editor-brain direct input.json --plan`, traite les demandes d'assets affichées, valide avec `shotplan validate --stage=final`, compile et rends avec `EngineDemo --props` (section 6).
-> 6. Garde le rendu FFmpeg de `montage.py` comme repli.
+> 5. Lance `editor-brain direct input.json --plan`, traite les demandes d'assets affichées, valide avec `shotplan validate --stage=final`, puis rends avec `studio-render render plan.json final.mp4 --fallback` et contrôle avec `studio-render qc` (sections 4.5, 4.6 et 6).
+> 6. Garde le rendu FFmpeg de `montage.py` tel quel : `studio-render` a son propre brouillon FFmpeg en repli, et ton FFmpeg complet lui sert.
 > 7. Liste ce que `projet.yaml` contient et que le format ne sait pas encore représenter, pour les prochaines phases.

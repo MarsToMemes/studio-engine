@@ -23,3 +23,4 @@ export * from './skills/index.js';
 export * from './bible/index.js';
 export * from './mix/loudness.js';
 export * from './qc/index.js';
+export * from './render/index.js';

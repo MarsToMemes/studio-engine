@@ -2,3 +2,6 @@ node_modules/
 dist/
 coverage/
 *.tsbuildinfo
+
+# Render cache (studio-render)
+.studio-cache/

@@ -8,7 +8,9 @@ packages/
 │               presets, serialization, framework-agnostic renderer, Remotion plan, AI blueprint. Zero runtime deps.
 ├── editor-brain/ @studio-engine/editor-brain — the AI editor brain: script + voice + assets → editorial analysis →
 │               story structure → ShotPlan v2 that follows VIDEO_EDITING_BIBLE.md, every decision explained.
-├── remotion/   @studio-engine/remotion — Remotion composition and render (@remotion/renderer).
+├── render/     @studio-engine/render — studio-render CLI: Remotion by cached chunks or FFmpeg draft, JS audio mixer,
+│               -14 LUFS master, QC_REPORT.json. What montage.py calls.
+├── remotion/   @studio-engine/remotion — Remotion composition (@remotion/renderer).
 └── studio/     @studio-engine/studio — technical test bench (@remotion/player preview, browser e2e). The product UI lives elsewhere.
 .claude/skills/ Official Remotion Agent Skills (remotion-dev/skills), pinned in skills-lock.json.
 ```
@@ -30,6 +32,8 @@ npm run render -- --scale=0.5   # → out/demo.mp4 (540p preview); omit --scale 
 npm run previews         # → motion-library/previews/*.jpg + catalog.json
 npm run loudness -- out/demo.mp4 --fix=out/final.mp4   # → −14 LUFS (MUS-09), two linear passes
 npm run qc -- plan.json out/final.mp4   # → QC_REPORT.json, each check cites its bible rule
+cd ../..
+node packages/render/bin/studio-render.mjs render plan.json out/final.mp4 --fallback   # cached chunks, mix, master
 ```
 
 Restore the agent skills on a fresh machine: `npx skills experimental_install`.

@@ -5,6 +5,7 @@
   "workspaces": [
     "packages/engine",
     "packages/editor-brain",
+    "packages/render",
     "packages/remotion",
     "packages/studio"
   ],
@@ -12,9 +13,9 @@
     "node": ">=20"
   },
   "scripts": {
-    "build": "npm run build -w @studio-engine/scene-engine && npm run build -w @studio-engine/editor-brain",
-    "test": "npm test -w @studio-engine/scene-engine && npm test -w @studio-engine/editor-brain && npm test -w @studio-engine/studio",
-    "typecheck": "npm run typecheck -w @studio-engine/scene-engine && npm run build && npm run typecheck -w @studio-engine/editor-brain && npm run typecheck -w @studio-engine/remotion && npm run typecheck -w @studio-engine/studio",
+    "build": "npm run build -w @studio-engine/scene-engine && npm run build -w @studio-engine/editor-brain && npm run build -w @studio-engine/render",
+    "test": "npm test -w @studio-engine/scene-engine && npm test -w @studio-engine/editor-brain && npm test -w @studio-engine/render && npm test -w @studio-engine/studio",
+    "typecheck": "npm run typecheck -w @studio-engine/scene-engine && npm run build && npm run typecheck -w @studio-engine/editor-brain && npm run typecheck -w @studio-engine/render && npm run typecheck -w @studio-engine/remotion && npm run typecheck -w @studio-engine/studio",
     "check": "npm run typecheck && npm test",
     "studio": "npm run dev -w @studio-engine/studio"
   }

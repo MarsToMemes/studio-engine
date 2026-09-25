@@ -995,7 +995,77 @@ Verified on a render of `BrainDemo`: 0 failures, and the silence measured at −
 
 ---
 
-## 24. Performance
+## 24. Rendering an episode (`@studio-engine/render`)
+
+`packages/render` is the Node side of the pipeline. It chooses the renderer, keeps a cache, mixes the sound and masters. Its CLI `studio-render` is what `montage.py` calls.
+
+```bash
+studio-render render plan.json final.mp4 [--engine=remotion|ffmpeg] [--fallback] [--scale=0.5] [--cache=.studio-cache]
+studio-render qc plan.json final.mp4 [--frames-dir=stills] [--review=review.json]
+studio-render loudness file [--fix=out] [--preset=voice]
+studio-render cache [--prune=<GB>]
+```
+
+`render` exits with 0 when rendered, 1 when Remotion failed and the draft was rendered instead (`--fallback`), 2 on error. From the monorepo root, the binary is `node packages/render/bin/studio-render.mjs`. The `npm run qc`, `npm run loudness` and `npm run render:episode` scripts of `packages/remotion` call it.
+
+**`RemotionRenderer`: the episode.**
+
+1. **Chunks of about 3 scenes** (`planRenderChunks`). Boundaries are content-defined: a chunk ends after a scene whose id hashes to a multiple of 3. Inserting or removing a scene only changes the chunks around it.
+2. **Cache key** of a chunk: a SHA-256 of `chunkKeyMaterial`. It contains:
+   - the scenes the chunk shows, including the previous one while a transition overlaps its start;
+   - their offsets inside the chunk;
+   - their assets, with a content fingerprint (checksum, else size + modification time);
+   - the canvas and the render settings;
+   - the version of the rendering code (a hash of the Remotion bundle's JavaScript).
+
+   Absolute positions are left out, so a chunk that only moved in time keeps its key. A change that moves the spoken words inside a shot does change pixels (a keyword effect lands elsewhere), and the key catches it.
+3. **Rendering.** Each missing chunk is rendered muted, with one bundle and one browser for all chunks. The chunks are then joined without re-encoding (FFmpeg concat), and the joined frame count is checked.
+4. **Sound: the JS mixer** (`mixAudio`). It uses the same audio plan and the same `audioVolumeAt` as the preview, with one gain per video frame (as Remotion applies it). Sources are decoded once to 48 kHz and cached. The mix is cached by the audio plan and the sources' content.
+   - If a video layer plays its own sound, the mixer does not handle it, and the audio is rendered by Remotion instead (not cached).
+5. **Master**: two linear `loudnorm` passes, then −14 LUFS (MUS-09). The video stream is copied. A silent mix is muxed as is.
+
+Measured on `BrainDemo` (34 s, 1019 frames, 480×270, 4 cores):
+
+| Run | Result |
+|---|---|
+| Cold | 85 s, 7 chunks rendered |
+| Again | **13 s**, everything from the cache |
+| One text changed | **22 s**, 1 chunk re-rendered |
+| Chunked vs single-pass render, same inputs | mean picture difference 0.09 %, ≤ 0.05 % at the chunk seams |
+| Mixer vs Remotion's own audio (WAV) | median gap **0.06 dB** per frame; sources placed to the sample (clicks at frames 30/60/90 exactly; Remotion's AAC adds 43 ms) |
+
+Where the two sound paths differ, Remotion is the one that is wrong:
+
+- When a looped music file restarts, Remotion leaves a hole and then stops applying the volume curve, so the music's fade-out is missing.
+- The mixer follows the plan.
+
+At 1080p, a single-pass Remotion render of the same episode takes 114 s on 4 cores, about 3.4× real time.
+
+**`FfmpegRenderer`: the draft.** It is not for publishing, and a `DRAFT · FFmpeg` mark is on every frame.
+
+- **Pictures.** One segment per shot:
+  - images with a slow 6 % push (`zoompan`);
+  - videos looped and cropped;
+  - documents fitted with their source;
+  - text, number, chapter, chart and map shots as text cards in Inter (charts and maps become their words: title and values, or place names);
+  - burned captions.
+- **Transitions.** Cuts, except `fade`.
+- **Sound.** The same mixer and master as the final render.
+- **Cache.** Segments are cached too.
+- **Requirements.** It needs a full FFmpeg (`zoompan`, `drawtext`); `check()` says what is missing.
+- **Measured.** The 34 s episode renders in 1080p in 29 s cold, and 17 s when only the texts changed.
+
+`renderEpisode(request, { fallback: true })` renders the draft when Remotion cannot run or fails, and the result's first note says why. Without `fallback`, the error is raised.
+
+**Cache housekeeping.**
+
+- Every file used by a render is touched.
+- `studio-render cache --prune=<GB>` removes the least recently used files until the cache is under that size.
+- At 1080p, count roughly tens of MB per chunk, so an episode's cache is about 1–2 GB.
+
+---
+
+## 25. Performance
 
 - Timeline resolution is O(scenes + layers + audio); scene lookup is O(log n); keyframe sampling is O(log k).
 - Compile once, sample per frame: per-frame work is proportional to the layers of the visible scene(s) only.
@@ -1005,10 +1075,10 @@ Verified on a render of `BrainDemo`: 0 failures, and the silence measured at −
 
 ---
 
-## 25. Testing
+## 26. Testing
 
 ```
-npm test          # 335 engine + 43 editor-brain + 25 studio tests (Vitest)
+npm test          # 340 engine + 43 editor-brain + 7 render + 25 studio tests (Vitest)
 npm run e2e -w @studio-engine/studio   # browser smoke test (after npm run build -w @studio-engine/studio)
 npm run check     # typecheck + build + tests, all workspaces
 ```
@@ -1017,7 +1087,7 @@ Covered: scene/layer creation and registries, validation (~50 targeted error/war
 
 ---
 
-## 26. Known limitations and next steps
+## 27. Known limitations and next steps
 
 - **Non-CSS effects** (grain, vignette, color grade, LUT, chromatic aberration, pixelate) are modeled and validated but the reference Remotion renderer does not draw them yet (needs shaders / SVG filters).
 - **Graphic kinds**: the reference renderer draws `counter`, `statCard`, `barChart`, `lineChart`, `pieChart`, `comparison`, `map`, `mapTiles`, `progress` and `timeline`; `icon`, `svg`, `lowerThird` and `custom` have no component (no available skill produces them).
@@ -1034,6 +1104,11 @@ Covered: scene/layer creation and registries, validation (~50 targeted error/war
   - a missing image under captions is not a black frame (the captions are bright), so it is not detected;
   - the frozen-picture check compares frames one second apart at 96×54, so a very slow move on a flat image can pass for frozen;
   - the thresholds (−45 / −60 dBFS, 3.5 % / 10 % luma) are tuned on the demo, not on a real episode.
+- **Render**:
+  - Remotion copies the `--public` folder into its bundle on every render, so large media are better served over http (as §5.2 of the handoff says);
+  - an asset's fingerprint is size + modification time: touching a file without changing it costs a re-render, not a stale chunk;
+  - a video layer with its own sound falls back to Remotion's audio, which is not cached and has the loop defect described in §24;
+  - the FFmpeg draft ignores `motionSkill`, charts and maps.
 - **The AI critic has not been run against the real API here** (no key in this environment): only its contract is tested, with recorded answers.
 - **Loudness is measured on the render**, not in the preview. A mono music file comes out about 3 dB lower in Remotion's stereo mix; the loudness pass absorbs it, but the levels of `MUSIC_STATE_LEVELS` are relative, not absolute dBFS.
 - **Shot split** (cut a shot in two at the playhead) is not implemented: it needs a media in-point on shots (`Shot` has no trim field yet).
