@@ -8,7 +8,7 @@
  */
 import type { Animation } from '../model/animation.js';
 import type { ComposedShot, ShotEvent, ShotSkillContext } from '../shotplan/compile.js';
-import type { Framing, ShotCameraMove } from '../shotplan/vocabulary.js';
+import { FRAMING_SCALE, type ShotCameraMove } from '../shotplan/vocabulary.js';
 import { addAnimations, byIntensity } from './helpers.js';
 import type { MotionSkillRegistry } from './registry.js';
 
@@ -38,15 +38,7 @@ export const SHOT_CAMERA_MOVE_INFO: Record<ShotCameraMove, ShotCameraMoveInfo> =
   shake: { id: 'shake', description: 'Short impact shake (≤ 0.5 s), conflict only.', implementation: { kind: 'skill', skill: 'camera_shake' } },
 };
 
-/** Scale of a framing on the media (1 = the whole media). */
-export const FRAMING_SCALE: Record<Framing, number | undefined> = {
-  wide: 1,
-  medium: 1.15,
-  close_up: 1.4,
-  extreme_close_up: 1.8,
-  overhead: undefined,
-  pov: undefined,
-};
+export { FRAMING_SCALE } from '../shotplan/vocabulary.js';
 
 export interface ShotCameraResult {
   /** Camera move actually applied. */

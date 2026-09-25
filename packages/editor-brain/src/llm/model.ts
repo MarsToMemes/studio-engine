@@ -14,8 +14,16 @@ export interface ToolSpec {
   inputSchema: Record<string, unknown>;
 }
 
+/** An image shown to the model (e.g. a still of a shot), base64-encoded. */
+export interface ChatImage {
+  mediaType: 'image/jpeg' | 'image/png';
+  data: string;
+  /** Shown as text just before the image, e.g. "Shot u3 at 9.4 s". */
+  label?: string;
+}
+
 export type ChatTurn =
-  | { role: 'user'; text: string }
+  | { role: 'user'; text: string; images?: ChatImage[] }
   /** The model's previous tool call, and the validation errors it gets back. */
   | { role: 'repair'; toolUseId: string; previousInput: unknown; errors: string[] };
 
@@ -65,10 +73,23 @@ export class AnthropicModel implements EditorModel {
   async callTool(request: ModelRequest): Promise<ModelResponse> {
     const messages: Anthropic.MessageParam[] = [];
     for (const turn of request.turns) {
-      if (turn.role === 'user') messages.push({ role: 'user', content: turn.text });
+      if (turn.role === 'user') {
+        if (!turn.images?.length) messages.push({ role: 'user', content: turn.text });
+        else
+          messages.push({
+            role: 'user',
+            content: [
+              ...turn.images.flatMap((img): Anthropic.ContentBlockParam[] => [
+                ...(img.label ? [{ type: 'text' as const, text: img.label }] : []),
+                { type: 'image', source: { type: 'base64', media_type: img.mediaType, data: img.data } },
+              ]),
+              { type: 'text', text: turn.text },
+            ],
+          });
+      }
       else {
         messages.push({ role: 'assistant', content: [{ type: 'tool_use', id: turn.toolUseId, name: request.tool.name, input: turn.previousInput as Record<string, unknown> }] });
-        messages.push({ role: 'user', content: [{ type: 'tool_result', tool_use_id: turn.toolUseId, is_error: true, content: `The story is invalid. Fix exactly these problems and call ${request.tool.name} again with the complete corrected story:\n- ${turn.errors.join('\n- ')}` }] });
+        messages.push({ role: 'user', content: [{ type: 'tool_result', tool_use_id: turn.toolUseId, is_error: true, content: `The answer is invalid. Fix exactly these problems and call ${request.tool.name} again with the complete corrected answer:\n- ${turn.errors.join('\n- ')}` }] });
       }
     }
     const response = await this.client.messages.create({
@@ -81,7 +102,7 @@ export class AnthropicModel implements EditorModel {
     });
     const call = response.content.find((b): b is Anthropic.ToolUseBlock => b.type === 'tool_use' && b.name === request.tool.name);
     if (!call) throw new Error(`the model did not call ${request.tool.name} (stop reason: ${response.stop_reason})`);
-    if (response.stop_reason === 'max_tokens') throw new Error(`the answer was cut at max_tokens (${request.maxTokens}): the script is too long for one call`);
+    if (response.stop_reason === 'max_tokens') throw new Error(`the answer was cut at max_tokens (${request.maxTokens}): the input is too long for one call`);
     const u = response.usage;
     return {
       toolUseId: call.id,

@@ -9,8 +9,8 @@ export const FPS = 30;
 export const episodeAssets: AssetRegistry = {
   narration: { id: 'narration', kind: 'audio', src: 'narration.wav', durationInSeconds: 40 },
   music: { id: 'music', kind: 'audio', src: 'music.wav', durationInSeconds: 60 },
-  landscape: { id: 'landscape', kind: 'image', src: 'landscape.png', width: 1280, height: 720 },
-  clip: { id: 'clip', kind: 'video', src: 'clip.mp4', durationInSeconds: 6, width: 640, height: 360, fps: 30 },
+  landscape: { id: 'landscape', kind: 'image', src: 'landscape.png', width: 1920, height: 1080 },
+  clip: { id: 'clip', kind: 'video', src: 'clip.mp4', durationInSeconds: 6, width: 1920, height: 1080, fps: 30 },
   report: { id: 'report', kind: 'image', src: 'report.png', width: 1000, height: 1400 },
   'sfx-impact': { id: 'sfx-impact', kind: 'audio', src: 'sfx/impact.wav', durationInSeconds: 1 },
   'sfx-glitch': { id: 'sfx-glitch', kind: 'audio', src: 'sfx/glitch.wav', durationInSeconds: 0.6 },

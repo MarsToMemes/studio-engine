@@ -10,8 +10,8 @@ import type { MotionSkill } from './types.js';
 
 /** Preview media, served from the renderer's public folder (packages/remotion/public). */
 export const PREVIEW_ASSETS: AssetRegistry = {
-  landscape: { id: 'landscape', kind: 'image', src: 'landscape.png', width: 1280, height: 720 },
-  clip: { id: 'clip', kind: 'video', src: 'clip.webm', durationInSeconds: 6, width: 640, height: 360, fps: 30 },
+  landscape: { id: 'landscape', kind: 'image', src: 'landscape.png', width: 1920, height: 1080 },
+  clip: { id: 'clip', kind: 'video', src: 'clip.webm', durationInSeconds: 6, width: 1920, height: 1080, fps: 30 },
   report: { id: 'report', kind: 'image', src: 'report.png', width: 1000, height: 1400 },
 };
 

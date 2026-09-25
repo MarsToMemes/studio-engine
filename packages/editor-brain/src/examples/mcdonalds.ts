@@ -11,8 +11,8 @@ const own: AssetSource = { provider: 'own production', license: 'own', commercia
 export const assets: AssetRegistry = {
   narration: { id: 'narration', kind: 'audio', src: 'narration.wav', durationInSeconds: 40, source: own },
   music: { id: 'music', kind: 'audio', src: 'music.wav', durationInSeconds: 60, source: { provider: 'Example Music', license: 'royalty-free', commercialUse: true, attributionRequired: false } },
-  restaurant: { id: 'restaurant', kind: 'image', src: 'landscape.png', width: 1280, height: 720, source: own },
-  kitchen: { id: 'kitchen', kind: 'video', src: 'clip.webm', durationInSeconds: 6, width: 640, height: 360, source: own },
+  restaurant: { id: 'restaurant', kind: 'image', src: 'landscape.png', width: 1920, height: 1080, source: own },
+  kitchen: { id: 'kitchen', kind: 'video', src: 'clip.webm', durationInSeconds: 6, width: 1920, height: 1080, source: own },
   report: { id: 'report', kind: 'image', src: 'report.png', width: 1000, height: 1400, source: { provider: "McDonald's investor relations", license: 'press use', commercialUse: true, attributionRequired: true, attribution: "McDonald's Annual Report 2023" } },
   'sfx-impact': { id: 'sfx-impact', kind: 'audio', src: 'sfx/impact.wav', durationInSeconds: 0.8, source: own },
   'sfx-glitch': { id: 'sfx-glitch', kind: 'audio', src: 'sfx/glitch.wav', durationInSeconds: 0.5, source: own },

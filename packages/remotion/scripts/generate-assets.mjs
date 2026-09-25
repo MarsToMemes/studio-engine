@@ -33,7 +33,10 @@ function png(width, height, pixel) {
   ihdr.writeUInt32BE(width, 0); ihdr.writeUInt32BE(height, 4); ihdr[8] = 8; ihdr[9] = 2;
   return Buffer.concat([Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]), chunk('IHDR', ihdr), chunk('IDAT', deflateSync(raw)), chunk('IEND', Buffer.alloc(0))]);
 }
-writeFileSync(join(pub, 'landscape.png'), png(1280, 720, (x, y) => {
+// Full HD, so it is never enlarged at 1080p (bible TECH-09). Drawn in 1280×720 units.
+writeFileSync(join(pub, 'landscape.png'), png(1920, 1080, (px, py) => {
+  const x = px / 1.5;
+  const y = py / 1.5;
   const t = y / 720;
   const sun = Math.hypot(x - 900, y - 300) < 90;
   const ground = y > 480 + 30 * Math.sin(x / 90);
@@ -108,9 +111,11 @@ writeFileSync(join(pub, 'pulse.json'), JSON.stringify({
     }));
   }
   // WebM/VP9 is decodable everywhere (open-source Chromium has no H.264); MP4/H.264 is kept for render tests.
+  // Drawn at 640×360, encoded in full HD so it is never enlarged at 1080p (bible TECH-09).
+  const hd = ['-vf', 'scale=1920:1080:flags=bicubic'];
   const encodings = [
-    ['clip.webm', ['-c:v', 'libvpx-vp9', '-b:v', '800k', '-pix_fmt', 'yuv420p']],
-    ['clip.mp4', ['-c:v', 'libx264', '-pix_fmt', 'yuv420p']],
+    ['clip.webm', [...hd, '-c:v', 'libvpx-vp9', '-b:v', '2M', '-deadline', 'realtime', '-cpu-used', '8', '-pix_fmt', 'yuv420p']],
+    ['clip.mp4', [...hd, '-c:v', 'libx264', '-preset', 'veryfast', '-pix_fmt', 'yuv420p']],
   ];
   for (const [name, codec] of encodings) {
     try {

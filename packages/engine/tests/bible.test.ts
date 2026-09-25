@@ -21,7 +21,8 @@ describe('VIDEO_EDITING_BIBLE.md', () => {
     // `npm run bible` regenerates the file instead of failing.
     if (process.env.UPDATE_BIBLE) writeFileSync(generatedPath, fresh);
     expect(readFileSync(generatedPath, 'utf8')).toBe(fresh);
-    expect(BIBLE_RULES).toEqual(parsed.rules);
+    // The imported module is the one before regeneration: compare it only on a normal run.
+    if (!process.env.UPDATE_BIBLE) expect(BIBLE_RULES).toEqual(parsed.rules);
   });
 
   it('covers every domain the brief requires', () => {

@@ -9,9 +9,12 @@
     "studio": "remotion studio src/index.ts",
     "render": "node scripts/render.mjs",
     "previews": "node scripts/previews.mjs",
-    "loudness": "node scripts/loudness.mjs"
+    "loudness": "node scripts/loudness.mjs",
+    "qc": "node scripts/qc.mjs"
   },
   "dependencies": {
+    "@fontsource/inter": "5.3.0",
+    "@fontsource/source-serif-4": "5.3.0",
     "@remotion/bundler": "4.0.528",
     "@remotion/captions": "4.0.528",
     "@remotion/lottie": "4.0.528",

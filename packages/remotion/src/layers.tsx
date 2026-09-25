@@ -39,7 +39,7 @@ const SafeVideo: React.FC<{ src: string; assetId: string; style: CSS } & Omit<Re
   const [failed, setFailed] = useState(false);
   if (failed) {
     return (
-      <div style={{ ...style, background: 'repeating-linear-gradient(45deg,#1b1b1b 0 24px,#232323 24px 48px)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#9a9a9a', fontFamily: 'Arial', fontSize: 36 }}>
+      <div style={{ ...style, background: 'repeating-linear-gradient(45deg,#1b1b1b 0 24px,#232323 24px 48px)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#9a9a9a', fontFamily: 'Inter, sans-serif', fontSize: 36 }}>
         Media unavailable: {assetId}
       </div>
     );

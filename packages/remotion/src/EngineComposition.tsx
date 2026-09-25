@@ -11,6 +11,7 @@ import {
   type VideoProject,
 } from '@studio-engine/scene-engine';
 import { resolveSrc } from './assets';
+import { useFonts } from './fonts';
 import { toPresentation, toTiming } from './presentations';
 import { SceneView } from './SceneView';
 
@@ -20,6 +21,7 @@ export type EngineCompositionProps = { project: VideoProject };
 const providers = new AnimationProviderRegistry([nativeAnimationProvider]).register(createRemotionAnimationProvider({ spring }), { default: true });
 
 export const EngineComposition: React.FC<EngineCompositionProps> = ({ project }) => {
+  useFonts(project);
   // Compile once per project, not per frame.
   const plan = useMemo(() => buildRemotionPlan(project), [project]);
   const compiled = useMemo(() => compileProject(project, { providers, mode: 'render' }), [project]);

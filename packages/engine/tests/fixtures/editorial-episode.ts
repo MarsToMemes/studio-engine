@@ -21,7 +21,7 @@ const own = { provider: 'own production', license: 'own', commercialUse: true, a
 export const editorialAssets: AssetRegistry = {
   narration: { id: 'narration', kind: 'audio', src: 'narration.wav', durationInSeconds: 40, source: own },
   music: { id: 'music', kind: 'audio', src: 'music.wav', durationInSeconds: 60, source: { provider: 'Example Music', id: 'track-42', license: 'royalty-free', commercialUse: true, attributionRequired: false } },
-  landscape: { id: 'landscape', kind: 'image', src: 'landscape.png', width: 1280, height: 720, source: own },
+  landscape: { id: 'landscape', kind: 'image', src: 'landscape.png', width: 1920, height: 1080, source: own },
   report: { id: 'report', kind: 'image', src: 'report.png', width: 1000, height: 1400, source: { provider: "McDonald's investor relations", url: 'https://corporate.mcdonalds.com', license: 'press use', commercialUse: true, attributionRequired: true, attribution: "McDonald's Annual Report 2023" } },
   'sfx-impact': { id: 'sfx-impact', kind: 'audio', src: 'sfx/impact.wav', durationInSeconds: 1, source: own },
 };

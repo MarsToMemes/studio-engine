@@ -23,7 +23,7 @@ SCRIPT + VOIX (transcrite) + VISUELS + DOCUMENTS + MUSIQUE + SFX + DROITS
  editor-brain ─ ANALYSE ÉDITORIALE → STRUCTURE DU RÉCIT → PLAN DE PLANS → HIÉRARCHIE VISUELLE → CAMÉRA
  (le réalisateur)   → MOTION DESIGN → SOUND DESIGN → TRANSITIONS → SOUS-TITRES   (chaque décision justifiée)
         │
-        ▼  ShotPlan v2 (JSON)  ◄─── validé contre VIDEO_EDITING_BIBLE.md (148 règles numérotées)
+        ▼  ShotPlan v2 (JSON)  ◄─── validé contre VIDEO_EDITING_BIBLE.md (149 règles numérotées)
         │
  engine ─ compilation déterministe → VideoProject (scènes, calques, animations, audio)
  (l'exécutant)
@@ -76,7 +76,7 @@ cd packages/remotion && npm run assets   # médias de test synthétiques dans pu
 
 ```
 studio-engine/
-├── VIDEO_EDITING_BIBLE.md        la référence éditoriale : 148 règles (ID · sévérité · mode de contrôle)
+├── VIDEO_EDITING_BIBLE.md        la référence éditoriale : 149 règles (ID · sévérité · mode de contrôle)
 ├── SCENE_ENGINE.md               documentation technique complète (API, formats, choix)
 ├── LOCAL_ENGINE_INTEGRATION.md   contrat moteur local ↔ studio-engine (qui fait quoi)
 ├── STUDIO_ENGINE_HANDOFF.md      ce document
@@ -107,7 +107,7 @@ studio-engine/
 
 ### 4.1 La bible (`VIDEO_EDITING_BIBLE.md`)
 
-- **Contenu** : 148 règles en 26 domaines. Narration, scènes, grammaire, rythme, hiérarchie visuelle, caméra, typographie, motion, transitions, sound design, musique, silence, documents, graphiques, cartes, sous-titres, couleur, répétitions, contraste, rappels visuels, escalade, révélations, chapitres, droits, technique.
+- **Contenu** : 149 règles en 26 domaines. Narration, scènes, grammaire, rythme, hiérarchie visuelle, caméra, typographie, motion, transitions, sound design, musique, silence, documents, graphiques, cartes, sous-titres, couleur, répétitions, contraste, rappels visuels, escalade, révélations, chapitres, droits, technique.
 - **Format** d'une règle : `RHY-03 · avertissement · AUTO — …`.
   - Sévérité : `bloquant`, `avertissement` ou `conseil`.
   - Contrôle : `AUTO` (code), `HEUR` (automatique mais approximatif) ou `REVUE` (IA critique ou humain).
@@ -181,10 +181,28 @@ studio-engine/
   - documents avec surlignage, focus, caviardage et source ;
   - sous-titres et transitions.
 - **Médias** : un média illisible est remplacé par un cadre de remplacement, jamais par un écran noir ni un crash.
+- **Polices embarquées** : Inter et Source Serif 4, sous licence SIL OFL 1.1, sans réseau ni police système. Si le projet demande une police absente, **le rendu s'arrête** avec son nom (TECH-04), au lieu de changer de police en silence.
 - **Compositions** :
   - `EngineDemo` : **rend n'importe quel projet passé en `--props`** ; c'est celle qu'utilise le moteur local ;
   - `ShotPlanDemo` et `BrainDemo` : les exemples ;
   - `MotionLibrary` : les 65 skills à la suite, 3 s chacun.
+
+### 4.5 Contrôle qualité avant publication (`QC_REPORT.json`)
+
+- **`npm run qc -- plan.json episode.mp4`** (dans `packages/remotion`) produit un rapport. Chaque vérification cite sa règle :
+  - plan valide (TECH-02), références résolues (TECH-06), image agrandie de plus de 1,5× (TECH-09) ;
+  - format : 1080p, H.264, fps, nombre d'images (TECH-07) ;
+  - images noires non voulues (TECH-03) et image figée plus de 4 s (RHY-03) ;
+  - voix présente dans chaque phrase (TECH-01), silences contrôlés vraiment silencieux (SIL-04), trou sonore (TECH-08) ;
+  - saturation et true peak (TECH-05), loudness (MUS-09) ;
+  - attributions à mettre dans la description (SRC-03), rappel de déclaration YouTube pour les médias IA réalistes (SRC-04).
+- **Sortie** : code 0 = publiable, 1 = une règle bloquante est cassée. `--frames-dir` enregistre une image par plan.
+- **Critique éditoriale par IA** : `editor-brain critique plan.json --stills=<dossier>`.
+  - Claude juge les 43 règles « REVUE » (rythme ressenti, arc, rappels…) à partir du plan, de la voix et des images de chaque plan.
+  - Il répond de façon structurée, et ses réponses sont contrôlées : règles existantes, plans existants, correction concrète.
+  - Ses remarques sont des **avertissements**, jamais des blocages : c'est toi qui décides.
+  - Sans clé, la critique reste « à faire » et le rapport liste les 43 règles à relire à la main.
+- **Validé sur un rendu volontairement cassé** (image noire, phrase muette, son saturé) : les 4 défauts sont trouvés, rien d'autre. Sur le rendu normal : 0 échec.
 
 ---
 
@@ -242,6 +260,7 @@ C'est ce que le moteur local doit produire depuis `projet.yaml`. Exemple complet
 - `src` = une URL `http(s)://`, ou un chemin relatif au dossier `packages/remotion/public/`. Le navigateur de rendu ne lit pas les chemins absolus du disque.
 - En local, le plus simple : `python -m http.server 8080` dans le dossier de l'épisode, ou copier les médias dans `public/`.
 - `durationInSeconds`, `width`, `height` et `fps` viennent de `ffprobe` : le moteur ne les devine pas.
+- **Résolution** : une image ou une vidéo affichée plein cadre doit faire au moins 1280×720, et idéalement 1920×1080 ou plus, surtout avec un cadrage serré. Au-delà d'un agrandissement de 1,5×, la validation avertit (TECH-09).
 - Vidéos : MP4 H.264/AAC (Chrome et le rendu Remotion les lisent), ou WebM/VP9.
 - Cartes niveau rue (`city_zoom`) :
   - il faut un style MapLibre accessible depuis la machine de rendu (`mapStyle`, ou `map.style` dans `hints.map`) ;
@@ -286,6 +305,11 @@ npm run previews -- --browser=/chemin/vers/chrome      # motion-library/previews
 npm run loudness -- out/episode.mp4
 npm run loudness -- out/episode.mp4 --fix=out/final.mp4     # deux passes linéaires, image copiée
 npm run loudness -- voix.wav --preset=voice                 # la voix seule, −16 LUFS (MUS-01)
+
+# Contrôle qualité avant publication → QC_REPORT.json (code 1 si une règle bloquante est cassée)
+npm run qc -- plan.json out/final.mp4 --frames-dir=out/stills
+node ../editor-brain/bin/editor-brain.mjs critique plan.json --stills=out/stills > review.json   # critique IA (ANTHROPIC_API_KEY)
+npm run qc -- plan.json out/final.mp4 --review=review.json                                       # rapport avec la critique
 ```
 
 ---
@@ -352,6 +376,22 @@ def direct_and_render(brain_input, workdir, use_llm=False):
     subprocess.run(["npx", "remotion", "render", "src/index.ts", "EngineDemo", str(workdir / "episode.mp4"),
                     f"--props={workdir / 'props.json'}"], cwd=STUDIO / "packages/remotion", check=True)
     master(workdir / "episode.mp4", workdir / "final.mp4")
+    return quality_control(workdir)
+
+def quality_control(workdir):
+    remotion = STUDIO / "packages/remotion"
+    stills, plan, final = workdir / "stills", workdir / "plan.json", workdir / "final.mp4"
+    subprocess.run(["node", "scripts/qc.mjs", str(plan), str(final), f"--frames-dir={stills}",
+                    f"--out={workdir / 'QC_REPORT.json'}"], cwd=remotion)
+    # Critique IA des règles REVUE (sans clé : "pending", le pipeline continue).
+    with open(workdir / "review.json", "w") as out:
+        subprocess.run(["node", str(STUDIO / "packages/editor-brain/bin/editor-brain.mjs"), "critique", str(plan),
+                        f"--stills={stills}"], stdout=out)
+    r = subprocess.run(["node", "scripts/qc.mjs", str(plan), str(final), f"--review={workdir / 'review.json'}",
+                        f"--out={workdir / 'QC_REPORT.json'}"], cwd=remotion)
+    report = json.loads((workdir / "QC_REPORT.json").read_text())
+    # report["attributions"] → description YouTube ; report["disclosures"] → case « contenu altéré ou synthétique »
+    return r.returncode == 0, report
 ```
 
 **Qui fait quoi**
@@ -375,20 +415,20 @@ def direct_and_render(brain_input, workdir, use_llm=False):
 
 | Brique | Statut |
 |---|---|
-| Bible du montage (148 règles, 47 vérifiées par le code) | ✅ |
+| Bible du montage (149 règles, 54 vérifiées par le code, 43 confiées à la critique éditoriale) | ✅ |
 | ShotPlan v2, Timeline JSON v2, narration segmentée, droits des assets | ✅ |
 | Moteur Remotion (composition, graphiques, cartes, documents, sous-titres, rendu MP4) | ✅ |
 | Motion Skill Registry v2 (65 skills, API, familles, repli sûr, MapLibre, aperçus, manifeste d'assets) | ✅ (tuiles réelles non testées) |
 | Sound design au rendu (états musicaux, silences, ambiance, loudness −14 LUFS) | ✅ vérifié sur rendu |
+| Contrôle qualité (`QC_REPORT.json`), polices embarquées, critique éditoriale IA | ✅ vérifié sur rendu (critique IA non testée avec une vraie clé) |
 | Cerveau éditorial déterministe (analyse → plan complet justifié) | ✅ |
 | Cerveau LLM (Claude, validé et réparé par les règles, repli heuristique) | ✅ (non testé avec une vraie clé) |
 | CLI pour le moteur local (`editor-brain`, `shotplan`), rendu d'un plan par `--props` | ✅ vérifié |
 
 **Pas encore fait** (dans l'ordre prévu)
-1. **Contrôle qualité sur le rendu** : images noires, saturation audio, polices, `QC_REPORT.json`, et critique éditoriale par IA (règles REVUE).
-2. **`RenderEngine`** : `RemotionRenderer` / `FFmpegRenderer` (branché sur `montage.py`), cache de rendu.
-3. **Commandes en langage naturel** (« rends cette révélation plus forte ») : des opérations sur le plan, avec diff et annulation.
-4. **Épisode test professionnel** : vraie voix, vrais médias sous licence.
+1. **`RenderEngine`** : `RemotionRenderer` / `FFmpegRenderer` (branché sur `montage.py`), cache de rendu.
+2. **Commandes en langage naturel** (« rends cette révélation plus forte ») : des opérations sur le plan, avec diff et annulation.
+3. **Épisode test professionnel** : vraie voix, vrais médias sous licence.
 
 **Limites connues**
 - Le cerveau heuristique :
@@ -398,14 +438,17 @@ def direct_and_render(brain_input, workdir, use_llm=False):
 - **Le cerveau LLM** fait un seul appel par épisode : au-delà d'environ 400 phrases, il faudra découper par chapitre.
 - **L'alignement** script/transcription gère jusqu'à environ 20 minutes de texte d'un coup.
 - **`city_zoom` avec de vraies tuiles** n'a pas été rendu ici : le réseau du conteneur bloque les serveurs de tuiles. Seul le style hors ligne (pays) est vérifié.
-- **Un cadrage serré sur une image basse résolution** l'agrandit, avec une perte de netteté. Le contrôle de résolution est prévu au contrôle qualité.
+- **Un cadrage serré sur une image basse résolution** l'agrandit et la rend floue. La validation le signale au-delà de 1,5× (TECH-09), mais le cerveau ne choisit pas encore un cadrage plus large à la place.
+- **Angles morts du contrôle qualité** :
+  - une image manquante sous des sous-titres n'est pas détectée ;
+  - les seuils sont réglés sur la démo, pas sur un vrai épisode.
 
 ---
 
 ## 9. Licences et droits
 
 - **Remotion** : gratuit jusqu'à 3 personnes dans l'entreprise, licence payante au-delà (voir remotion.pro).
-- **`@anthropic-ai/sdk`** : MIT. **MapLibre GL** : BSD-3. Les **tuiles** de carte ont leur propre licence et leurs quotas, qui dépendent du fournisseur. Elles ne sont pas fournies. **Natural Earth / world-atlas** : domaine public / ISC. **d3-geo**, **topojson-client** : ISC.
+- **`@anthropic-ai/sdk`** : MIT. **MapLibre GL** : BSD-3. **Inter**, **Source Serif 4** (polices du rendu) : SIL OFL 1.1, usage commercial autorisé. Les **tuiles** de carte ont leur propre licence et leurs quotas, qui dépendent du fournisseur. Elles ne sont pas fournies. **Natural Earth / world-atlas** : domaine public / ISC. **d3-geo**, **topojson-client** : ISC.
 - **Règles du projet** :
   - aucun téléchargement automatique de vidéo YouTube ni d'asset commercial sans licence vérifiée ;
   - un asset aux droits incertains n'est pas utilisé ;

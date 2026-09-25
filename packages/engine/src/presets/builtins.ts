@@ -189,7 +189,7 @@ const typographyPresets = [
     shadow: { x: 0, y: 6, blur: 24, color: 'rgba(0,0,0,0.45)' }, highlight: { color: '#ffd400' },
   }),
   typography('documentary-serif', 'Documentary serif', 'Elegant serif for narration beats and chapter titles.', {
-    fontFamily: 'Georgia, "Times New Roman", serif', fontSize: 72, fontWeight: 500, lineHeight: 1.15, textAlign: 'center', color: '#f4efe6',
+    fontFamily: '"Source Serif 4", Georgia, "Times New Roman", serif', fontSize: 72, fontWeight: 500, lineHeight: 1.15, textAlign: 'center', color: '#f4efe6',
   }),
   typography('lower-third', 'Lower third', 'Compact label with a solid background plate.', {
     fontFamily: 'Inter, Arial, sans-serif', fontSize: 40, fontWeight: 700, lineHeight: 1.2, textAlign: 'left', color: '#ffffff',

@@ -777,14 +777,14 @@ SFX     │◆impact        ◆impact               SFX events, draggable
 
 ## 19. Editorial bible (`VIDEO_EDITING_BIBLE.md`)
 
-- **Single source of truth.** The editorial rules live in `VIDEO_EDITING_BIBLE.md` at the repository root: 148 rules in 26 domains, from narration and rhythm to sound, rights and technical quality.
+- **Single source of truth.** The editorial rules live in `VIDEO_EDITING_BIBLE.md` at the repository root: 149 rules in 26 domains, from narration and rhythm to sound, rights and technical quality.
 - **Rule format.** Each rule has a stable id (`RHY-03`), a severity (`bloquant` / `avertissement` / `conseil`) and an enforcement mode:
   - `AUTO`: deterministic check;
   - `HEUR`: approximate check, never blocking;
   - `REVUE`: AI critic or human.
 - `src/bible/parse.ts` parses the markdown. `src/bible/rules.generated.ts` is generated from it (`npm run bible -w @studio-engine/scene-engine`), and `tests/bible.test.ts` fails when the two diverge or when the markdown breaks the format (sequential ids per domain, prefix matching its section, no blocking heuristic).
 - Validation issues carry `rule` (`ISSUE_CODE_RULES`; structural errors fall under `TECH-02`). The studio shows it as a badge whose tooltip is the rule text. `formatIssues` includes it, so an AI repair loop receives the rule with the error.
-- **Checked in code today: 47 rules** (`enforcedRuleIds()`), out of 105 automatable rules (`AUTO` + `HEUR`) and 148 in total. `ISSUE_CODE_RULES` gives the exact mapping. The `REVUE` rules belong to the AI critic and the human; the remaining automatable ones arrive with QC on the render (black frames, clipping, fonts, loudness in the QC report) and the LLM layer.
+- **Checked in code today: 54 rules** (`enforcedRuleIds()`, plan validation and QC on the render), out of 106 automatable rules (`AUTO` + `HEUR`) and 149 in total. `ISSUE_CODE_RULES` gives the exact mapping. The 43 `REVUE` rules belong to the editorial critic (AI, §23) and to the human.
 
 ---
 
@@ -931,7 +931,71 @@ Verified on a real render (`BrainDemo`, 34 s):
 
 ---
 
-## 23. Performance
+## 23. Quality control before publishing (`QC_REPORT.json`)
+
+One report says whether an episode can be published. Each check has a status (`pass`, `fail`, `warn`, `info`, `skipped`) and cites its bible rule. `fail` means a blocking rule is broken.
+
+```bash
+cd packages/remotion
+npm run qc -- plan.json                                   # plan only
+npm run qc -- plan.json out/final.mp4 --frames-dir=out/stills [--stage=preview] [--review=review.json]
+node ../editor-brain/bin/editor-brain.mjs critique plan.json --stills=out/stills > review.json   # AI review (ANTHROPIC_API_KEY)
+```
+
+Exit code: 0 pass, 1 a check failed, 2 unreadable input. The logic is in the engine (`qc/`, pure functions: `runQc`, `formatQcReport`). The script only decodes the render with FFmpeg: 96×54 grey frames and mono 48 kHz audio. The minimal FFmpeg bundled with Remotion is enough for it.
+
+| Check | Rule | How |
+|---|---|---|
+| Plan valid (final or draft) | TECH-02 + the rule of each issue | `validateShotPlan` |
+| Unresolved references | TECH-06 | compile notes |
+| Attributions to publish; disclosure of realistic AI media | SRC-03, SRC-04 | `asset.source` |
+| Resolution, codec H.264, fps, frame count, audio stream | TECH-07 | ffprobe (the video stream's frame count: the container also counts AAC priming) |
+| Unwanted black frames | TECH-03 | more than 2 black frames where the plan shows content (see below) |
+| Frozen picture | RHY-03 | a frame compared with the one a second earlier stays the same for 4 s; shots with `hold` excluded |
+| The voice is heard in every narration segment | TECH-01 | at least 30 % of the segment's frames over −45 dBFS. A share, not a mean: one loud instant cannot hide a missing voice |
+| Controlled silences are silent | SIL-04 | under −45 dBFS after the 0.15 s drop |
+| No unwanted gap | TECH-08 (new) | more than 1.5 s under −60 dBFS outside the controlled silences |
+| Clipping, true peak | TECH-05 | full-scale samples, and `loudnorm`'s true peak |
+| Mix loudness | MUS-09 | −14 LUFS ±1 |
+| Fonts | TECH-04 | the render itself (below) |
+| REVUE rules (43) | each rule | editorial review, AI or human |
+
+**What "unwanted" black means.**
+
+- Two kinds of frame count as dark: `black` (a mean under 3.5 %) and `empty` (under 10 % with nothing bright, i.e. the dark theme background alone).
+- Dark frames are allowed in these windows (`expectedDarkWindows`):
+  - chapter cards and blackout reveals;
+  - the first 0.8 s of typographic shots, before their text enters;
+  - dips to black;
+  - the first and last 0.5 s of the episode.
+- Outside those windows, black frames fail and empty frames warn.
+
+**Fonts (TECH-04).**
+
+- The render bundles its fonts: Inter (sans) and Source Serif 4 (quotes, instead of Georgia, which Linux doesn't have). Both are under the SIL OFL 1.1 and loaded through `@fontsource`.
+- Before the first frame, every font the project asks for (`usedFontFamilies`) is checked by measuring glyph widths. A missing font **stops the render** with its name. In `@remotion/player` it is a console warning.
+
+**Editorial critic** (`critiqueEpisode`, `editor-brain critique`).
+
+- **What the model sees.** The cut shot by shot: timing, type, on-screen text, spoken words, motion, camera, transition, music, SFX and the editor's reason. It also gets one still per shot from `--frames-dir`, at most 60 stills, evenly spread.
+- **What it answers.** Findings on the REVUE rules only, through a forced tool `submit_editorial_review`: `{ rule, shots, severity: major | minor | suggestion, finding, fix }`.
+- **How the answer is checked.**
+  - Rules must be REVUE rules, and shots must exist.
+  - The finding and the fix must say something.
+  - One repair turn with the exact errors, then what is still invalid is dropped and listed.
+- **Effect on QC.** Findings are warnings in the QC report, never failures: a person decides.
+- **Failures.** Without a key, or on an API error, the review stays `pending` and the report lists the 43 rules to review by hand. `RecordedModel` replays an answer.
+
+Verified on a render of `BrainDemo`: 0 failures, and the silence measured at −74 dBFS. A deliberately broken render was also checked, with a black image, a muted sentence, no music and a clipped sound effect. The QC reported all four faults, and nothing else:
+
+- 12 black frames (TECH-03);
+- "narration u4 is not heard" (TECH-01);
+- a 4.9 s gap (TECH-08);
+- 11 clipped frames and a true peak of +0.8 dBTP (TECH-05).
+
+---
+
+## 24. Performance
 
 - Timeline resolution is O(scenes + layers + audio); scene lookup is O(log n); keyframe sampling is O(log k).
 - Compile once, sample per frame: per-frame work is proportional to the layers of the visible scene(s) only.
@@ -941,10 +1005,10 @@ Verified on a real render (`BrainDemo`, 34 s):
 
 ---
 
-## 24. Testing
+## 25. Testing
 
 ```
-npm test          # 323 engine + 34 editor-brain + 25 studio tests (Vitest)
+npm test          # 335 engine + 43 editor-brain + 25 studio tests (Vitest)
 npm run e2e -w @studio-engine/studio   # browser smoke test (after npm run build -w @studio-engine/studio)
 npm run check     # typecheck + build + tests, all workspaces
 ```
@@ -953,7 +1017,7 @@ Covered: scene/layer creation and registries, validation (~50 targeted error/war
 
 ---
 
-## 25. Known limitations and next steps
+## 26. Known limitations and next steps
 
 - **Non-CSS effects** (grain, vignette, color grade, LUT, chromatic aberration, pixelate) are modeled and validated but the reference Remotion renderer does not draw them yet (needs shaders / SVG filters).
 - **Graphic kinds**: the reference renderer draws `counter`, `statCard`, `barChart`, `lineChart`, `pieChart`, `comparison`, `map`, `mapTiles`, `progress` and `timeline`; `icon`, `svg`, `lowerThird` and `custom` have no component (no available skill produces them).
@@ -966,6 +1030,11 @@ Covered: scene/layer creation and registries, validation (~50 targeted error/war
 - **Caption alignment**: without word timings from a transcription / alignment step, word timings are estimates.
 - **Music ducking without narration segments** follows the whole narration file: with one continuous voice-over (a v1 plan) the music stays ducked for the entire episode. With segments (every plan from the brain), it follows the sentences (MUS-06).
 - **One music track per episode**: changing the track at chapters (MUS-07) and loop points on the bar are not handled; a looped file restarts from its beginning, audibly unless it was cut to loop.
+- **QC blind spots**:
+  - a missing image under captions is not a black frame (the captions are bright), so it is not detected;
+  - the frozen-picture check compares frames one second apart at 96×54, so a very slow move on a flat image can pass for frozen;
+  - the thresholds (−45 / −60 dBFS, 3.5 % / 10 % luma) are tuned on the demo, not on a real episode.
+- **The AI critic has not been run against the real API here** (no key in this environment): only its contract is tested, with recorded answers.
 - **Loudness is measured on the render**, not in the preview. A mono music file comes out about 3 dB lower in Remotion's stereo mix; the loudness pass absorbs it, but the levels of `MUSIC_STATE_LEVELS` are relative, not absolute dBFS.
 - **Shot split** (cut a shot in two at the playhead) is not implemented: it needs a media in-point on shots (`Shot` has no trim field yet).
 - Not in scope by design: the AI model itself.

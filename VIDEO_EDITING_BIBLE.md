@@ -481,6 +481,8 @@ Recette : **mise en place → (silence contrôlé) → impact → révélation v
 - **TECH-05** · bloquant · AUTO — Aucune saturation audio : true peak ≤ −1 dBTP.
 - **TECH-06** · avertissement · AUTO — Le plan final ne contient que des références résolues (skills, transitions, SFX, assets).
 - **TECH-07** · bloquant · AUTO — Rendu final en 1920×1080, H.264, 30 i/s (configurable) ; aperçu en 540p.
+- **TECH-08** · avertissement · AUTO — Aucun trou sonore non voulu : jamais plus de 1,5 s sous −60 dBFS en dehors des silences contrôlés.
+- **TECH-09** · avertissement · AUTO — Une image n'est jamais agrandie de plus de 1,5× à l'écran (couverture du cadre × cadrage × poussée de caméra) : au-delà, elle paraît floue.
 
 ---
 

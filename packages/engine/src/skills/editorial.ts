@@ -76,9 +76,9 @@ export const EDITORIAL_SKILLS: SkillDefinition[] = [
     canApply: (t) => textLayerOf(t) !== undefined,
     apply: (target, ctx) => {
       const text = textLayerOf(target)!;
-      text.style = { ...text.style, fontFamily: 'Georgia, "Times New Roman", serif', fontWeight: 500, fontStyle: 'italic', textTransform: 'none', letterSpacing: 0, fontSize: Math.round((text.style.fontSize ?? 100) * 0.6) };
+      text.style = { ...text.style, fontFamily: '"Source Serif 4", Georgia, "Times New Roman", serif', fontWeight: 500, fontStyle: 'italic', textTransform: 'none', letterSpacing: 0, fontSize: Math.round((text.style.fontSize ?? 100) * 0.6) };
       target.scene.layers.push(
-        createLayer('text', { id: `${target.shot.id}:quote-mark`, text: '“', style: { fontFamily: 'Georgia, serif', fontSize: 260, fontWeight: 700, color: ctx.theme.accent, textAlign: 'left' }, position: box('top-left', 8, 10, 12, 26), zIndex: 38, animations: [{ type: 'fade', phase: 'in', durationInFrames: sec(ctx, 0.4) }] }),
+        createLayer('text', { id: `${target.shot.id}:quote-mark`, text: '“', style: { fontFamily: '"Source Serif 4", Georgia, serif', fontSize: 260, fontWeight: 700, color: ctx.theme.accent, textAlign: 'left' }, position: box('top-left', 8, 10, 12, 26), zIndex: 38, animations: [{ type: 'fade', phase: 'in', durationInFrames: sec(ctx, 0.4) }] }),
       );
       addAnimations(text, { type: 'kineticTypography', phase: 'in', style: 'rise', split: 'words', each: byIntensity(ctx.intensity, 3, 2, 2), durationInFrames: sec(ctx, 0.4), startFrame: sec(ctx, 0.15) });
       const attribution = target.roles.subtext;

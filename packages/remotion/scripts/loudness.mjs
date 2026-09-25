@@ -4,8 +4,8 @@
 //   node scripts/loudness.mjs voice.wav --preset=voice             → the voice alone, -16 LUFS (MUS-01)
 //   --json                 machine-readable report on stdout
 //   --ffmpeg=/path/ffmpeg  FFmpeg to use (default: `ffmpeg` on PATH, else Remotion's bundled one)
-import { spawnSync } from 'node:child_process';
 import { extname } from 'node:path';
+import { ffmpeg } from './ffmpeg.mjs';
 import { judgeLoudness, LOUDNESS_TARGETS, loudnormSecondPass, parseLoudnorm } from '@studio-engine/scene-engine';
 
 const args = process.argv.slice(2);
@@ -23,18 +23,6 @@ if (!target) {
 }
 const kind = presetName === 'voice' ? 'voice' : 'mix';
 
-function ffmpegCommand() {
-  const explicit = arg('ffmpeg') ?? process.env.FFMPEG;
-  if (explicit) return [explicit];
-  if (spawnSync('ffmpeg', ['-version'], { stdio: 'ignore' }).status === 0) return ['ffmpeg'];
-  return ['npx', 'remotion', 'ffmpeg'];
-}
-const [bin, ...pre] = ffmpegCommand();
-const ffmpeg = (a) => {
-  const r = spawnSync(bin, [...pre, '-hide_banner', '-nostats', ...a], { encoding: 'utf8', maxBuffer: 1 << 26 });
-  if (r.status !== 0) throw new Error(`ffmpeg failed:\n${r.stderr.slice(-2000)}`);
-  return r.stderr;
-};
 const measure = (file) => parseLoudnorm(ffmpeg(['-i', file, '-vn', '-af', `loudnorm=I=${target.integrated}:TP=${target.truePeak}:LRA=${target.lra}:print_format=json`, '-f', 'null', '-']));
 
 try {

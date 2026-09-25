@@ -14,7 +14,7 @@ import { resolveNarration, resolveSilences } from './editorial.js';
 import { getShotPlanDuration, getShotStartFrames } from './timeline.js';
 import type { ShotPlan } from './types.js';
 import { EDITORIAL_GRAMMAR } from './grammar.js';
-import { BEATS, SHOT_CAMERA_MOVES, DECIDED_BY, EDITORIAL_INTENTS, FRAMINGS, isEditorialLevel, MUSIC_STATES, RESOLVING_BEATS, SILENCE_KINDS, type EditorialIntent } from './vocabulary.js';
+import { BEATS, SHOT_CAMERA_MOVES, DECIDED_BY, EDITORIAL_INTENTS, FRAMINGS, FRAMING_SCALE, isEditorialLevel, MUSIC_STATES, RESOLVING_BEATS, SILENCE_KINDS, type EditorialIntent } from './vocabulary.js';
 
 export type ValidationStage = 'draft' | 'final';
 
@@ -290,6 +290,7 @@ export const CRAFT_LIMITS = {
   maxBars: 7,
   maxPieSlices: 6,
   maxMapLabels: 8,
+  maxUpscale: 1.5,
 } as const;
 
 const TYPOGRAPHIC: readonly string[] = ['text', 'revelation'];
@@ -314,6 +315,14 @@ function validateCraft(plan: ShotPlan, issues: IssueCollector, starts: readonly 
 
   shots.forEach((shot, i) => {
     const p = sp(i);
+    // TECH-09: enlargement of the media once it covers the frame, is framed and pushed in.
+    const media = (shot.type === 'image' || shot.type === 'video') && shot.media ? plan.assets[shot.media] : undefined;
+    if (media?.width && media.height) {
+      const cover = Math.max(plan.width / media.width, plan.height / media.height);
+      const push = shot.camera === 'push_in' || shot.camera === 'punch_in' ? 1.12 : 1;
+      const upscale = cover * (shot.framing ? (FRAMING_SCALE[shot.framing] ?? 1) : 1) * push;
+      if (upscale > L.maxUpscale) issues.warn(`${p}.media`, 'media.upscale', `"${shot.media}" (${media.width}×${media.height}) is enlarged ${upscale.toFixed(1)}× on screen${shot.framing ? ` (${shot.framing})` : ''}: it will look soft (max ${L.maxUpscale}×). Use a larger source or a wider framing`);
+    }
     if (TYPOGRAPHIC.includes(shot.type) && shot.text && countWords(shot.text) > L.maxTextWords) issues.warn(`${p}.text`, 'typography.words', `${countWords(shot.text)} words on screen (max ${L.maxTextWords}, ideally 3–7): split the statement`);
     if (Array.isArray(shot.highlightedWords) && shot.highlightedWords.length > L.maxEmphasis) issues.warn(`${p}.highlightedWords`, 'typography.emphasis', `${shot.highlightedWords.length} emphasised words (max ${L.maxEmphasis})`);
     if (shot.type === 'document') {

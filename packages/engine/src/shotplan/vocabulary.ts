@@ -50,6 +50,16 @@ export type ShotCameraMove = (typeof SHOT_CAMERA_MOVES)[number];
 export const FRAMINGS = ['wide', 'medium', 'close_up', 'extreme_close_up', 'overhead', 'pov'] as const;
 export type Framing = (typeof FRAMINGS)[number];
 
+/** Scale of a framing on the media (1 = the whole media). */
+export const FRAMING_SCALE: Record<Framing, number | undefined> = {
+  wide: 1,
+  medium: 1.15,
+  close_up: 1.4,
+  extreme_close_up: 1.8,
+  overhead: undefined,
+  pov: undefined,
+};
+
 /** Controlled silences before a revelation (bible §13). */
 export const SILENCE_KINDS = ['music_drop', 'sfx_drop', 'ambient_drop'] as const;
 export type SilenceKind = (typeof SILENCE_KINDS)[number];

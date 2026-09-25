@@ -151,4 +151,6 @@ export const BIBLE_RULES: readonly BibleRule[] = [
   {"id":"TECH-05","domain":"TECH","section":"Qualité technique","severity":"blocking","enforcement":"auto","text":"Aucune saturation audio : true peak ≤ −1 dBTP."},
   {"id":"TECH-06","domain":"TECH","section":"Qualité technique","severity":"warning","enforcement":"auto","text":"Le plan final ne contient que des références résolues (skills, transitions, SFX, assets)."},
   {"id":"TECH-07","domain":"TECH","section":"Qualité technique","severity":"blocking","enforcement":"auto","text":"Rendu final en 1920×1080, H.264, 30 i/s (configurable) ; aperçu en 540p."},
+  {"id":"TECH-08","domain":"TECH","section":"Qualité technique","severity":"warning","enforcement":"auto","text":"Aucun trou sonore non voulu : jamais plus de 1,5 s sous −60 dBFS en dehors des silences contrôlés."},
+  {"id":"TECH-09","domain":"TECH","section":"Qualité technique","severity":"warning","enforcement":"auto","text":"Une image n'est jamais agrandie de plus de 1,5× à l'écran (couverture du cadre × cadrage × poussée de caméra) : au-delà, elle paraît floue."},
 ];
