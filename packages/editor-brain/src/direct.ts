@@ -99,7 +99,7 @@ export function directFromStory(input: BrainInput, story: Story): BrainResult {
     : new Set<string>();
 
   // 4–5. SHOT PLANNER, VISUAL DIRECTOR, MOTION DIRECTOR
-  const visual = new VisualDirector(input.assets, input.catalog, fps, Math.ceil(units.length / 3));
+  const visual = new VisualDirector(input.assets, input.catalog, fps, Math.ceil(units.length / 3), input.mapStyle);
   const motion = new MotionDirector(skills);
   const drafts: Draft[] = [];
   const segments: NarrationSegment[] = [];

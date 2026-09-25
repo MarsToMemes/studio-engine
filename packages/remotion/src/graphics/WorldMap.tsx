@@ -46,6 +46,18 @@ export const WorldMap: React.FC<GraphicProps> = ({ layer, frame, fps, width, hei
         return <path key={i} d={path(f) ?? ''} fill={on ? accent : '#242424'} fillOpacity={on ? 0.25 + 0.75 * countryP : 1} stroke="#3a3a3a" strokeWidth={0.8} />;
       })}
       {shownRoute.length > 1 ? <path d={`M${shownRoute.map((c) => projection(c)!.join(',')).join(' L')}`} fill="none" stroke={accent} strokeWidth={6} strokeLinecap="round" strokeDasharray="1 14" /> : null}
+      {anim.plane && shownRoute.length > 0 && routeP < 1
+        ? (() => {
+            // The moving head of a flight route (flight_route).
+            const head = projection(shownRoute[shownRoute.length - 1]!);
+            return head ? (
+              <g transform={`translate(${head[0]},${head[1]})`}>
+                <circle r={22} fill={accent} opacity={0.25} />
+                <circle r={10} fill="#fff" stroke={accent} strokeWidth={4} />
+              </g>
+            ) : null;
+          })()
+        : null}
       {markers.map((m, i) => {
         const c = coords([m.coordinates])[0];
         const xy = c ? projection(c) : null;

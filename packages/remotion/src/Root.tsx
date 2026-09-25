@@ -5,6 +5,7 @@ import { EngineComposition } from './EngineComposition';
 import { buildDemoProject } from './demoProject';
 import { buildShotPlanDemoProject } from './shotPlanDemo';
 import { buildBrainDemoProject } from './brainDemo';
+import { buildMotionLibraryProject } from './motionLibrary';
 
 const project = buildDemoProject();
 const { composition } = buildRemotionPlan(project);
@@ -12,6 +13,8 @@ const shotPlanProject = buildShotPlanDemoProject();
 const shotPlanComposition = buildRemotionPlan(shotPlanProject).composition;
 const brainProject = buildBrainDemoProject();
 const brainComposition = buildRemotionPlan(brainProject).composition;
+const libraryProject = buildMotionLibraryProject();
+const libraryComposition = buildRemotionPlan(libraryProject).composition;
 
 export const RemotionRoot: React.FC = () => (
   <>
@@ -46,6 +49,15 @@ export const RemotionRoot: React.FC = () => (
     fps={brainComposition.fps}
     durationInFrames={brainComposition.durationInFrames}
     defaultProps={{ project: brainProject }}
+  />
+  <Composition
+    id="MotionLibrary"
+    component={EngineComposition}
+    width={libraryComposition.width}
+    height={libraryComposition.height}
+    fps={libraryComposition.fps}
+    durationInFrames={libraryComposition.durationInFrames}
+    defaultProps={{ project: libraryProject }}
   />
   </>
 );

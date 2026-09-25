@@ -4,9 +4,11 @@ import { deflateSync } from 'node:zlib';
 import { execFileSync } from 'node:child_process';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { ensureMapLibreWorker } from './maplibre-worker.mjs';
 
 const pub = join(dirname(fileURLToPath(import.meta.url)), '..', 'public');
 mkdirSync(pub, { recursive: true });
+ensureMapLibreWorker();
 
 // --- PNG: warm gradient "landscape" with a sun --------------------------------
 function png(width, height, pixel) {

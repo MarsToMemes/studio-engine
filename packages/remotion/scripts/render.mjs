@@ -3,6 +3,7 @@
 import { bundle } from '@remotion/bundler';
 import { renderMedia, renderStill, selectComposition } from '@remotion/renderer';
 import { mkdirSync } from 'node:fs';
+import { ensureMapLibreWorker } from './maplibre-worker.mjs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -14,6 +15,7 @@ const frames = arg('frames')?.split('-').map(Number);
 const stills = arg('stills')?.split(',').map(Number) ?? [];
 const compositionId = arg('composition') ?? 'EngineDemo';
 mkdirSync(join(root, 'out'), { recursive: true });
+ensureMapLibreWorker();
 
 const serveUrl = await bundle({ entryPoint: join(root, 'src/index.ts'), publicDir: join(root, 'public') });
 const composition = await selectComposition({ serveUrl, id: compositionId, browserExecutable });

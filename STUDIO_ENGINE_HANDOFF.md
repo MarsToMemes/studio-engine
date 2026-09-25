@@ -136,7 +136,13 @@ studio-engine/
   - Push ou pull de 5 à 10 %, pans, tilts, punch, parallaxe, tremblement.
   - Cadrage de large à très gros plan, autour d'un point d'intérêt.
   - Un skill qui bouge déjà la caméra l'emporte, et le moteur le signale (CAM-02).
-- **Motion Skill Registry** : 49 skills en texte, chiffres, images, documents, données, cartes, révélations et éditorial. Il n'expose que ce qui peut réellement être rendu.
+- **Motion Skill Registry v2** : 65 skills en texte, chiffres, images, documents, données, cartes, révélations et éditorial. Il n'expose que ce qui peut réellement être rendu.
+  - API : `getMotionSkill(id)`, `getCompatibleSkills(typeDePlan)`, `getFallbackSkill(id, typeDePlan)`.
+  - Métadonnées par skill : `family`, `implementation` (`remotion` / `svg` / `maplibre`), `defaultDuration`, `controlsCamera`.
+  - **Repli sûr par type de plan** : un id inventé par l'IA sur un plan chiffre donne `number_count`, jamais un plan sans mouvement ni un plantage.
+  - **Familles** : `pan_left` et `pan_right` comptent comme un seul traitement « pan » pour la règle de répétition.
+  - `city_zoom` : zoom jusqu'au niveau rue avec MapLibre ; il faut un style de tuiles, voir §5.2.
+  - Catalogue et aperçus dans `motion-library/` (`catalog.json` + une image par skill).
 - **Transitions** : la coupe franche par défaut ; les transitions spectaculaires sont limitées (≤ 25 % des coupes, au plus 3 glitch).
 - **Timeline JSON v2** : une vue à plat, **sans perte** dans les deux sens (`toTimeline` / `fromTimeline`).
 
@@ -162,11 +168,18 @@ studio-engine/
 ### 4.4 Remotion (`packages/remotion`)
 
 - **Rôle** : la composition React qui rend un `VideoProject`.
-- **Rendu** : textes cinétiques, chiffres, graphiques (barres, courbes, camemberts, comparaisons), carte du monde (données Natural Earth, domaine public), documents avec surlignage et source, sous-titres, transitions.
+- **Rendu** :
+  - textes cinétiques et hiérarchie typographique ;
+  - chiffres, y compris les compteurs à rouleaux ;
+  - graphiques : barres, classements, courbes, camemberts, comparaisons, jauges, frises ;
+  - carte du monde (données Natural Earth, domaine public) et carte MapLibre ;
+  - documents avec surlignage, focus, caviardage et source ;
+  - sous-titres et transitions.
 - **Médias** : un média illisible est remplacé par un cadre de remplacement, jamais par un écran noir ni un crash.
 - **Compositions** :
   - `EngineDemo` : **rend n'importe quel projet passé en `--props`** ; c'est celle qu'utilise le moteur local ;
-  - `ShotPlanDemo` et `BrainDemo` : les exemples.
+  - `ShotPlanDemo` et `BrainDemo` : les exemples ;
+  - `MotionLibrary` : les 65 skills à la suite, 3 s chacun.
 
 ---
 
@@ -213,6 +226,9 @@ C'est ce que le moteur local doit produire depuis `projet.yaml`. Exemple complet
   - Données de graphique (`chart`), lieux (`map` ou `places`), média imposé (`media`), intention imposée (`intent`), mots à mettre en valeur (`highlightedWords`).
   - Les hints gagnent toujours.
 - **`sfx`** : la bibliothèque de sons par catégorie. Catégories possibles : whoosh, impact, hit, riser, drop, glitch, click, pop, bass, reveal, transition, notification, document, camera, digital, ambient. Une catégorie absente donne une demande d'asset.
+- **`mapStyle`** (facultatif) : `{ "url": "<style MapLibre>", "attribution": "© …" }` d'un fournisseur de tuiles sous licence, ou de PMTiles auto-hébergées.
+  - Avec ce champ, une carte d'un seul lieu descend au niveau rue (`city_zoom`, zoom 12) et l'attribution s'affiche à l'écran.
+  - Sans ce champ, les cartes restent sur la carte du monde hors ligne.
 - **Droits** : chaque asset a un `source` avec au moins `license` et `commercialUse`. C'est bloquant en validation `final` (SRC-01). `syntheticMedia: true` signale une vidéo IA réaliste, pour le rappel de déclaration YouTube.
 
 ### 5.2 Médias : où les mettre
@@ -221,6 +237,11 @@ C'est ce que le moteur local doit produire depuis `projet.yaml`. Exemple complet
 - En local, le plus simple : `python -m http.server 8080` dans le dossier de l'épisode, ou copier les médias dans `public/`.
 - `durationInSeconds`, `width`, `height` et `fps` viennent de `ffprobe` : le moteur ne les devine pas.
 - Vidéos : MP4 H.264/AAC (Chrome et le rendu Remotion les lisent), ou WebM/VP9.
+- Cartes niveau rue (`city_zoom`) :
+  - il faut un style MapLibre accessible depuis la machine de rendu (`mapStyle`, ou `map.style` dans `hints.map`) ;
+  - la licence et le quota des tuiles sont ceux du fournisseur ;
+  - le worker MapLibre est copié dans `packages/remotion/public/maplibre/` par `npm run assets`, `render` et `previews` ;
+  - chaque image attend que ses tuiles soient chargées (au plus 8 s) : le rendu est plus lent que pour les autres plans.
 
 ### 5.3 Sorties
 
@@ -250,6 +271,10 @@ node packages/engine/bin/shotplan.mjs compile  plan.json > project.json  # notes
 cd packages/remotion
 npx remotion render src/index.ts EngineDemo out/episode.mp4 --props=props.json                 # 1080p H.264
 npx remotion render src/index.ts EngineDemo out/preview.mp4 --props=props.json --scale=0.5     # aperçu 540p
+
+# Médias de démo + worker MapLibre (public/maplibre/), et les aperçus de la Motion Library
+npm run assets
+npm run previews -- --browser=/chemin/vers/chrome      # motion-library/previews/*.jpg + catalog.json
 ```
 
 ---
@@ -324,20 +349,19 @@ def direct_and_render(brain_input, workdir, use_llm=False):
 | Bible du montage (147 règles, 45 vérifiées par le code) | ✅ |
 | ShotPlan v2, Timeline JSON v2, narration segmentée, droits des assets | ✅ |
 | Moteur Remotion (composition, graphiques, cartes, documents, sous-titres, rendu MP4) | ✅ |
-| Motion Skill Registry (49 skills, replis, caméra séparée) | ✅, v2 en cours |
+| Motion Skill Registry v2 (65 skills, API, familles, repli sûr, MapLibre, aperçus, manifeste d'assets) | ✅ (tuiles réelles non testées) |
 | Cerveau éditorial déterministe (analyse → plan complet justifié) | ✅ |
 | Cerveau LLM (Claude, validé et réparé par les règles, repli heuristique) | ✅ (non testé avec une vraie clé) |
 | CLI pour le moteur local (`editor-brain`, `shotplan`), rendu d'un plan par `--props` | ✅ vérifié |
 
 **Pas encore fait** (dans l'ordre prévu)
-1. **Motion Skill Registry v2** : API `getMotionSkill` / `getCompatibleSkills` / `getFallbackSkill`, les 16 skills manquants, `city_zoom` (MapLibre, niveau rue), dossier `/motion-library/`.
-2. **Sound design au rendu.**
+1. **Sound design au rendu.**
    - Les états musicaux et les silences sont **décidés et validés mais pas encore audibles** : la musique joue à un niveau constant, avec ducking par phrase.
    - La mesure LUFS se fera avec le FFmpeg local.
-3. **Contrôle qualité sur le rendu** : images noires, saturation audio, polices, `QC_REPORT.json`, et critique éditoriale par IA (règles REVUE).
-4. **`RenderEngine`** : `RemotionRenderer` / `FFmpegRenderer` (branché sur `montage.py`), cache de rendu.
-5. **Commandes en langage naturel** (« rends cette révélation plus forte ») : des opérations sur le plan, avec diff et annulation.
-6. **Épisode test professionnel** : vraie voix, vrais médias sous licence.
+2. **Contrôle qualité sur le rendu** : images noires, saturation audio, polices, `QC_REPORT.json`, et critique éditoriale par IA (règles REVUE).
+3. **`RenderEngine`** : `RemotionRenderer` / `FFmpegRenderer` (branché sur `montage.py`), cache de rendu.
+4. **Commandes en langage naturel** (« rends cette révélation plus forte ») : des opérations sur le plan, avec diff et annulation.
+5. **Épisode test professionnel** : vraie voix, vrais médias sous licence.
 
 **Limites connues**
 - Le cerveau heuristique :
@@ -346,6 +370,7 @@ def direct_and_render(brain_input, workdir, use_llm=False):
   - ne connaît que 70 lieux.
 - **Le cerveau LLM** fait un seul appel par épisode : au-delà d'environ 400 phrases, il faudra découper par chapitre.
 - **L'alignement** script/transcription gère jusqu'à environ 20 minutes de texte d'un coup.
+- **`city_zoom` avec de vraies tuiles** n'a pas été rendu ici : le réseau du conteneur bloque les serveurs de tuiles. Seul le style hors ligne (pays) est vérifié.
 - **Un cadrage serré sur une image basse résolution** l'agrandit, avec une perte de netteté. Le contrôle de résolution est prévu au contrôle qualité.
 
 ---
@@ -353,12 +378,13 @@ def direct_and_render(brain_input, workdir, use_llm=False):
 ## 9. Licences et droits
 
 - **Remotion** : gratuit jusqu'à 3 personnes dans l'entreprise, licence payante au-delà (voir remotion.pro).
-- **`@anthropic-ai/sdk`** : MIT. **Natural Earth / world-atlas** : domaine public / ISC. **d3-geo**, **topojson-client** : ISC.
+- **`@anthropic-ai/sdk`** : MIT. **MapLibre GL** : BSD-3. Les **tuiles** de carte ont leur propre licence et leurs quotas, qui dépendent du fournisseur. Elles ne sont pas fournies. **Natural Earth / world-atlas** : domaine public / ISC. **d3-geo**, **topojson-client** : ISC.
 - **Règles du projet** :
   - aucun téléchargement automatique de vidéo YouTube ni d'asset commercial sans licence vérifiée ;
   - un asset aux droits incertains n'est pas utilisé ;
   - les attributions requises sont listées dans le rapport ;
-  - une vidéo IA réaliste déclenche le rappel de déclaration YouTube (contenu altéré ou synthétique).
+  - une vidéo IA réaliste déclenche le rappel de déclaration YouTube (contenu altéré ou synthétique) ;
+  - les packs (SFX, musiques, lower thirds, overlays, Lottie…) se déclarent dans `motion-library/assets/manifest.json`. `loadAssetManifest()` rejette toute entrée sans licence enregistrée, non commerciale, ou dont l'attribution est requise mais absente.
 
 ---
 

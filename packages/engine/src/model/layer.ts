@@ -166,6 +166,11 @@ export interface TextLayer extends LayerBase {
   /** Word indices to render with `style.highlight`. */
   emphasis?: number[];
   decorations?: TextDecoration[];
+  /**
+   * Size of each word relative to the style's font size (word index → scale):
+   * typographic hierarchy where the important word is the biggest (bible TYPO-01).
+   */
+  wordScales?: number[];
   maxWidth?: number;
   /** Shrink the font to fit the box. */
   autoFit?: boolean;
@@ -225,7 +230,7 @@ export interface LottieLayer extends LayerBase {
   };
 }
 
-export type GraphicKind = 'counter' | 'statCard' | 'barChart' | 'lineChart' | 'pieChart' | 'comparison' | 'map' | 'progress' | 'icon' | 'svg' | 'lowerThird' | 'custom';
+export type GraphicKind = 'counter' | 'statCard' | 'barChart' | 'lineChart' | 'pieChart' | 'comparison' | 'map' | 'mapTiles' | 'progress' | 'timeline' | 'icon' | 'svg' | 'lowerThird' | 'custom';
 
 /**
  * Data-driven graphic (animated number, chart, lower third…). The engine only

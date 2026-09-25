@@ -73,6 +73,12 @@ export interface BrainInput {
   captions?: boolean;
   /** Length of the pauses kept between sentences. Default `standard`. */
   pacing?: Pacing;
+  /**
+   * MapLibre style of a licensed tile provider (or self-hosted PMTiles), with
+   * its on-screen attribution. With it, a map of one place zooms to street
+   * level (`city_zoom`); without it, maps stay on the offline world map.
+   */
+  mapStyle?: { url: string; attribution: string };
   skills?: MotionSkillRegistry;
 }
 

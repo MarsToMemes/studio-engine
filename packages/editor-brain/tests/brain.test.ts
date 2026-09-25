@@ -91,6 +91,17 @@ describe('directEpisode: the McDonald’s episode', () => {
     }
   });
 
+  it('with a tile style, a map of one place goes down to the street (city_zoom)', () => {
+    const single = (input: BrainInput): BrainInput => ({ ...input, script: input.script.map((b) => (b.kind === 'text' && b.text.startsWith('From Chicago') ? { kind: 'text' as const, text: 'In Chicago, the restaurants sit on prime land.' } : b)) });
+    const styled = directEpisode(single(mcdonaldsInput({ mapStyle: { url: 'https://tiles.example/style.json', attribution: '© OpenStreetMap contributors' }, narration: undefined })));
+    const map = styled.plan.shots.find((s) => s.type === 'map')!;
+    expect(map).toMatchObject({ motionSkill: 'city_zoom', map: { zoom: 12, style: 'https://tiles.example/style.json', attribution: '© OpenStreetMap contributors' } });
+    expect(compileShotPlan(styled.plan).ok).toBe(true);
+    // Without a style: the offline world map.
+    const plain = directEpisode(single(mcdonaldsInput({ narration: undefined })));
+    expect(plain.plan.shots.find((s) => s.type === 'map')!.motionSkill).not.toBe('city_zoom');
+  });
+
   it('follows the grammar: statement hook, figure, document proof, chart, map, revelation, callback', () => {
     const type = (unit: string) => shotsOf(plan, unit).map((s) => s.type);
     expect(type('u1')).toEqual(['text']);

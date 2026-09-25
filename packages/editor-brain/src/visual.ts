@@ -50,7 +50,7 @@ export class VisualDirector {
    * the callback of the conclusion (the first third of the video): a callback
    * repeats the beginning in a new context, not a shot seen a moment ago.
    */
-  constructor(assets: AssetRegistry, catalog: CatalogEntry[] | undefined, private readonly fps: number, private readonly motifBefore = Infinity) {
+  constructor(assets: AssetRegistry, catalog: CatalogEntry[] | undefined, private readonly fps: number, private readonly motifBefore = Infinity, private readonly mapStyle?: { url: string; attribution: string }) {
     const byId = new Map((catalog ?? []).map((c) => [c.assetId, c]));
     this.entries = Object.values(assets)
       .filter((a) => a.kind === 'image' || a.kind === 'video' || a.kind === 'svg')
@@ -161,7 +161,7 @@ export class VisualDirector {
         if (!h?.chart) return undefined; // never invent data
         return { type, chart: { kind: h.chart.kind, labels: h.chart.labels, values: h.chart.values, ...(h.chart.unit ? { unit: h.chart.unit } : {}), ...(h.chart.title ? { title: h.chart.title } : {}) }, reason: `${capitalize(u.why)}: the data builds with the voice.` };
       case 'map': {
-        const map = h?.map ?? toMap(u);
+        const map = h?.map ?? toMap(u, this.mapStyle);
         return map ? { type, map, reason: `${capitalize(u.why)}: ${u.entities.places.map((p) => p.name).join(', ') || 'the place'} on the map.` } : undefined;
       }
       case 'document': {
@@ -260,7 +260,7 @@ function toNumber(u: EditorialUnit): Shot['number'] | undefined {
  * Frames every place: the centre of their bounding box, and a zoom that fits
  * its span (0.25 shows the whole world in the reference map renderer).
  */
-function toMap(u: EditorialUnit): Shot['map'] | undefined {
+function toMap(u: EditorialUnit, style?: { url: string; attribution: string }): Shot['map'] | undefined {
   const places = u.entities.places.slice(0, 8);
   if (!places.length) return undefined;
   const lons = places.map((p) => p.coordinates[0]);
@@ -268,6 +268,8 @@ function toMap(u: EditorialUnit): Shot['map'] | undefined {
   const span = Math.max(Math.max(...lons) - Math.min(...lons), (Math.max(...lats) - Math.min(...lats)) * 2);
   const zoom = places.length === 1 ? 3 : span > 120 ? 0.25 : span > 60 ? 0.6 : span > 25 ? 1.2 : 2;
   const center: [number, number] = [(Math.max(...lons) + Math.min(...lons)) / 2, (Math.max(...lats) + Math.min(...lats)) / 2];
+  // One place and a tile style: down to the street (city_zoom).
+  if (places.length === 1 && style) return { center, zoom: 12, style: style.url, attribution: style.attribution, markers: places.map((p) => ({ label: p.name, coordinates: p.coordinates })) };
   return { center, zoom, markers: places.map((p) => ({ label: p.name, coordinates: p.coordinates })) };
 }
 

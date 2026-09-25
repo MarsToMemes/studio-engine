@@ -17,14 +17,26 @@ import {
 import { buildEpisodePlan, transcript } from './fixtures/shotplan-episode.js';
 
 const SPEC_SKILLS = {
-  text: ['keyword_pop', 'word_reveal', 'character_reveal', 'typewriter', 'slide_text', 'scale_text', 'blur_reveal', 'mask_reveal', 'highlight_word', 'underline_word'],
-  numbers: ['number_pop', 'number_count', 'percentage_reveal', 'currency_reveal', 'stat_card'],
-  images: ['slow_zoom', 'slow_push', 'punch_in', 'punch_out', 'pan_left', 'pan_right', 'parallax', 'blur_transition', 'camera_shake'],
-  documents: ['document_highlight', 'document_zoom', 'document_pan', 'source_reveal'],
-  data: ['chart_growth', 'chart_reveal', 'bar_animation', 'line_animation', 'pie_reveal', 'comparison_graph'],
-  maps: ['map_zoom', 'map_route', 'location_pin', 'country_highlight', 'business_expansion'],
-  reveals: ['glitch_reveal', 'flash_reveal', 'blackout_reveal', 'zoom_reveal', 'text_reveal'],
-  editorial: ['chapter_card', 'source_card', 'quote_card', 'lower_third', 'full_screen_statement'],
+  text: ['keyword_pop', 'word_reveal', 'character_reveal', 'typewriter', 'slide_text', 'scale_text', 'blur_reveal', 'mask_reveal', 'highlight_word', 'underline_word', 'kinetic_statement'],
+  numbers: ['number_pop', 'number_count', 'percentage_reveal', 'currency_reveal', 'stat_card', 'counter_roll', 'odometer'],
+  images: ['slow_zoom', 'slow_push', 'punch_in', 'punch_out', 'pan_left', 'pan_right', 'parallax', 'blur_transition', 'camera_shake', 'depth_zoom', 'cinematic_push'],
+  documents: ['document_highlight', 'document_zoom', 'document_pan', 'source_reveal', 'document_focus', 'redaction_reveal'],
+  data: ['chart_growth', 'chart_reveal', 'bar_animation', 'line_animation', 'pie_reveal', 'comparison_graph', 'ranking_animation', 'percentage_bar'],
+  maps: ['map_zoom', 'map_route', 'location_pin', 'country_highlight', 'business_expansion', 'flight_route', 'city_zoom'],
+  reveals: ['glitch_reveal', 'flash_reveal', 'blackout_reveal', 'zoom_reveal', 'text_reveal', 'light_reveal', 'impact_reveal'],
+  editorial: ['chapter_card', 'source_card', 'quote_card', 'lower_third', 'full_screen_statement', 'warning_card', 'timeline_event', 'key_fact'],
+};
+
+/** VIDEO_EDITING brief §10: the catalogue the registry must cover. */
+const BRIEF_CATALOGUE = {
+  TEXT: 'keyword_pop word_reveal character_reveal typewriter slide_text scale_text blur_reveal mask_reveal highlight_word underline_word kinetic_statement',
+  NUMBERS: 'number_pop number_count percentage_reveal currency_reveal stat_card counter_roll odometer',
+  IMAGES: 'slow_zoom slow_push punch_in punch_out pan_left pan_right parallax camera_shake depth_zoom cinematic_push',
+  DOCUMENTS: 'document_highlight document_zoom document_pan source_reveal document_focus redaction_reveal',
+  DATA: 'chart_growth chart_reveal bar_animation line_animation pie_reveal comparison_graph ranking_animation percentage_bar',
+  MAPS: 'map_zoom map_route location_pin country_highlight business_expansion flight_route city_zoom',
+  REVEALS: 'glitch_reveal flash_reveal blackout_reveal zoom_reveal text_reveal light_reveal impact_reveal',
+  EDITORIAL: 'chapter_card source_card quote_card lower_third full_screen_statement warning_card timeline_event key_fact',
 };
 
 /** One-shot plan helper: the episode fixture with a single shot replaced. */
@@ -47,7 +59,8 @@ describe('Motion Skill Registry: catalog', () => {
     for (const [category, ids] of Object.entries(SPEC_SKILLS)) {
       expect(getAvailableMotionSkills({ category: category as never }).map((s) => s.id).sort(), category).toEqual([...ids].sort());
     }
-    expect(BUILT_IN_SKILLS).toHaveLength(49);
+    expect(BUILT_IN_SKILLS).toHaveLength(65);
+    for (const [category, ids] of Object.entries(BRIEF_CATALOGUE)) for (const id of ids.split(' ')) expect(defaultMotionSkillRegistry.isAvailable(id), `${category}: ${id}`).toBe(true);
     for (const s of getAvailableMotionSkills()) {
       expect(s.id).toMatch(/^[a-z][a-z0-9_]*$/);
       expect(s.name.length).toBeGreaterThan(2);
@@ -56,6 +69,10 @@ describe('Motion Skill Registry: catalog', () => {
       expect(s.duration.min).toBeGreaterThan(0);
       expect(s.duration.max).toBeGreaterThanOrEqual(s.duration.min);
       expect(s.compatibleShotTypes.length).toBeGreaterThan(0);
+      expect(s.defaultDuration).toBeGreaterThanOrEqual(s.duration.min);
+      expect(s.defaultDuration).toBeLessThanOrEqual(s.duration.max);
+      expect(s.family).toMatch(/^[a-z][a-z0-9_]*$/);
+      expect(['remotion', 'svg', 'maplibre', 'lottie', 'canvas', 'gsap']).toContain(s.implementation);
       for (const f of s.fallback) expect(defaultMotionSkillRegistry.has(f), `${s.id} → ${f}`).toBe(true);
       expect(JSON.parse(JSON.stringify(s))).toEqual(s); // metadata is plain JSON for the AI
     }
@@ -86,9 +103,15 @@ describe('Motion Skill Registry: fallbacks (render never fails)', () => {
   const revelation = buildEpisodePlan();
 
   it('an invented skill leaves the shot without motion and says so', () => {
+    // requested → fallbacks → safe fallback of the shot type → static (brief §34).
     const r = compiled(planWith('reveal', { motionSkill: 'cinematic_money_explosion_v4' }));
-    expect(r.notes.find((n) => n.startsWith('reveal:'))).toMatch(/not installed; no fallback applies/);
-    expect(scene(r, 'reveal').metadata!.extra).not.toHaveProperty('appliedSkill');
+    expect(r.notes.find((n) => n.startsWith('reveal:'))).toBe('reveal: "cinematic_money_explosion_v4" is not installed; fell back to "word_reveal" (safe fallback of revelation shots)');
+    expect(scene(r, 'reveal').metadata!.extra!.appliedSkill).toBe('word_reveal');
+    // Without any skill able to animate text, the shot stays static and says so.
+    const bare = createMotionSkillRegistry(undefined, BUILT_IN_SKILLS.filter((s) => !s.compatibleShotTypes.includes('revelation')));
+    const r2 = compiled(planWith('reveal', { motionSkill: 'cinematic_money_explosion_v4' }), { skills: bare });
+    expect(r2.notes.find((n) => n.startsWith('reveal:'))).toMatch(/not installed; no fallback applies/);
+    expect(scene(r2, 'reveal').metadata!.extra).not.toHaveProperty('appliedSkill');
   });
 
   it('glitch_reveal → zoom_reveal → … → nothing, even when skills are not installed', () => {
@@ -97,7 +120,8 @@ describe('Motion Skill Registry: fallbacks (render never fails)', () => {
     expect(applied([])).toBe('glitch_reveal');
     expect(applied(['glitch_reveal'])).toBe('zoom_reveal');
     expect(applied(['glitch_reveal', 'zoom_reveal'])).toBe('text_reveal');
-    expect(applied(['glitch_reveal', 'zoom_reveal', 'text_reveal', 'mask_reveal', 'scale_text', 'slide_text'])).toBeUndefined();
+    expect(applied(['glitch_reveal', 'zoom_reveal', 'text_reveal', 'mask_reveal', 'scale_text', 'slide_text'])).toBe('word_reveal'); // safe fallback
+    expect(applied(['glitch_reveal', 'zoom_reveal', 'text_reveal', 'mask_reveal', 'scale_text', 'slide_text', 'word_reveal'])).toBeUndefined(); // static
   });
 
   it('falls back when the shot has nothing for the skill to animate', () => {

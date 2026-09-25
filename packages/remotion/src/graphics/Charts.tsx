@@ -5,8 +5,37 @@ import { FONT, GREY, growth, nums, str, strs, type GraphicProps } from './common
 const accentOf = (data: GraphicProps['layer']['data']) => str(data.accent, '#FFC72C');
 const fmt = (v: number) => formatCounter(v, { decimals: Number.isInteger(v) ? 0 : 1 });
 
-export const BarChart: React.FC<GraphicProps> = ({ layer, frame, fps }) => {
+/** Horizontal bars sorted from first to last, with their rank (ranking_animation). */
+const RankingBars: React.FC<GraphicProps> = ({ layer, frame, fps }) => {
   const { data } = layer;
+  const labels = strs(data.labels);
+  const values = nums(data.values);
+  const order = values.map((v, i) => ({ v, label: labels[i] ?? '' })).sort((a, b) => (data.sorted ? b.v - a.v : 0));
+  const max = Math.max(1e-9, ...values);
+  const rowH = Math.min(110, 520 / Math.max(1, order.length));
+  return (
+    <svg width="100%" height="100%" viewBox="0 0 1000 600" preserveAspectRatio="xMidYMid meet">
+      {order.map((row, i) => {
+        const g = growth(data, frame, fps, i);
+        const y = 40 + i * rowH;
+        const w = (row.v / max) * 560 * g;
+        return (
+          <g key={i} opacity={g > 0 ? 1 : 0}>
+            {data.ranks ? <text x={30} y={y + rowH * 0.62} fill={i === 0 ? accentOf(data) : '#fff'} fontSize={40} fontWeight={800} fontFamily={FONT}>{i + 1}</text> : null}
+            <text x={90} y={y + rowH * 0.6} fill="#fff" fontSize={32} fontFamily={FONT}>{row.label}</text>
+            <rect x={330} y={y + rowH * 0.18} width={w} height={rowH * 0.6} rx={10} fill={i === 0 ? accentOf(data) : GREY} />
+            <text x={345 + w} y={y + rowH * 0.62} fill="#fff" fontSize={34} fontWeight={800} fontFamily={FONT}>{fmt(row.v * g)}</text>
+          </g>
+        );
+      })}
+    </svg>
+  );
+};
+
+export const BarChart: React.FC<GraphicProps> = (props) => {
+  const { layer, frame, fps } = props;
+  const { data } = layer;
+  if (data.horizontal) return <RankingBars {...props} />;
   const labels = strs(data.labels);
   const values = nums(data.values);
   const max = Math.max(1, ...values);

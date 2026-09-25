@@ -73,7 +73,7 @@ export interface SkillProvider {
   toResolver(): ShotSkillResolver;
   availableIds(): Set<string>;
   /** Optional: lets the shot camera use skill-based moves and detect camera conflicts (CAM-02). */
-  get?(id: string): { id: string; category: string; controlsCamera: boolean } | undefined;
+  get?(id: string): { id: string; category: string; controlsCamera: boolean; family?: string } | undefined;
   resolve?: CameraSkillSource['resolve'];
   resolveParams?: CameraSkillSource['resolveParams'];
 }

@@ -55,6 +55,13 @@ export interface MapPayload {
   markers?: Array<{ label?: string; coordinates: [number, number] }>;
   route?: Array<[number, number]>;
   highlightCountries?: string[];
+  /**
+   * MapLibre style URL for street-level maps (skill `city_zoom`): your tile
+   * provider or self-hosted PMTiles. Its data licence decides `attribution`.
+   */
+  style?: string;
+  /** Map data attribution shown on screen when the licence requires it (bible MAP-05), e.g. "© OpenStreetMap contributors". */
+  attribution?: string;
 }
 
 /** A highlighted region of a document image, in percent of the image box. */

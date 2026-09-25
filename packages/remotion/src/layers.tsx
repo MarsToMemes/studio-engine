@@ -20,6 +20,7 @@ import {
   type CaptionStyle,
   type CaptionTrack,
   type CompiledScene,
+  type Gradient,
   type LayerFrame,
   type ResolvedRenderOptions,
   type TextDecoration,
@@ -56,6 +57,10 @@ const SafeVideo: React.FC<{ src: string; assetId: string; style: CSS } & Omit<Re
   );
 };
 const css = (s: Record<string, string | number>) => s as CSS;
+const gradientCss = (g: Gradient) => {
+  const stops = g.stops.map((s) => `${s.color} ${s.offset * 100}%`).join(', ');
+  return g.kind === 'radial' ? `radial-gradient(${stops})` : g.kind === 'conic' ? `conic-gradient(from ${g.angle ?? 0}deg, ${stops})` : `linear-gradient(${g.angle ?? 180}deg, ${stops})`;
+};
 
 export const BackgroundView: React.FC<{ background: Background; assets: AssetRegistry }> = ({ background, assets }) => {
   switch (background.type) {
@@ -63,12 +68,8 @@ export const BackgroundView: React.FC<{ background: Background; assets: AssetReg
       return null;
     case 'color':
       return <AbsoluteFill style={{ backgroundColor: background.color }} />;
-    case 'gradient': {
-      const g = background.gradient;
-      const stops = g.stops.map((s) => `${s.color} ${s.offset * 100}%`).join(', ');
-      const image = g.kind === 'radial' ? `radial-gradient(${stops})` : g.kind === 'conic' ? `conic-gradient(from ${g.angle ?? 0}deg, ${stops})` : `linear-gradient(${g.angle ?? 180}deg, ${stops})`;
-      return <AbsoluteFill style={{ backgroundImage: image }} />;
-    }
+    case 'gradient':
+      return <AbsoluteFill style={{ backgroundImage: gradientCss(background.gradient) }} />;
     case 'image':
     case 'video': {
       const src = assetSrc(assets[background.assetId]);
@@ -112,12 +113,13 @@ const TextView: React.FC<{ frame: LayerFrame; scene: CompiledScene; sceneFrame: 
   const emphasis = new Set(byWord ? (layer.emphasis ?? []) : []);
   const decorations = byWord ? (layer.decorations ?? []) : [];
   const accent = layer.style.highlight?.color;
-  if (!frame.compiled.hasUnitAnimations && emphasis.size === 0 && decorations.length === 0) return <div style={base}><span style={plate}>{text}</span></div>;
+  const scales = byWord ? layer.wordScales : undefined;
+  if (!frame.compiled.hasUnitAnimations && emphasis.size === 0 && decorations.length === 0 && !scales?.length) return <div style={base}><span style={plate}>{text}</span></div>;
   const parts = splitText(text, split);
   const units = frame.compiled.hasUnitAnimations ? sampleLayerUnits(frame.compiled, sceneFrame, parts.length, scene, options) : [];
   return (
     <div style={base}>
-      <span style={{ ...plate, display: 'inline-flex', flexWrap: 'wrap', justifyContent: 'inherit' }}>
+      <span style={{ ...plate, display: 'inline-flex', flexWrap: 'wrap', justifyContent: 'inherit', ...(scales?.length ? { alignItems: 'baseline' } : {}) }}>
         {parts.map((part, i) => {
           const u = units[i];
           const core = part.trimEnd();
@@ -127,7 +129,7 @@ const TextView: React.FC<{ frame: LayerFrame; scene: CompiledScene; sceneFrame: 
           const recolor = decos.find((d) => d.textColor && decorationProgress(d, frame.localFrame) > 0.5)?.textColor;
           const color = recolor ?? (highlighted ? accent : undefined);
           return (
-            <span key={i} style={{ display: 'inline-block', whiteSpace: 'pre', ...(u ? (stateToStyle(u) as CSS) : {}), ...(color ? { color } : {}) }}>
+            <span key={i} style={{ display: 'inline-block', whiteSpace: 'pre', ...(scales?.[i] !== undefined ? { fontSize: `${scales[i]}em`, verticalAlign: 'baseline' } : {}), ...(u ? (stateToStyle(u) as CSS) : {}), ...(color ? { color } : {}) }}>
               <span style={{ position: 'relative', display: 'inline-block', zIndex: 0 }}>
                 {decos.map((d, k) => <Decoration key={k} decoration={d} progress={decorationProgress(d, frame.localFrame)} />)}
                 {core}
@@ -290,7 +292,7 @@ export const LayerView: React.FC<{ frame: LayerFrame; scene: CompiledScene; scen
           style={{
             width: '100%',
             height: '100%',
-            background: typeof layer.fill === 'string' ? layer.fill : undefined,
+            background: layer.fill === undefined ? undefined : typeof layer.fill === 'string' ? layer.fill : gradientCss(layer.fill),
             border: layer.stroke ? `${layer.stroke.width}px solid ${layer.stroke.color}` : undefined,
             borderRadius: layer.shape === 'ellipse' ? '50%' : layer.cornerRadius,
             boxSizing: 'border-box',

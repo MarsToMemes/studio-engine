@@ -115,7 +115,7 @@ export const BUILT_IN_SCENE_TYPES: readonly SceneTypeDefinition[] = [
     defaultDurationInSeconds: 4,
     defaultRole: 'context',
     allowedLayerTypes: VISUAL,
-    check: (s) => need(s.layers.some((l) => l.type === 'graphic' && l.kind === 'map'), 'a map scene needs a map graphic layer'),
+    check: (s) => need(s.layers.some((l) => l.type === 'graphic' && (l.kind === 'map' || l.kind === 'mapTiles')), 'a map scene needs a map graphic layer'),
   },
   {
     type: 'screenshot',

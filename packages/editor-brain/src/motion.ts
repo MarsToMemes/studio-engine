@@ -31,10 +31,14 @@ export class MotionDirector {
     const grammar = EDITORIAL_GRAMMAR[u.intent];
     let candidates = role === 'key' ? grammar.skills : TYPOGRAPHIC.includes(v.type) ? SUPPORT_TEXT : [];
     if (v.type === 'chapter') candidates = ['chapter_card'];
+    // A map with a tile style is there to go down to the street.
+    if (v.type === 'map' && v.map?.style) candidates = ['city_zoom', ...candidates.filter((id) => id !== 'city_zoom')];
     candidates = candidates.filter((id) => this.fits(id, v, u, afterSilence));
     const recent = this.history.slice(-WINDOW + 1);
     const prevTypo = this.history.slice(-2).filter((h) => TYPOGRAPHIC.includes(h.type));
-    const fresh = candidates.filter((id) => recent.filter((h) => h.skill === id).length < MAX_IN_WINDOW);
+    // Repetition counts families: alternating pan_left / pan_right is not variety.
+    const family = (id: string | undefined) => (id ? (this.registry.get(id)?.family ?? id) : undefined);
+    const fresh = candidates.filter((id) => recent.filter((h) => family(h.skill) === family(id)).length < MAX_IN_WINDOW);
     // Two typographic shots in a row never share a treatment (REP-05 keeps it to 2).
     const varied = TYPOGRAPHIC.includes(v.type) ? fresh.filter((id) => prevTypo[prevTypo.length - 1]?.skill !== id) : fresh;
     const skill = varied[0] ?? fresh[0] ?? candidates.sort((a, b) => this.uses(a) - this.uses(b))[0];

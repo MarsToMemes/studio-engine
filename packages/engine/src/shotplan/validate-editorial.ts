@@ -269,7 +269,7 @@ export function validateEditorialLayer(plan: ShotPlan, issues: IssueCollector, s
 
 /** Optional knowledge of the installed skills (the Motion Skill Registry provides it). */
 export interface SkillCatalog {
-  get(id: string): { category: string; controlsCamera: boolean } | undefined;
+  get(id: string): { category: string; controlsCamera: boolean; family?: string } | undefined;
 }
 
 /** Windows of the repetition and contrast rules (bible §19, §20, §9, §11). */
@@ -353,9 +353,12 @@ function validateCraft(plan: ShotPlan, issues: IssueCollector, starts: readonly 
   const W = L.window;
   for (let end = 0; end < shots.length; end++) {
     const win = shots.slice(Math.max(0, end - W + 1), end + 1);
+    // Near-duplicates (pan_left / pan_right) count as one treatment: their family.
+    const familyOf = (id: string | undefined) => (id ? (catalog?.get(id)?.family ?? id) : undefined);
     const skill = shots[end]!.motionSkill;
-    if (skill && win.filter((s) => s.motionSkill === skill).length > L.maxSameSkillInWindow) {
-      warnOnce(`skill:${skill}`, `${sp(end)}.motionSkill`, 'repetition.skill', `"${skill}" is used more than ${L.maxSameSkillInWindow} times in ${W} shots: use another skill of the same category`);
+    const family = familyOf(skill);
+    if (skill && win.filter((s) => familyOf(s.motionSkill) === family).length > L.maxSameSkillInWindow) {
+      warnOnce(`skill:${family}`, `${sp(end)}.motionSkill`, 'repetition.skill', `"${family}"${family !== skill ? ' treatments' : ''} used more than ${L.maxSameSkillInWindow} times in ${W} shots: use another skill of the same category`);
     }
     if (win.length === W) {
       if (new Set(win.map((s) => s.type)).size < L.minTypesInWindow) warnOnce(`types:${end}`, sp(end), 'variety.window', `${W} shots use fewer than ${L.minTypesInWindow} visual types: the visual language needs to breathe`);

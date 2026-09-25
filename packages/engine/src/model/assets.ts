@@ -24,7 +24,6 @@ export interface Asset {
   fps?: number;
   /** Content hash, used for dedupe and cache keys. */
   checksum?: string;
-  /** Licensing / provenance, e.g. stock provider id. */
   /** Provenance and rights (bible SRC-01): never use an asset whose rights are uncertain. */
   source?: AssetSource;
   metadata?: JsonObject;

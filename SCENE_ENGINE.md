@@ -650,7 +650,11 @@ AI: "number_pop" ──► MotionSkillRegistry.resolve() ──► skill.apply(s
 getAvailableMotionSkills({ category?, shotType?, intensity?, query? })   // metadata only, plain JSON, for the AI
 // { id: 'number_pop', name, category: 'numbers', description, parameters, intensity: 'medium',
 //   duration: { min: 0.4, max: 1.2 }, compatibleShotTypes: ['number'], fallback: ['number_count', 'scale_text'],
-//   events: ['number'], requires?: { graphicKinds: [...] }, version: 1 }
+//   events: ['number'], requires?: { graphicKinds: [...] }, version: 1,
+//   defaultDuration: 0.8, family: 'number_pop', implementation: 'remotion', controlsCamera: false }
+getMotionSkill(id)                                        // one skill's metadata, or undefined
+getCompatibleSkills(shotType, filter?)                    // available skills for a shot type
+getFallbackSkill(id, shotType?)                           // first available skill of the chain, then the safe fallback
 
 compileShotPlan(plan)                                      // uses defaultMotionSkillRegistry
 compileShotPlan(plan, { skills: createMotionSkillRegistry({ graphicKinds }) })   // another renderer
@@ -658,28 +662,67 @@ compileShotPlan(plan, { skills: false })                   // no motion
 ```
 
 - **Only real skills are advertised.** A skill that needs a renderer component (`requires.graphicKinds`) is available only if the renderer declares it. The reference Remotion renderer's component record is typed on `REFERENCE_RENDERER_GRAPHIC_KINDS`: if the engine advertises a component the Remotion package does not implement, the Remotion package does not compile.
-- **Fallbacks** work even for skills that are not installed (`BUILT_IN_SKILL_FALLBACKS`), are cycle-safe, and are reported in `notes` (e.g. `glitch_reveal` → `zoom_reveal` → `text_reveal` → … → no motion). A skill also falls back when the shot has nothing for it to animate (e.g. `keyword_pop` without highlighted words).
+- **Fallbacks** work even for skills that are not installed (`BUILT_IN_SKILL_FALLBACKS`), are cycle-safe, and are reported in `notes` (e.g. `glitch_reveal` → `zoom_reveal` → `text_reveal` → …). A skill also falls back when the shot has nothing for it to animate (e.g. `keyword_pop` without highlighted words).
+- **Safe fallback by shot type** (`SAFE_FALLBACKS`), tried after the chain, before "no motion": text / revelation / chapter → `word_reveal`, number → `number_count`, chart → `chart_reveal`, map → `map_zoom`, document → `document_zoom`, image / video → `slow_zoom`. An invented id (`cinematic_money_explosion_v4`) on a number shot gives `number_count` with the note `(safe fallback of number shots)`.
+- **Family** groups near-duplicates (`pan_left` / `pan_right` → `pan`, `slow_zoom` / `slow_push` / `depth_zoom` / `cinematic_push` → `push`, `counter_roll` / `odometer` → `digit_roll`…). The repetition rule REP-01 and the brain's motion step count families, not ids.
+- **Implementation** says what draws the skill: `remotion` (layers and animations only), `svg` (a graphic component of the reference renderer), `maplibre` (`city_zoom`). Reserved: `lottie`, `canvas`, `gsap`.
 - **Intensity** (`subtle | medium | strong`) scales each skill (e.g. `slow_zoom` 5 % / 7.5 % / 10 %, `punch_in` 106 % / **112 %** / 118 %).
 - **Voice sync.** Skills receive the narration words of their shot (`ShotSkillContext.words`). Keyword effects (`keyword_pop`, `highlight_word`, `underline_word`, `punch_in`, `camera_shake`) land on the frame the word is spoken, never later than 0.5 s before the cut so they are seen.
 - **Events.** Each application records editorial events (`keyword`, `number`, `highlight`, `reveal`, `impact`, `glitch`, `whoosh`, `chapter`, `text`) with their frame in `scene.metadata.extra.events` — the input of automatic sound design (Phase 8).
 - **Parameters** (`motionParams`) are validated against the skill definition; invalid values fall back to defaults with a note.
 
-Catalog (49 skills):
+Catalog (65 skills; previews in `motion-library/`):
 
 | Category | Skills |
 |---|---|
-| text | `keyword_pop`, `word_reveal`, `character_reveal`, `typewriter`, `slide_text`, `scale_text`, `blur_reveal`, `mask_reveal`, `highlight_word`, `underline_word` |
-| numbers | `number_pop`, `number_count`, `percentage_reveal` (ring), `currency_reveal`, `stat_card` |
-| images | `slow_zoom`, `slow_push`, `punch_in`, `punch_out`, `pan_left`, `pan_right`, `parallax`, `blur_transition`, `camera_shake` |
-| documents | `document_highlight`, `document_zoom`, `document_pan`, `source_reveal` (the camera moves the whole page so highlights stay on their lines) |
-| data | `chart_growth`, `chart_reveal`, `bar_animation`, `line_animation`, `pie_reveal`, `comparison_graph` |
-| maps | `map_zoom`, `map_route`, `location_pin`, `country_highlight`, `business_expansion` |
-| reveals | `glitch_reveal`, `flash_reveal`, `blackout_reveal`, `zoom_reveal`, `text_reveal` |
-| editorial | `chapter_card`, `source_card`, `quote_card`, `lower_third`, `full_screen_statement` |
+| text | `keyword_pop`, `word_reveal`, `character_reveal`, `typewriter`, `slide_text`, `scale_text`, `blur_reveal`, `mask_reveal`, `highlight_word`, `underline_word`, `kinetic_statement` |
+| numbers | `number_pop`, `number_count`, `percentage_reveal` (ring), `currency_reveal`, `stat_card`, `counter_roll`, `odometer` |
+| images | `slow_zoom`, `slow_push`, `punch_in`, `punch_out`, `pan_left`, `pan_right`, `parallax`, `blur_transition`, `camera_shake`, `depth_zoom`, `cinematic_push` |
+| documents | `document_highlight`, `document_zoom`, `document_pan`, `source_reveal` (the camera moves the whole page so highlights stay on their lines), `document_focus`, `redaction_reveal` |
+| data | `chart_growth`, `chart_reveal`, `bar_animation`, `line_animation`, `pie_reveal`, `comparison_graph`, `ranking_animation`, `percentage_bar` |
+| maps | `map_zoom`, `map_route`, `location_pin`, `country_highlight`, `business_expansion`, `flight_route`, `city_zoom` (MapLibre) |
+| reveals | `glitch_reveal`, `flash_reveal`, `blackout_reveal`, `zoom_reveal`, `text_reveal`, `light_reveal`, `impact_reveal` |
+| editorial | `chapter_card`, `source_card`, `quote_card`, `lower_third`, `full_screen_statement`, `warning_card`, `key_fact`, `timeline_event` |
+
+Registry v2 skills (Phase 5), in short:
+
+- `kinetic_statement` sizes each word by weight (`TextLayer.wordScales`): key words 1.3–1.6×, light words 0.62×.
+- `counter_roll` / `odometer` animate digit strips (`counter` `data.style`).
+- `depth_zoom` is an accelerating zoom toward `shot.focus`; `cinematic_push` is a dolly camera.
+- `document_focus` dims the page around the first highlight while the camera goes to it.
+- `redaction_reveal` pulls black bars off the passages as they are read.
+- `ranking_animation` draws sorted horizontal bars with ranks.
+- `percentage_bar` fills a `progress` bar; it applies to `%` values only.
+- `flight_route` adds a moving head on the route.
+- `city_zoom` is described below.
+- `light_reveal` sweeps a light band that rides the reveal edge.
+- `impact_reveal` combines a slam, a white flash and a shake.
+- `warning_card` is red: the colour is reserved for warnings.
+- `key_fact` draws an accent frame with a tab.
+- `timeline_event` places dated points on a line.
+
+**`city_zoom` (MapLibre GL 6, BSD-3).**
+
+- **When it applies.** Only when the shot gives `map.style`: either a MapLibre style URL (a licensed tile provider or self-hosted PMTiles), or `offline:natural-earth` (country shapes from local data, no network; for testing the pipeline). Otherwise it falls back to `map_zoom`.
+- **Attribution.** `map.attribution` is drawn on screen (MAP-05).
+- **Deterministic rendering.** It is non-interactive, with no fade and the drawing buffer preserved. Each frame moves the camera and waits (`delayRender`) for MapLibre's `idle` event, capped at 8 s so a missing tile never hangs a render.
+- **The worker.** MapLibre's worker is served from `packages/remotion/public/maplibre/`, copied by `npm run assets`, `render` and `previews`, or it can be passed in `data.workerUrl`. WebGL works in headless Chromium (SwiftShader).
+- **Not verified here: real tiles.** The tile hosts are blocked by this container's network policy.
+
+**Previews.**
+
+- `skillPreviewPlan(skill)` and `skillGalleryPlan(registry)` build canonical one-shot plans on the preview media. Every available skill applies to its own preview (tested).
+- `npm run previews -w @studio-engine/remotion -- --browser=…` renders `motion-library/previews/<id>.jpg` and `motion-library/catalog.json`.
+- The `MotionLibrary` composition plays the whole reel.
+
+**Asset packs.**
+
+- `loadAssetManifest(motion-library/assets/manifest.json)` keeps only entries whose rights are recorded and usable commercially (license, commercialUse, attribution text when required). It returns `{ assets, byCategory, rejected }`.
+- Nothing is downloaded automatically. See `motion-library/README.md`.
 
 Engine primitives added for skills: `units` on `stagger` / `kineticTypography` (animate only some words), `TextLayer.decorations` (underline / marker drawn at a frame, optional `textColor`), graphic kinds `statCard` and `comparison`.
 
-Reference renderer components (`packages/remotion/src/graphics`): `Counter` (with percentage ring), `StatCard`, `BarChart`, `LineChart` (optional area), `PieChart`, `Comparison`, `WorldMap`. Maps use **Natural Earth** data via `world-atlas` (ISC; data public domain) projected with `d3-geo` (ISC): offline, no token, no attribution requirement.
+Reference renderer components (`packages/remotion/src/graphics`): `Counter` (with percentage ring and digit strips), `StatCard`, `BarChart` (and ranking bars), `LineChart` (optional area), `PieChart`, `Comparison`, `WorldMap` (with route head), `Progress`, `Timeline`, `MapTiles` (MapLibre). Maps use **Natural Earth** data via `world-atlas` (ISC; data public domain) projected with `d3-geo` (ISC): offline, no token, no attribution requirement.
 
 Adding a skill: `defineSkill({ id, name, category, description, intensity, duration, compatibleShotTypes, fallback, events, requires?, canApply?, apply })` and `registry.register(skill)`. `apply` only edits engine data (layers, animations, scene camera) of the composed shot, addressed by role (`media`, `text`, `number`, `chart`, `map`, `document`, `highlight`, `source`, `subtext`, `accent`, `captions`).
 
@@ -859,7 +902,7 @@ The rules below keep a video from feeling algorithmic. They apply to every plan 
 ## 23. Testing
 
 ```
-npm test          # 281 engine + 33 editor-brain + 25 studio tests (Vitest)
+npm test          # 313 engine + 34 editor-brain + 25 studio tests (Vitest)
 npm run e2e -w @studio-engine/studio   # browser smoke test (after npm run build -w @studio-engine/studio)
 npm run check     # typecheck + build + tests, all workspaces
 ```
@@ -871,7 +914,9 @@ Covered: scene/layer creation and registries, validation (~50 targeted error/war
 ## 24. Known limitations and next steps
 
 - **Non-CSS effects** (grain, vignette, color grade, LUT, chromatic aberration, pixelate) are modeled and validated but the reference Remotion renderer does not draw them yet (needs shaders / SVG filters).
-- **Graphic kinds**: the reference renderer draws `counter`, `statCard`, `barChart`, `lineChart`, `pieChart`, `comparison` and `map`; `progress`, `icon`, `svg`, `lowerThird` and `custom` have no component (no available skill produces them).
+- **Graphic kinds**: the reference renderer draws `counter`, `statCard`, `barChart`, `lineChart`, `pieChart`, `comparison`, `map`, `mapTiles`, `progress` and `timeline`; `icon`, `svg`, `lowerThird` and `custom` have no component (no available skill produces them).
+- **`city_zoom` with real tiles** has not been rendered here (tile hosts blocked by the container's network policy); only the offline style is verified. Render time per frame depends on the tile provider.
+- **Motion Library previews are stills**: they show the composition, not the motion.
 - **Asset masks** (`mask.type: 'asset'`) need asset URL resolution and are left to the renderer (`maskToCss` returns `{}`).
 - **Lottie overrides** (slots, colors, themes) are modeled; the reference renderer does not apply them.
 - **Remotion shader transitions** require Chrome ≥ 148 with HTML-in-Canvas; off by default.

@@ -1,6 +1,7 @@
 import { DATA_SKILLS } from './data.js';
 import { DOCUMENT_SKILLS } from './documents.js';
 import { EDITORIAL_SKILLS } from './editorial.js';
+import { EXTENDED_SKILLS } from './extended.js';
 import { IMAGE_SKILLS } from './images.js';
 import { MAP_SKILLS } from './maps.js';
 import { NUMBER_SKILLS } from './numbers.js';
@@ -13,6 +14,12 @@ export * from './types.js';
 export * from './registry.js';
 export { defineSkill } from './define.js';
 
+/**
+ * Near-duplicates of the first registry, grouped so the repetition manager
+ * does not count alternating names as variety.
+ */
+const FAMILIES: Readonly<Record<string, string>> = { pan_left: 'pan', pan_right: 'pan', slow_zoom: 'push', slow_push: 'push', text_reveal: 'word_reveal', map_route: 'route' };
+
 export const BUILT_IN_SKILLS: readonly SkillDefinition[] = [
   ...TEXT_SKILLS,
   ...NUMBER_SKILLS,
@@ -22,7 +29,8 @@ export const BUILT_IN_SKILLS: readonly SkillDefinition[] = [
   ...MAP_SKILLS,
   ...REVEAL_SKILLS,
   ...EDITORIAL_SKILLS,
-];
+  ...EXTENDED_SKILLS,
+].map((s) => (FAMILIES[s.id] ? { ...s, family: FAMILIES[s.id]! } : s));
 
 /** Fallback chains of every built-in skill, usable even where a skill is not installed. */
 export const BUILT_IN_SKILL_FALLBACKS: Readonly<Record<string, readonly string[]>> = Object.fromEntries(BUILT_IN_SKILLS.map((s) => [s.id, s.fallback]));
@@ -40,3 +48,4 @@ export function getAvailableMotionSkills(filter?: Parameters<MotionSkillRegistry
   return defaultMotionSkillRegistry.getAvailableMotionSkills(filter);
 }
 export * from './camera.js';
+export * from './preview.js';

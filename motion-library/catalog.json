@@ -1,0 +1,2151 @@
+{
+  "generatedBy": "packages/remotion/scripts/previews.mjs",
+  "previewSeconds": 3,
+  "categories": [
+    "text",
+    "numbers",
+    "images",
+    "documents",
+    "data",
+    "maps",
+    "reveals",
+    "editorial"
+  ],
+  "skills": [
+    {
+      "version": 1,
+      "parameters": {},
+      "events": [
+        "keyword"
+      ],
+      "fallback": [
+        "scale_text"
+      ],
+      "controlsCamera": false,
+      "defaultDuration": 0.8,
+      "family": "keyword_pop",
+      "implementation": "remotion",
+      "id": "keyword_pop",
+      "name": "Keyword pop",
+      "category": "text",
+      "description": "The sentence is visible; each highlighted keyword slams in with a spring when the voice says it.",
+      "intensity": "medium",
+      "duration": {
+        "min": 0.4,
+        "max": 1.2
+      },
+      "compatibleShotTypes": [
+        "text",
+        "revelation",
+        "chapter",
+        "image",
+        "video",
+        "map",
+        "document",
+        "chart",
+        "number"
+      ],
+      "preview": "previews/keyword_pop.jpg"
+    },
+    {
+      "version": 1,
+      "parameters": {},
+      "events": [
+        "text"
+      ],
+      "fallback": [
+        "slide_text"
+      ],
+      "controlsCamera": false,
+      "defaultDuration": 1.3,
+      "family": "word_reveal",
+      "implementation": "remotion",
+      "id": "word_reveal",
+      "name": "Word reveal",
+      "category": "text",
+      "description": "Words rise and fade in one after another.",
+      "intensity": "medium",
+      "duration": {
+        "min": 0.6,
+        "max": 2
+      },
+      "compatibleShotTypes": [
+        "text",
+        "revelation",
+        "chapter",
+        "image",
+        "video",
+        "map",
+        "document",
+        "chart",
+        "number"
+      ],
+      "preview": "previews/word_reveal.jpg"
+    },
+    {
+      "version": 1,
+      "parameters": {},
+      "events": [
+        "text"
+      ],
+      "fallback": [
+        "word_reveal"
+      ],
+      "controlsCamera": false,
+      "defaultDuration": 1,
+      "family": "character_reveal",
+      "implementation": "remotion",
+      "id": "character_reveal",
+      "name": "Character reveal",
+      "category": "text",
+      "description": "Characters pop in one by one. Best for short words and titles.",
+      "intensity": "medium",
+      "duration": {
+        "min": 0.5,
+        "max": 1.5
+      },
+      "compatibleShotTypes": [
+        "text",
+        "revelation",
+        "chapter",
+        "image",
+        "video",
+        "map",
+        "document",
+        "chart",
+        "number"
+      ],
+      "preview": "previews/character_reveal.jpg"
+    },
+    {
+      "version": 1,
+      "parameters": {},
+      "events": [
+        "text"
+      ],
+      "fallback": [
+        "word_reveal"
+      ],
+      "controlsCamera": false,
+      "defaultDuration": 1.9,
+      "family": "typewriter",
+      "implementation": "remotion",
+      "id": "typewriter",
+      "name": "Typewriter",
+      "category": "text",
+      "description": "Characters appear at a steady typing speed.",
+      "intensity": "medium",
+      "duration": {
+        "min": 0.8,
+        "max": 3
+      },
+      "compatibleShotTypes": [
+        "text",
+        "revelation",
+        "chapter",
+        "image",
+        "video",
+        "map",
+        "document",
+        "chart",
+        "number"
+      ],
+      "preview": "previews/typewriter.jpg"
+    },
+    {
+      "version": 1,
+      "parameters": {},
+      "events": [
+        "text"
+      ],
+      "fallback": [
+        "scale_text"
+      ],
+      "controlsCamera": false,
+      "defaultDuration": 0.6,
+      "family": "slide_text",
+      "implementation": "remotion",
+      "id": "slide_text",
+      "name": "Slide text",
+      "category": "text",
+      "description": "Text slides up into place while fading in.",
+      "intensity": "subtle",
+      "duration": {
+        "min": 0.3,
+        "max": 0.8
+      },
+      "compatibleShotTypes": [
+        "text",
+        "revelation",
+        "chapter",
+        "image",
+        "video",
+        "map",
+        "document",
+        "chart",
+        "number"
+      ],
+      "preview": "previews/slide_text.jpg"
+    },
+    {
+      "version": 1,
+      "parameters": {},
+      "events": [
+        "text"
+      ],
+      "fallback": [],
+      "controlsCamera": false,
+      "defaultDuration": 0.6,
+      "family": "scale_text",
+      "implementation": "remotion",
+      "id": "scale_text",
+      "name": "Scale text",
+      "category": "text",
+      "description": "Text scales up from slightly smaller with a small overshoot.",
+      "intensity": "medium",
+      "duration": {
+        "min": 0.3,
+        "max": 0.8
+      },
+      "compatibleShotTypes": [
+        "text",
+        "revelation",
+        "chapter",
+        "image",
+        "video",
+        "map",
+        "document",
+        "chart",
+        "number"
+      ],
+      "preview": "previews/scale_text.jpg"
+    },
+    {
+      "version": 1,
+      "parameters": {},
+      "events": [
+        "text"
+      ],
+      "fallback": [
+        "scale_text"
+      ],
+      "controlsCamera": false,
+      "defaultDuration": 0.7,
+      "family": "blur_reveal",
+      "implementation": "remotion",
+      "id": "blur_reveal",
+      "name": "Blur reveal",
+      "category": "text",
+      "description": "Text comes into focus while fading in.",
+      "intensity": "subtle",
+      "duration": {
+        "min": 0.4,
+        "max": 1
+      },
+      "compatibleShotTypes": [
+        "text",
+        "revelation",
+        "chapter",
+        "image",
+        "video",
+        "map",
+        "document",
+        "chart",
+        "number"
+      ],
+      "preview": "previews/blur_reveal.jpg"
+    },
+    {
+      "version": 1,
+      "parameters": {},
+      "events": [
+        "text"
+      ],
+      "fallback": [
+        "slide_text"
+      ],
+      "controlsCamera": false,
+      "defaultDuration": 0.6,
+      "family": "mask_reveal",
+      "implementation": "remotion",
+      "id": "mask_reveal",
+      "name": "Mask reveal",
+      "category": "text",
+      "description": "A hard-edged mask wipes the text in from the left.",
+      "intensity": "medium",
+      "duration": {
+        "min": 0.3,
+        "max": 0.8
+      },
+      "compatibleShotTypes": [
+        "text",
+        "revelation",
+        "chapter",
+        "image",
+        "video",
+        "map",
+        "document",
+        "chart",
+        "number"
+      ],
+      "preview": "previews/mask_reveal.jpg"
+    },
+    {
+      "version": 1,
+      "parameters": {},
+      "events": [
+        "highlight"
+      ],
+      "fallback": [
+        "underline_word",
+        "keyword_pop"
+      ],
+      "controlsCamera": false,
+      "defaultDuration": 0.6,
+      "family": "highlight_word",
+      "implementation": "remotion",
+      "id": "highlight_word",
+      "name": "Highlight word",
+      "category": "text",
+      "description": "A highlighter marker sweeps across each keyword when it is spoken.",
+      "intensity": "subtle",
+      "duration": {
+        "min": 0.3,
+        "max": 0.8
+      },
+      "compatibleShotTypes": [
+        "text",
+        "revelation",
+        "chapter",
+        "image",
+        "video",
+        "map",
+        "document",
+        "chart",
+        "number"
+      ],
+      "preview": "previews/highlight_word.jpg"
+    },
+    {
+      "version": 1,
+      "parameters": {},
+      "events": [
+        "highlight"
+      ],
+      "fallback": [
+        "highlight_word",
+        "keyword_pop"
+      ],
+      "controlsCamera": false,
+      "defaultDuration": 0.6,
+      "family": "underline_word",
+      "implementation": "remotion",
+      "id": "underline_word",
+      "name": "Underline word",
+      "category": "text",
+      "description": "An accent underline draws itself under each keyword when it is spoken.",
+      "intensity": "subtle",
+      "duration": {
+        "min": 0.3,
+        "max": 0.8
+      },
+      "compatibleShotTypes": [
+        "text",
+        "revelation",
+        "chapter",
+        "image",
+        "video",
+        "map",
+        "document",
+        "chart",
+        "number"
+      ],
+      "preview": "previews/underline_word.jpg"
+    },
+    {
+      "version": 1,
+      "parameters": {},
+      "events": [
+        "number"
+      ],
+      "fallback": [
+        "number_count",
+        "scale_text"
+      ],
+      "controlsCamera": false,
+      "defaultDuration": 0.8,
+      "family": "number_pop",
+      "implementation": "remotion",
+      "id": "number_pop",
+      "name": "Number pop",
+      "category": "numbers",
+      "description": "The number springs in and counts up fast. For striking statistics.",
+      "intensity": "medium",
+      "duration": {
+        "min": 0.4,
+        "max": 1.2
+      },
+      "compatibleShotTypes": [
+        "number"
+      ],
+      "preview": "previews/number_pop.jpg"
+    },
+    {
+      "version": 1,
+      "parameters": {},
+      "events": [
+        "number"
+      ],
+      "fallback": [
+        "number_pop"
+      ],
+      "controlsCamera": false,
+      "defaultDuration": 1.7,
+      "family": "number_count",
+      "implementation": "remotion",
+      "id": "number_count",
+      "name": "Number count",
+      "category": "numbers",
+      "description": "The number counts up from its starting value, then lands.",
+      "intensity": "subtle",
+      "duration": {
+        "min": 0.8,
+        "max": 2.5
+      },
+      "compatibleShotTypes": [
+        "number"
+      ],
+      "preview": "previews/number_count.jpg"
+    },
+    {
+      "version": 1,
+      "parameters": {},
+      "events": [
+        "number"
+      ],
+      "fallback": [
+        "number_count"
+      ],
+      "controlsCamera": false,
+      "defaultDuration": 1.4,
+      "family": "percentage_reveal",
+      "implementation": "remotion",
+      "id": "percentage_reveal",
+      "name": "Percentage reveal",
+      "category": "numbers",
+      "description": "A percentage counts up while a ring fills to the same value.",
+      "intensity": "medium",
+      "duration": {
+        "min": 0.8,
+        "max": 2
+      },
+      "compatibleShotTypes": [
+        "number"
+      ],
+      "preview": "previews/percentage_reveal.jpg"
+    },
+    {
+      "version": 1,
+      "parameters": {
+        "currency": {
+          "type": "string",
+          "default": "$",
+          "description": "Symbol used when the number has no prefix"
+        }
+      },
+      "events": [
+        "number"
+      ],
+      "fallback": [
+        "number_count"
+      ],
+      "controlsCamera": false,
+      "defaultDuration": 1.4,
+      "family": "currency_reveal",
+      "implementation": "remotion",
+      "id": "currency_reveal",
+      "name": "Currency reveal",
+      "category": "numbers",
+      "description": "A money amount counts up with currency symbol and thousands separators.",
+      "intensity": "medium",
+      "duration": {
+        "min": 0.8,
+        "max": 2
+      },
+      "compatibleShotTypes": [
+        "number"
+      ],
+      "preview": "previews/currency_reveal.jpg"
+    },
+    {
+      "version": 1,
+      "parameters": {},
+      "events": [
+        "number"
+      ],
+      "fallback": [
+        "number_pop"
+      ],
+      "controlsCamera": false,
+      "defaultDuration": 1,
+      "family": "stat_card",
+      "implementation": "svg",
+      "id": "stat_card",
+      "name": "Stat card",
+      "category": "numbers",
+      "description": "A card with the number and its label slides in. Good over footage.",
+      "intensity": "subtle",
+      "duration": {
+        "min": 0.5,
+        "max": 1.5
+      },
+      "compatibleShotTypes": [
+        "number"
+      ],
+      "requires": {
+        "graphicKinds": [
+          "statCard"
+        ]
+      },
+      "preview": "previews/stat_card.jpg"
+    },
+    {
+      "version": 1,
+      "parameters": {},
+      "events": [],
+      "fallback": [],
+      "controlsCamera": true,
+      "defaultDuration": 6,
+      "family": "push",
+      "implementation": "remotion",
+      "id": "slow_zoom",
+      "name": "Slow zoom",
+      "category": "images",
+      "description": "Slow push of 5–10 % over the whole shot. The default way to keep a still image alive.",
+      "intensity": "subtle",
+      "duration": {
+        "min": 2,
+        "max": 10
+      },
+      "compatibleShotTypes": [
+        "image",
+        "video",
+        "text",
+        "number",
+        "document",
+        "chart",
+        "map",
+        "revelation",
+        "chapter"
+      ],
+      "preview": "previews/slow_zoom.jpg"
+    },
+    {
+      "version": 1,
+      "parameters": {},
+      "events": [],
+      "fallback": [
+        "slow_zoom"
+      ],
+      "controlsCamera": true,
+      "defaultDuration": 6,
+      "family": "push",
+      "implementation": "remotion",
+      "id": "slow_push",
+      "name": "Slow push",
+      "category": "images",
+      "description": "Dolly-like push: slow zoom with a slight upward drift.",
+      "intensity": "subtle",
+      "duration": {
+        "min": 2,
+        "max": 10
+      },
+      "compatibleShotTypes": [
+        "image",
+        "video",
+        "text",
+        "number",
+        "document",
+        "chart",
+        "map",
+        "revelation",
+        "chapter"
+      ],
+      "preview": "previews/slow_push.jpg"
+    },
+    {
+      "version": 1,
+      "parameters": {},
+      "events": [
+        "impact"
+      ],
+      "fallback": [
+        "slow_zoom"
+      ],
+      "controlsCamera": true,
+      "defaultDuration": 0.6,
+      "family": "punch_in",
+      "implementation": "remotion",
+      "id": "punch_in",
+      "name": "Punch in",
+      "category": "images",
+      "description": "Quick 100 % → 112 % → 100 % hit on a beat (the first keyword when spoken).",
+      "intensity": "medium",
+      "duration": {
+        "min": 0.4,
+        "max": 0.8
+      },
+      "compatibleShotTypes": [
+        "image",
+        "video",
+        "text",
+        "number",
+        "document",
+        "chart",
+        "map",
+        "revelation",
+        "chapter"
+      ],
+      "preview": "previews/punch_in.jpg"
+    },
+    {
+      "version": 1,
+      "parameters": {},
+      "events": [
+        "impact"
+      ],
+      "fallback": [
+        "punch_in"
+      ],
+      "controlsCamera": true,
+      "defaultDuration": 0.5,
+      "family": "punch_out",
+      "implementation": "remotion",
+      "id": "punch_out",
+      "name": "Punch out",
+      "category": "images",
+      "description": "Starts punched in and snaps back out to the full frame.",
+      "intensity": "medium",
+      "duration": {
+        "min": 0.3,
+        "max": 0.6
+      },
+      "compatibleShotTypes": [
+        "image",
+        "video",
+        "text",
+        "number",
+        "document",
+        "chart",
+        "map",
+        "revelation",
+        "chapter"
+      ],
+      "preview": "previews/punch_out.jpg"
+    },
+    {
+      "version": 1,
+      "parameters": {},
+      "events": [],
+      "fallback": [
+        "slow_zoom"
+      ],
+      "controlsCamera": true,
+      "defaultDuration": 6,
+      "family": "pan",
+      "implementation": "remotion",
+      "id": "pan_left",
+      "name": "Pan left",
+      "category": "images",
+      "description": "Slow lateral drift to the left, slightly zoomed to keep the frame filled.",
+      "intensity": "subtle",
+      "duration": {
+        "min": 2,
+        "max": 10
+      },
+      "compatibleShotTypes": [
+        "image",
+        "video",
+        "document",
+        "map"
+      ],
+      "preview": "previews/pan_left.jpg"
+    },
+    {
+      "version": 1,
+      "parameters": {},
+      "events": [],
+      "fallback": [
+        "slow_zoom"
+      ],
+      "controlsCamera": true,
+      "defaultDuration": 6,
+      "family": "pan",
+      "implementation": "remotion",
+      "id": "pan_right",
+      "name": "Pan right",
+      "category": "images",
+      "description": "Slow lateral drift to the right, slightly zoomed to keep the frame filled.",
+      "intensity": "subtle",
+      "duration": {
+        "min": 2,
+        "max": 10
+      },
+      "compatibleShotTypes": [
+        "image",
+        "video",
+        "document",
+        "map"
+      ],
+      "preview": "previews/pan_right.jpg"
+    },
+    {
+      "version": 1,
+      "parameters": {},
+      "events": [],
+      "fallback": [
+        "slow_push",
+        "slow_zoom"
+      ],
+      "controlsCamera": true,
+      "defaultDuration": 5,
+      "family": "parallax",
+      "implementation": "remotion",
+      "id": "parallax",
+      "name": "Parallax",
+      "category": "images",
+      "description": "Depth drift of the media, slightly enlarged so edges never show.",
+      "intensity": "subtle",
+      "duration": {
+        "min": 2,
+        "max": 8
+      },
+      "compatibleShotTypes": [
+        "image",
+        "video",
+        "document",
+        "map"
+      ],
+      "preview": "previews/parallax.jpg"
+    },
+    {
+      "version": 1,
+      "parameters": {},
+      "events": [],
+      "fallback": [
+        "slow_zoom"
+      ],
+      "controlsCamera": true,
+      "defaultDuration": 0.5,
+      "family": "blur_transition",
+      "implementation": "remotion",
+      "id": "blur_transition",
+      "name": "Blur in / out",
+      "category": "images",
+      "description": "The media comes out of blur at the start and blurs away at the end.",
+      "intensity": "subtle",
+      "duration": {
+        "min": 0.3,
+        "max": 0.6
+      },
+      "compatibleShotTypes": [
+        "image",
+        "video",
+        "document",
+        "map"
+      ],
+      "preview": "previews/blur_transition.jpg"
+    },
+    {
+      "version": 1,
+      "parameters": {},
+      "events": [
+        "impact"
+      ],
+      "fallback": [
+        "punch_in"
+      ],
+      "controlsCamera": true,
+      "defaultDuration": 0.6,
+      "family": "camera_shake",
+      "implementation": "remotion",
+      "id": "camera_shake",
+      "name": "Camera shake",
+      "category": "images",
+      "description": "Short decaying shake of the whole frame on an impact.",
+      "intensity": "medium",
+      "duration": {
+        "min": 0.3,
+        "max": 0.8
+      },
+      "compatibleShotTypes": [
+        "image",
+        "video",
+        "text",
+        "number",
+        "document",
+        "chart",
+        "map",
+        "revelation",
+        "chapter"
+      ],
+      "preview": "previews/camera_shake.jpg"
+    },
+    {
+      "version": 1,
+      "parameters": {},
+      "events": [],
+      "fallback": [
+        "document_pan",
+        "slow_zoom"
+      ],
+      "controlsCamera": true,
+      "defaultDuration": 5,
+      "family": "document_zoom",
+      "implementation": "remotion",
+      "id": "document_zoom",
+      "name": "Document zoom",
+      "category": "documents",
+      "description": "Slow zoom into the highlighted passage of the document.",
+      "intensity": "medium",
+      "duration": {
+        "min": 2,
+        "max": 8
+      },
+      "compatibleShotTypes": [
+        "document"
+      ],
+      "preview": "previews/document_zoom.jpg"
+    },
+    {
+      "version": 1,
+      "parameters": {},
+      "events": [],
+      "fallback": [
+        "document_zoom"
+      ],
+      "controlsCamera": true,
+      "defaultDuration": 5,
+      "family": "document_pan",
+      "implementation": "remotion",
+      "id": "document_pan",
+      "name": "Document pan",
+      "category": "documents",
+      "description": "Reads down the page: zoomed in, the camera travels from top to bottom.",
+      "intensity": "subtle",
+      "duration": {
+        "min": 2,
+        "max": 8
+      },
+      "compatibleShotTypes": [
+        "document"
+      ],
+      "preview": "previews/document_pan.jpg"
+    },
+    {
+      "version": 1,
+      "parameters": {},
+      "events": [
+        "highlight"
+      ],
+      "fallback": [
+        "document_zoom"
+      ],
+      "controlsCamera": true,
+      "defaultDuration": 5,
+      "family": "document_highlight",
+      "implementation": "remotion",
+      "id": "document_highlight",
+      "name": "Document highlight",
+      "category": "documents",
+      "description": "Highlighter swipes over the key passages (timed ones keep their timing, others are spread over the shot) with a gentle push towards the first one.",
+      "intensity": "medium",
+      "duration": {
+        "min": 2,
+        "max": 8
+      },
+      "compatibleShotTypes": [
+        "document"
+      ],
+      "preview": "previews/document_highlight.jpg"
+    },
+    {
+      "version": 1,
+      "parameters": {},
+      "events": [
+        "text"
+      ],
+      "fallback": [
+        "source_card"
+      ],
+      "controlsCamera": true,
+      "defaultDuration": 0.7,
+      "family": "source_reveal",
+      "implementation": "remotion",
+      "id": "source_reveal",
+      "name": "Source reveal",
+      "category": "documents",
+      "description": "The source citation slides in after the document has settled.",
+      "intensity": "subtle",
+      "duration": {
+        "min": 0.4,
+        "max": 1
+      },
+      "compatibleShotTypes": [
+        "document",
+        "image",
+        "video",
+        "chart",
+        "map"
+      ],
+      "preview": "previews/source_reveal.jpg"
+    },
+    {
+      "version": 1,
+      "parameters": {},
+      "events": [
+        "number"
+      ],
+      "fallback": [
+        "line_animation",
+        "chart_reveal"
+      ],
+      "controlsCamera": false,
+      "defaultDuration": 1.9,
+      "family": "chart_growth",
+      "implementation": "svg",
+      "id": "chart_growth",
+      "name": "Chart growth",
+      "category": "data",
+      "description": "A rising line with a filled area: shows growth over time.",
+      "intensity": "medium",
+      "duration": {
+        "min": 0.8,
+        "max": 3
+      },
+      "compatibleShotTypes": [
+        "chart"
+      ],
+      "requires": {
+        "graphicKinds": [
+          "lineChart"
+        ]
+      },
+      "preview": "previews/chart_growth.jpg"
+    },
+    {
+      "version": 1,
+      "parameters": {},
+      "events": [
+        "number"
+      ],
+      "fallback": [],
+      "controlsCamera": false,
+      "defaultDuration": 1,
+      "family": "chart_reveal",
+      "implementation": "remotion",
+      "id": "chart_reveal",
+      "name": "Chart reveal",
+      "category": "data",
+      "description": "The chart scales in and builds quickly. Works with any chart form.",
+      "intensity": "subtle",
+      "duration": {
+        "min": 0.5,
+        "max": 1.5
+      },
+      "compatibleShotTypes": [
+        "chart"
+      ],
+      "preview": "previews/chart_reveal.jpg"
+    },
+    {
+      "version": 1,
+      "parameters": {},
+      "events": [
+        "number"
+      ],
+      "fallback": [
+        "chart_reveal"
+      ],
+      "controlsCamera": false,
+      "defaultDuration": 1.9,
+      "family": "bar_animation",
+      "implementation": "svg",
+      "id": "bar_animation",
+      "name": "Bar animation",
+      "category": "data",
+      "description": "Bars grow one after another; the last one in the accent color.",
+      "intensity": "medium",
+      "duration": {
+        "min": 0.8,
+        "max": 3
+      },
+      "compatibleShotTypes": [
+        "chart"
+      ],
+      "requires": {
+        "graphicKinds": [
+          "barChart"
+        ]
+      },
+      "preview": "previews/bar_animation.jpg"
+    },
+    {
+      "version": 1,
+      "parameters": {},
+      "events": [
+        "number"
+      ],
+      "fallback": [
+        "chart_reveal"
+      ],
+      "controlsCamera": false,
+      "defaultDuration": 1.9,
+      "family": "line_animation",
+      "implementation": "svg",
+      "id": "line_animation",
+      "name": "Line animation",
+      "category": "data",
+      "description": "The line draws itself from left to right.",
+      "intensity": "medium",
+      "duration": {
+        "min": 0.8,
+        "max": 3
+      },
+      "compatibleShotTypes": [
+        "chart"
+      ],
+      "requires": {
+        "graphicKinds": [
+          "lineChart"
+        ]
+      },
+      "preview": "previews/line_animation.jpg"
+    },
+    {
+      "version": 1,
+      "parameters": {},
+      "events": [
+        "number"
+      ],
+      "fallback": [
+        "chart_reveal"
+      ],
+      "controlsCamera": false,
+      "defaultDuration": 1.9,
+      "family": "pie_reveal",
+      "implementation": "svg",
+      "id": "pie_reveal",
+      "name": "Pie reveal",
+      "category": "data",
+      "description": "Slices sweep in around the circle.",
+      "intensity": "medium",
+      "duration": {
+        "min": 0.8,
+        "max": 3
+      },
+      "compatibleShotTypes": [
+        "chart"
+      ],
+      "requires": {
+        "graphicKinds": [
+          "pieChart"
+        ]
+      },
+      "preview": "previews/pie_reveal.jpg"
+    },
+    {
+      "version": 1,
+      "parameters": {},
+      "events": [
+        "number"
+      ],
+      "fallback": [
+        "bar_animation",
+        "chart_reveal"
+      ],
+      "controlsCamera": false,
+      "defaultDuration": 1.9,
+      "family": "comparison_graph",
+      "implementation": "svg",
+      "id": "comparison_graph",
+      "name": "Comparison",
+      "category": "data",
+      "description": "Two values side by side, the larger one in the accent color.",
+      "intensity": "medium",
+      "duration": {
+        "min": 0.8,
+        "max": 3
+      },
+      "compatibleShotTypes": [
+        "chart"
+      ],
+      "requires": {
+        "graphicKinds": [
+          "comparison"
+        ]
+      },
+      "preview": "previews/comparison_graph.jpg"
+    },
+    {
+      "version": 1,
+      "parameters": {},
+      "events": [
+        "whoosh"
+      ],
+      "fallback": [],
+      "controlsCamera": true,
+      "defaultDuration": 2.5,
+      "family": "map_zoom",
+      "implementation": "svg",
+      "category": "maps",
+      "compatibleShotTypes": [
+        "map"
+      ],
+      "requires": {
+        "graphicKinds": [
+          "map"
+        ]
+      },
+      "id": "map_zoom",
+      "name": "Map zoom",
+      "description": "From a wide view, the map zooms to the location.",
+      "intensity": "medium",
+      "duration": {
+        "min": 1,
+        "max": 4
+      },
+      "preview": "previews/map_zoom.jpg"
+    },
+    {
+      "version": 1,
+      "parameters": {},
+      "events": [],
+      "fallback": [
+        "map_zoom"
+      ],
+      "controlsCamera": true,
+      "defaultDuration": 3,
+      "family": "route",
+      "implementation": "svg",
+      "category": "maps",
+      "compatibleShotTypes": [
+        "map"
+      ],
+      "requires": {
+        "graphicKinds": [
+          "map"
+        ]
+      },
+      "id": "map_route",
+      "name": "Map route",
+      "description": "A route draws itself between places.",
+      "intensity": "medium",
+      "duration": {
+        "min": 1,
+        "max": 5
+      },
+      "preview": "previews/map_route.jpg"
+    },
+    {
+      "version": 1,
+      "parameters": {},
+      "events": [
+        "impact"
+      ],
+      "fallback": [
+        "map_zoom"
+      ],
+      "controlsCamera": true,
+      "defaultDuration": 1.3,
+      "family": "location_pin",
+      "implementation": "svg",
+      "category": "maps",
+      "compatibleShotTypes": [
+        "map"
+      ],
+      "requires": {
+        "graphicKinds": [
+          "map"
+        ]
+      },
+      "id": "location_pin",
+      "name": "Location pin",
+      "description": "Pins drop on the marked places with a spring.",
+      "intensity": "medium",
+      "duration": {
+        "min": 0.5,
+        "max": 2
+      },
+      "preview": "previews/location_pin.jpg"
+    },
+    {
+      "version": 1,
+      "parameters": {},
+      "events": [
+        "highlight"
+      ],
+      "fallback": [
+        "map_zoom"
+      ],
+      "controlsCamera": true,
+      "defaultDuration": 1.3,
+      "family": "country_highlight",
+      "implementation": "svg",
+      "category": "maps",
+      "compatibleShotTypes": [
+        "map"
+      ],
+      "requires": {
+        "graphicKinds": [
+          "map"
+        ]
+      },
+      "id": "country_highlight",
+      "name": "Country highlight",
+      "description": "Countries fill with the accent color.",
+      "intensity": "medium",
+      "duration": {
+        "min": 0.5,
+        "max": 2
+      },
+      "preview": "previews/country_highlight.jpg"
+    },
+    {
+      "version": 1,
+      "parameters": {},
+      "events": [
+        "impact"
+      ],
+      "fallback": [
+        "location_pin",
+        "map_zoom"
+      ],
+      "controlsCamera": true,
+      "defaultDuration": 3.8,
+      "family": "business_expansion",
+      "implementation": "svg",
+      "category": "maps",
+      "compatibleShotTypes": [
+        "map"
+      ],
+      "requires": {
+        "graphicKinds": [
+          "map"
+        ]
+      },
+      "id": "business_expansion",
+      "name": "Business expansion",
+      "description": "Locations light up one after another across the map: growth of a network.",
+      "intensity": "strong",
+      "duration": {
+        "min": 1.5,
+        "max": 6
+      },
+      "preview": "previews/business_expansion.jpg"
+    },
+    {
+      "version": 1,
+      "parameters": {},
+      "events": [
+        "glitch"
+      ],
+      "fallback": [
+        "zoom_reveal",
+        "text_reveal"
+      ],
+      "controlsCamera": false,
+      "defaultDuration": 0.6,
+      "family": "glitch_reveal",
+      "implementation": "remotion",
+      "id": "glitch_reveal",
+      "name": "Glitch reveal",
+      "category": "reveals",
+      "description": "Digital glitch burst as the element appears. Reserve for real revelations.",
+      "intensity": "strong",
+      "duration": {
+        "min": 0.3,
+        "max": 0.8
+      },
+      "compatibleShotTypes": [
+        "revelation",
+        "text",
+        "number",
+        "image",
+        "video",
+        "chapter",
+        "document",
+        "chart",
+        "map"
+      ],
+      "preview": "previews/glitch_reveal.jpg"
+    },
+    {
+      "version": 1,
+      "parameters": {},
+      "events": [
+        "impact"
+      ],
+      "fallback": [
+        "zoom_reveal"
+      ],
+      "controlsCamera": false,
+      "defaultDuration": 0.4,
+      "family": "flash_reveal",
+      "implementation": "remotion",
+      "id": "flash_reveal",
+      "name": "Flash reveal",
+      "category": "reveals",
+      "description": "White flash, then the element settles from a slight zoom.",
+      "intensity": "strong",
+      "duration": {
+        "min": 0.2,
+        "max": 0.6
+      },
+      "compatibleShotTypes": [
+        "revelation",
+        "text",
+        "number",
+        "image",
+        "video",
+        "chapter",
+        "document",
+        "chart",
+        "map"
+      ],
+      "preview": "previews/flash_reveal.jpg"
+    },
+    {
+      "version": 1,
+      "parameters": {},
+      "events": [
+        "reveal"
+      ],
+      "fallback": [
+        "zoom_reveal"
+      ],
+      "controlsCamera": false,
+      "defaultDuration": 0.7,
+      "family": "blackout_reveal",
+      "implementation": "remotion",
+      "id": "blackout_reveal",
+      "name": "Blackout reveal",
+      "category": "reveals",
+      "description": "A beat of black, then the element appears. Suspense before a reveal.",
+      "intensity": "strong",
+      "duration": {
+        "min": 0.4,
+        "max": 1
+      },
+      "compatibleShotTypes": [
+        "revelation",
+        "text",
+        "number",
+        "image",
+        "video",
+        "chapter",
+        "document",
+        "chart",
+        "map"
+      ],
+      "preview": "previews/blackout_reveal.jpg"
+    },
+    {
+      "version": 1,
+      "parameters": {},
+      "events": [
+        "whoosh"
+      ],
+      "fallback": [
+        "text_reveal",
+        "scale_text"
+      ],
+      "controlsCamera": false,
+      "defaultDuration": 0.5,
+      "family": "zoom_reveal",
+      "implementation": "remotion",
+      "id": "zoom_reveal",
+      "name": "Zoom reveal",
+      "category": "reveals",
+      "description": "The element rushes in from a large, blurred scale.",
+      "intensity": "medium",
+      "duration": {
+        "min": 0.3,
+        "max": 0.7
+      },
+      "compatibleShotTypes": [
+        "revelation",
+        "text",
+        "number",
+        "image",
+        "video",
+        "chapter",
+        "document",
+        "chart",
+        "map"
+      ],
+      "preview": "previews/zoom_reveal.jpg"
+    },
+    {
+      "version": 1,
+      "parameters": {},
+      "events": [
+        "reveal"
+      ],
+      "fallback": [
+        "mask_reveal",
+        "scale_text"
+      ],
+      "controlsCamera": false,
+      "defaultDuration": 0.6,
+      "family": "word_reveal",
+      "implementation": "remotion",
+      "id": "text_reveal",
+      "name": "Text reveal",
+      "category": "reveals",
+      "description": "The statement is revealed by a wiping mask, word by word emphasis stays.",
+      "intensity": "medium",
+      "duration": {
+        "min": 0.3,
+        "max": 0.8
+      },
+      "compatibleShotTypes": [
+        "revelation",
+        "text",
+        "number",
+        "image",
+        "video",
+        "chapter",
+        "document",
+        "chart",
+        "map"
+      ],
+      "preview": "previews/text_reveal.jpg"
+    },
+    {
+      "version": 1,
+      "parameters": {},
+      "events": [
+        "chapter",
+        "whoosh"
+      ],
+      "fallback": [
+        "full_screen_statement",
+        "word_reveal"
+      ],
+      "controlsCamera": true,
+      "defaultDuration": 2.3,
+      "family": "chapter_card",
+      "implementation": "remotion",
+      "id": "chapter_card",
+      "name": "Chapter card",
+      "category": "editorial",
+      "description": "Chapter number fades in, the title rises word by word, the accent bar draws under it.",
+      "intensity": "medium",
+      "duration": {
+        "min": 1.5,
+        "max": 3
+      },
+      "compatibleShotTypes": [
+        "chapter"
+      ],
+      "preview": "previews/chapter_card.jpg"
+    },
+    {
+      "version": 1,
+      "parameters": {},
+      "events": [
+        "text"
+      ],
+      "fallback": [
+        "source_reveal"
+      ],
+      "controlsCamera": false,
+      "defaultDuration": 1,
+      "family": "source_card",
+      "implementation": "remotion",
+      "id": "source_card",
+      "name": "Source card",
+      "category": "editorial",
+      "description": "A source citation card slides in at the bottom left.",
+      "intensity": "subtle",
+      "duration": {
+        "min": 0.5,
+        "max": 1.5
+      },
+      "compatibleShotTypes": [
+        "document",
+        "image",
+        "video",
+        "chart",
+        "map",
+        "number"
+      ],
+      "preview": "previews/source_card.jpg"
+    },
+    {
+      "version": 1,
+      "parameters": {},
+      "events": [
+        "text"
+      ],
+      "fallback": [
+        "word_reveal"
+      ],
+      "controlsCamera": false,
+      "defaultDuration": 4,
+      "family": "quote_card",
+      "implementation": "remotion",
+      "id": "quote_card",
+      "name": "Quote card",
+      "category": "editorial",
+      "description": "The text becomes an editorial quote: serif, large accent quotation mark, attribution below.",
+      "intensity": "subtle",
+      "duration": {
+        "min": 2,
+        "max": 6
+      },
+      "compatibleShotTypes": [
+        "text",
+        "revelation"
+      ],
+      "preview": "previews/quote_card.jpg"
+    },
+    {
+      "version": 1,
+      "parameters": {},
+      "events": [
+        "text"
+      ],
+      "fallback": [
+        "slide_text"
+      ],
+      "controlsCamera": false,
+      "defaultDuration": 3.8,
+      "family": "lower_third",
+      "implementation": "remotion",
+      "id": "lower_third",
+      "name": "Lower third",
+      "category": "editorial",
+      "description": "The on-screen label slides in from the left with an accent bar, and leaves before the cut.",
+      "intensity": "subtle",
+      "duration": {
+        "min": 1.5,
+        "max": 6
+      },
+      "compatibleShotTypes": [
+        "image",
+        "video",
+        "map",
+        "document"
+      ],
+      "preview": "previews/lower_third.jpg"
+    },
+    {
+      "version": 1,
+      "parameters": {},
+      "events": [
+        "text"
+      ],
+      "fallback": [
+        "scale_text"
+      ],
+      "controlsCamera": true,
+      "defaultDuration": 2.8,
+      "family": "full_screen_statement",
+      "implementation": "remotion",
+      "id": "full_screen_statement",
+      "name": "Full-screen statement",
+      "category": "editorial",
+      "description": "A big statement fills the screen, words slamming in, with a slow push.",
+      "intensity": "medium",
+      "duration": {
+        "min": 1.5,
+        "max": 4
+      },
+      "compatibleShotTypes": [
+        "text",
+        "revelation",
+        "chapter"
+      ],
+      "preview": "previews/full_screen_statement.jpg"
+    },
+    {
+      "version": 1,
+      "parameters": {},
+      "events": [
+        "keyword"
+      ],
+      "fallback": [
+        "scale_text",
+        "word_reveal"
+      ],
+      "controlsCamera": false,
+      "defaultDuration": 2.8,
+      "family": "kinetic_statement",
+      "implementation": "remotion",
+      "id": "kinetic_statement",
+      "name": "Kinetic statement",
+      "category": "text",
+      "description": "Typographic hierarchy: small linking words, large key words, the most important one the biggest (\"THE real BUSINESS\"). Words slam in one by one.",
+      "intensity": "medium",
+      "duration": {
+        "min": 1.5,
+        "max": 4
+      },
+      "compatibleShotTypes": [
+        "text",
+        "revelation"
+      ],
+      "preview": "previews/kinetic_statement.jpg"
+    },
+    {
+      "version": 1,
+      "parameters": {},
+      "events": [
+        "number"
+      ],
+      "fallback": [
+        "number_count",
+        "number_pop"
+      ],
+      "controlsCamera": false,
+      "defaultDuration": 1.7,
+      "family": "digit_roll",
+      "implementation": "svg",
+      "id": "counter_roll",
+      "name": "Counter roll",
+      "category": "numbers",
+      "description": "Each digit rolls like a slot machine and locks in place, left to right.",
+      "intensity": "medium",
+      "duration": {
+        "min": 0.8,
+        "max": 2.5
+      },
+      "compatibleShotTypes": [
+        "number"
+      ],
+      "requires": {
+        "graphicKinds": [
+          "counter"
+        ]
+      },
+      "preview": "previews/counter_roll.jpg"
+    },
+    {
+      "version": 1,
+      "parameters": {},
+      "events": [
+        "number"
+      ],
+      "fallback": [
+        "counter_roll",
+        "number_count"
+      ],
+      "controlsCamera": false,
+      "defaultDuration": 1.7,
+      "family": "digit_roll",
+      "implementation": "svg",
+      "id": "odometer",
+      "name": "Odometer",
+      "category": "numbers",
+      "description": "The number turns like a mechanical counter: digits scroll continuously to the value.",
+      "intensity": "medium",
+      "duration": {
+        "min": 0.8,
+        "max": 2.5
+      },
+      "compatibleShotTypes": [
+        "number"
+      ],
+      "requires": {
+        "graphicKinds": [
+          "counter"
+        ]
+      },
+      "preview": "previews/odometer.jpg"
+    },
+    {
+      "version": 1,
+      "parameters": {},
+      "events": [],
+      "fallback": [
+        "slow_zoom"
+      ],
+      "controlsCamera": true,
+      "defaultDuration": 4,
+      "family": "push",
+      "implementation": "remotion",
+      "id": "depth_zoom",
+      "name": "Depth zoom",
+      "category": "images",
+      "description": "An accelerating dive into the point of interest: the image seems to open up in depth. For a detail that matters.",
+      "intensity": "medium",
+      "duration": {
+        "min": 2,
+        "max": 6
+      },
+      "compatibleShotTypes": [
+        "image",
+        "video",
+        "document",
+        "map"
+      ],
+      "preview": "previews/depth_zoom.jpg"
+    },
+    {
+      "version": 1,
+      "parameters": {},
+      "events": [],
+      "fallback": [
+        "slow_push",
+        "slow_zoom"
+      ],
+      "controlsCamera": true,
+      "defaultDuration": 6.5,
+      "family": "push",
+      "implementation": "remotion",
+      "id": "cinematic_push",
+      "name": "Cinematic push",
+      "category": "images",
+      "description": "A dolly-like push with a slight rise, smoother and wider than a slow zoom: the establishing move of a sequence.",
+      "intensity": "subtle",
+      "duration": {
+        "min": 3,
+        "max": 10
+      },
+      "compatibleShotTypes": [
+        "image",
+        "video",
+        "text",
+        "number",
+        "document",
+        "chart",
+        "map",
+        "revelation",
+        "chapter"
+      ],
+      "preview": "previews/cinematic_push.jpg"
+    },
+    {
+      "version": 1,
+      "parameters": {},
+      "events": [
+        "highlight"
+      ],
+      "fallback": [
+        "document_highlight",
+        "document_zoom"
+      ],
+      "controlsCamera": true,
+      "defaultDuration": 5.3,
+      "family": "document_focus",
+      "implementation": "remotion",
+      "id": "document_focus",
+      "name": "Document focus",
+      "category": "documents",
+      "description": "The camera moves to the highlighted passage while the rest of the page darkens: nothing competes with the proof.",
+      "intensity": "medium",
+      "duration": {
+        "min": 2.5,
+        "max": 8
+      },
+      "compatibleShotTypes": [
+        "document"
+      ],
+      "preview": "previews/document_focus.jpg"
+    },
+    {
+      "version": 1,
+      "parameters": {},
+      "events": [
+        "reveal"
+      ],
+      "fallback": [
+        "document_highlight",
+        "document_zoom"
+      ],
+      "controlsCamera": true,
+      "defaultDuration": 5,
+      "family": "redaction_reveal",
+      "implementation": "remotion",
+      "id": "redaction_reveal",
+      "name": "Redaction reveal",
+      "category": "documents",
+      "description": "The key passages start blacked out, then the bars pull away to reveal them, as the voice reads them.",
+      "intensity": "strong",
+      "duration": {
+        "min": 2,
+        "max": 8
+      },
+      "compatibleShotTypes": [
+        "document"
+      ],
+      "preview": "previews/redaction_reveal.jpg"
+    },
+    {
+      "version": 1,
+      "parameters": {},
+      "events": [
+        "number"
+      ],
+      "fallback": [
+        "bar_animation",
+        "chart_reveal"
+      ],
+      "controlsCamera": false,
+      "defaultDuration": 2.6,
+      "family": "ranking_animation",
+      "implementation": "svg",
+      "id": "ranking_animation",
+      "name": "Ranking",
+      "category": "data",
+      "description": "Horizontal bars sorted from first to last, growing one after another with their rank: who leads, by how much.",
+      "intensity": "medium",
+      "duration": {
+        "min": 1.2,
+        "max": 4
+      },
+      "compatibleShotTypes": [
+        "chart"
+      ],
+      "requires": {
+        "graphicKinds": [
+          "barChart"
+        ]
+      },
+      "preview": "previews/ranking_animation.jpg"
+    },
+    {
+      "version": 1,
+      "parameters": {},
+      "events": [
+        "number"
+      ],
+      "fallback": [
+        "percentage_reveal",
+        "number_count"
+      ],
+      "controlsCamera": false,
+      "defaultDuration": 1.7,
+      "family": "percentage_bar",
+      "implementation": "svg",
+      "id": "percentage_bar",
+      "name": "Percentage bar",
+      "category": "data",
+      "description": "The percentage counts up while a bar fills to the same share: the proportion becomes visible.",
+      "intensity": "medium",
+      "duration": {
+        "min": 0.8,
+        "max": 2.5
+      },
+      "compatibleShotTypes": [
+        "number"
+      ],
+      "requires": {
+        "graphicKinds": [
+          "counter",
+          "progress"
+        ]
+      },
+      "preview": "previews/percentage_bar.jpg"
+    },
+    {
+      "version": 1,
+      "parameters": {},
+      "events": [
+        "whoosh"
+      ],
+      "fallback": [
+        "map_route",
+        "location_pin",
+        "map_zoom"
+      ],
+      "controlsCamera": true,
+      "defaultDuration": 4,
+      "family": "route",
+      "implementation": "svg",
+      "id": "flight_route",
+      "name": "Flight route",
+      "category": "maps",
+      "description": "A great-circle route draws itself with a moving point at its head, from the first place to the last.",
+      "intensity": "medium",
+      "duration": {
+        "min": 2,
+        "max": 6
+      },
+      "compatibleShotTypes": [
+        "map"
+      ],
+      "requires": {
+        "graphicKinds": [
+          "map"
+        ]
+      },
+      "preview": "previews/flight_route.jpg"
+    },
+    {
+      "version": 1,
+      "parameters": {},
+      "events": [
+        "whoosh"
+      ],
+      "fallback": [
+        "map_zoom",
+        "location_pin"
+      ],
+      "controlsCamera": true,
+      "defaultDuration": 4.8,
+      "family": "city_zoom",
+      "implementation": "maplibre",
+      "id": "city_zoom",
+      "name": "City zoom",
+      "category": "maps",
+      "description": "From the region down to street level on a real map (MapLibre tiles), landing on the place as it is named.",
+      "intensity": "medium",
+      "duration": {
+        "min": 2.5,
+        "max": 7
+      },
+      "compatibleShotTypes": [
+        "map"
+      ],
+      "requires": {
+        "graphicKinds": [
+          "mapTiles"
+        ]
+      },
+      "preview": "previews/city_zoom.jpg"
+    },
+    {
+      "version": 1,
+      "parameters": {},
+      "events": [
+        "reveal"
+      ],
+      "fallback": [
+        "text_reveal",
+        "word_reveal"
+      ],
+      "controlsCamera": false,
+      "defaultDuration": 2,
+      "family": "word_reveal",
+      "implementation": "remotion",
+      "id": "light_reveal",
+      "name": "Light reveal",
+      "category": "reveals",
+      "description": "A band of light sweeps across and the statement appears behind it: a clean, warm reveal.",
+      "intensity": "medium",
+      "duration": {
+        "min": 1,
+        "max": 3
+      },
+      "compatibleShotTypes": [
+        "revelation",
+        "text",
+        "chapter"
+      ],
+      "preview": "previews/light_reveal.jpg"
+    },
+    {
+      "version": 1,
+      "parameters": {},
+      "events": [
+        "impact"
+      ],
+      "fallback": [
+        "flash_reveal",
+        "zoom_reveal"
+      ],
+      "controlsCamera": true,
+      "defaultDuration": 2,
+      "family": "impact_reveal",
+      "implementation": "remotion",
+      "id": "impact_reveal",
+      "name": "Impact reveal",
+      "category": "reveals",
+      "description": "The statement slams in with a white flash and a short shake: the hardest hit of the video, for a major revelation.",
+      "intensity": "strong",
+      "duration": {
+        "min": 1,
+        "max": 3
+      },
+      "compatibleShotTypes": [
+        "revelation",
+        "text",
+        "number"
+      ],
+      "preview": "previews/impact_reveal.jpg"
+    },
+    {
+      "version": 1,
+      "parameters": {},
+      "events": [
+        "text"
+      ],
+      "fallback": [
+        "full_screen_statement",
+        "word_reveal"
+      ],
+      "controlsCamera": false,
+      "defaultDuration": 3.3,
+      "family": "warning_card",
+      "implementation": "remotion",
+      "id": "warning_card",
+      "name": "Warning card",
+      "category": "editorial",
+      "description": "A warning: red side bar and warning sign, the statement slides in. Red is reserved for danger and negative events (bible COL-02).",
+      "intensity": "medium",
+      "duration": {
+        "min": 1.5,
+        "max": 5
+      },
+      "compatibleShotTypes": [
+        "text",
+        "revelation"
+      ],
+      "preview": "previews/warning_card.jpg"
+    },
+    {
+      "version": 1,
+      "parameters": {},
+      "events": [
+        "text"
+      ],
+      "fallback": [
+        "highlight_word",
+        "word_reveal"
+      ],
+      "controlsCamera": false,
+      "defaultDuration": 4,
+      "family": "key_fact",
+      "implementation": "remotion",
+      "id": "key_fact",
+      "name": "Key fact",
+      "category": "editorial",
+      "description": "The statement inside an accent frame, like a fact card to remember: calm, clear, no effect.",
+      "intensity": "subtle",
+      "duration": {
+        "min": 2,
+        "max": 6
+      },
+      "compatibleShotTypes": [
+        "text"
+      ],
+      "preview": "previews/key_fact.jpg"
+    },
+    {
+      "version": 1,
+      "parameters": {},
+      "events": [
+        "text"
+      ],
+      "fallback": [
+        "bar_animation",
+        "chart_reveal"
+      ],
+      "controlsCamera": false,
+      "defaultDuration": 4.5,
+      "family": "timeline_event",
+      "implementation": "svg",
+      "id": "timeline_event",
+      "name": "Timeline",
+      "category": "editorial",
+      "description": "A horizontal timeline draws itself; each date (the chart labels) appears as its dot is reached. For a sequence of events or steps.",
+      "intensity": "subtle",
+      "duration": {
+        "min": 2,
+        "max": 7
+      },
+      "compatibleShotTypes": [
+        "chart"
+      ],
+      "requires": {
+        "graphicKinds": [
+          "timeline"
+        ]
+      },
+      "preview": "previews/timeline_event.jpg"
+    }
+  ],
+  "transitions": [
+    {
+      "id": "hard_cut",
+      "engineType": "cut",
+      "tier": "neutral",
+      "description": "Default. Instant cut, no overlap."
+    },
+    {
+      "id": "fade",
+      "engineType": "fade",
+      "tier": "standard",
+      "description": "Dip through black. Chapter or time change."
+    },
+    {
+      "id": "dissolve",
+      "engineType": "crossfade",
+      "tier": "standard",
+      "description": "Soft cross-dissolve between related shots."
+    },
+    {
+      "id": "slide",
+      "engineType": "slide",
+      "tier": "standard",
+      "description": "Next shot slides over the current one."
+    },
+    {
+      "id": "push",
+      "engineType": "push",
+      "tier": "standard",
+      "description": "Next shot pushes the current one out."
+    },
+    {
+      "id": "wipe",
+      "engineType": "wipe",
+      "tier": "standard",
+      "description": "Hard-edge wipe."
+    },
+    {
+      "id": "zoom",
+      "engineType": "zoom",
+      "tier": "spectacular",
+      "description": "Zoom through. Energetic continuation."
+    },
+    {
+      "id": "zoom_blur",
+      "engineType": "zoomBlur",
+      "tier": "spectacular",
+      "description": "Fast zoom with motion blur."
+    },
+    {
+      "id": "whip",
+      "engineType": "whip",
+      "tier": "spectacular",
+      "description": "Whip pan. Fast-paced sequences."
+    },
+    {
+      "id": "blur",
+      "engineType": "blur",
+      "tier": "standard",
+      "description": "Blur dissolve."
+    },
+    {
+      "id": "flash",
+      "engineType": "flash",
+      "tier": "spectacular",
+      "description": "White flash. Beats, impacts."
+    },
+    {
+      "id": "glitch",
+      "engineType": "glitch",
+      "tier": "spectacular",
+      "description": "Digital glitch. Revelations only."
+    },
+    {
+      "id": "film_burn",
+      "engineType": "filmBurn",
+      "tier": "spectacular",
+      "description": "Warm light burst. Archive / memory."
+    }
+  ]
+}

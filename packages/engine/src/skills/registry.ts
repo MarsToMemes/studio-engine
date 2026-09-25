@@ -14,8 +14,21 @@ import type { Intensity, ShotType } from '../shotplan/types.js';
 import type { MotionSkill, SkillCategory, SkillDefinition } from './types.js';
 
 /** Graphic kinds drawn by the reference Remotion renderer (packages/remotion). */
-export const REFERENCE_RENDERER_GRAPHIC_KINDS = ['counter', 'statCard', 'barChart', 'lineChart', 'pieChart', 'comparison', 'map'] as const satisfies readonly GraphicKind[];
+export const REFERENCE_RENDERER_GRAPHIC_KINDS = ['counter', 'statCard', 'barChart', 'lineChart', 'pieChart', 'comparison', 'map', 'mapTiles', 'progress', 'timeline'] as const satisfies readonly GraphicKind[];
 export type ReferenceRendererGraphicKind = (typeof REFERENCE_RENDERER_GRAPHIC_KINDS)[number];
+
+/** Last resort before "no motion": one sober skill that animates any shot of the type. */
+export const SAFE_FALLBACKS: Readonly<Record<ShotType, string>> = {
+  text: 'word_reveal',
+  revelation: 'word_reveal',
+  chapter: 'word_reveal',
+  number: 'number_count',
+  chart: 'chart_reveal',
+  map: 'map_zoom',
+  document: 'document_zoom',
+  image: 'slow_zoom',
+  video: 'slow_zoom',
+};
 
 export interface RendererCapabilities {
   graphicKinds: ReadonlySet<GraphicKind>;
@@ -36,6 +49,8 @@ export interface SkillResolution {
   tried: string[];
   /** Why the requested skill was not used, when a fallback (or nothing) was chosen. */
   reason?: string;
+  /** The chain was exhausted and the shot type's safe fallback was used. */
+  safe?: boolean;
 }
 
 export class MotionSkillRegistry {
@@ -87,6 +102,38 @@ export class MotionSkillRegistry {
       .map(toMetadata);
   }
 
+  /** Metadata of an installed skill (check `isAvailable` for this renderer). */
+  getMotionSkill(id: string): MotionSkill | undefined {
+    const s = this.skills.get(id);
+    return s ? toMetadata(s) : undefined;
+  }
+
+  /** Available skills that can animate this shot type. */
+  getCompatibleSkills(shotType: ShotType, filter: Omit<SkillFilter, 'shotType'> = {}): MotionSkill[] {
+    return this.getAvailableMotionSkills({ ...filter, shotType });
+  }
+
+  /**
+   * First available fallback of a skill (its fallback chain, then the safe
+   * fallback of the shot type). `undefined` = the static version (no motion).
+   * Without a composed shot, applicability (`canApply`) is not checked:
+   * `resolve()` does it at compile time.
+   */
+  getFallbackSkill(id: string, shotType?: ShotType): MotionSkill | undefined {
+    const visited = new Set<string>([id]);
+    const queue = [...(this.skills.get(id)?.fallback ?? this.fallbacks[id] ?? [])];
+    while (queue.length) {
+      const next = queue.shift()!;
+      if (visited.has(next)) continue;
+      visited.add(next);
+      const s = this.skills.get(next);
+      if (s && this.isAvailable(next) && (!shotType || s.compatibleShotTypes.includes(shotType))) return toMetadata(s);
+      queue.push(...(s?.fallback ?? this.fallbacks[next] ?? []));
+    }
+    const safe = shotType ? SAFE_FALLBACKS[shotType] : undefined;
+    return safe && safe !== id && this.isAvailable(safe) ? this.getMotionSkill(safe) : undefined;
+  }
+
   availableIds(): Set<string> {
     return new Set([...this.skills.keys()].filter((id) => this.isAvailable(id)));
   }
@@ -125,18 +172,25 @@ export class MotionSkillRegistry {
       }
       return undefined;
     };
-    const skill = visit(id);
-    return { ...(skill ? { skill } : {}), tried, ...(skill?.id !== id && reason ? { reason } : {}) };
+    let skill = visit(id);
+    let safe = false;
+    // Chain exhausted: the safe fallback of the shot type, before the static version (brief §34).
+    if (!skill) {
+      const candidate = SAFE_FALLBACKS[target.shot.type];
+      if (candidate && !visited.has(candidate)) skill = visit(candidate);
+      safe = skill !== undefined;
+    }
+    return { ...(skill ? { skill } : {}), tried, ...(skill?.id !== id && reason ? { reason } : {}), ...(safe ? { safe } : {}) };
   }
 
   /** Adapter for `compileShotPlan({ applySkill })`. */
   toResolver(): ShotSkillResolver {
     return (target, ctx) => {
       const requested = target.shot.motionSkill!;
-      const { skill, reason } = this.resolve(requested, target);
+      const { skill, reason, safe } = this.resolve(requested, target);
       if (!skill) return { note: `${reason ?? `"${requested}" unavailable`}; no fallback applies, shot left without motion` };
       const notes: string[] = [];
-      if (skill.id !== requested) notes.push(`${reason}; fell back to "${skill.id}"`);
+      if (skill.id !== requested) notes.push(`${reason}; fell back to "${skill.id}"${safe ? ` (safe fallback of ${target.shot.type} shots)` : ''}`);
       // Parameters were written for the requested skill; a fallback uses its own defaults.
       let params: PresetParams;
       try {
