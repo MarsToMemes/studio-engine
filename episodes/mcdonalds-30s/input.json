@@ -11,7 +11,10 @@
     },
     {
       "kind": "text",
-      "text": "McDonald's isn't a burger company."
+      "text": "McDonald's isn't a burger company.",
+      "hints": {
+        "strike": "burger"
+      }
     },
     {
       "kind": "text",
@@ -22,11 +25,32 @@
     },
     {
       "kind": "text",
-      "text": "Over 60% of its revenue comes from franchisees."
+      "text": "Over 60% of its revenue comes from franchisees.",
+      "hints": {
+        "source": "McDonald's Form 10-K 2023"
+      }
     },
     {
       "kind": "text",
-      "text": "The annual report says it plainly: franchisees pay rent and royalties."
+      "text": "The annual report says it plainly: franchisees pay rent and royalties.",
+      "hints": {
+        "source": "McDonald's Form 10-K 2023",
+        "documentCard": {
+          "header": "McDONALD'S CORPORATION · FORM 10-K · 2023",
+          "heading": "Revenues",
+          "sentence": "Revenues from franchised restaurants include *rent* and *royalties* based on a percent of sales, with minimum rent payments.",
+          "rows": [
+            [
+              "Rents",
+              "9,840.0"
+            ],
+            [
+              "Royalties",
+              "5,530.9"
+            ]
+          ]
+        }
+      }
     },
     {
       "kind": "text",
@@ -44,7 +68,7 @@
           ],
           "unit": "B$",
           "title": "Rent paid by franchisees",
-          "source": "McDonald's Form 10-K 2019 and 2023"
+          "source": "McDonald's Form 10-K 2019, 2023"
         }
       }
     },
@@ -61,7 +85,12 @@
       "kind": "text",
       "text": "They own the land under more than half of them.",
       "hints": {
-        "intent": "revelation"
+        "intent": "revelation",
+        "share": {
+          "value": 57,
+          "label": "of the land under its restaurants"
+        },
+        "source": "McDonald's Form 10-K 2023"
       }
     },
     {

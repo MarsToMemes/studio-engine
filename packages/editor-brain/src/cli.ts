@@ -3,6 +3,7 @@
  *
  *   editor-brain direct <input.json|->            full result as JSON (plan, analysis, structure, requests, decisions, qc)
  *   editor-brain direct <input.json|-> --plan     only the ShotPlan v2
+ *   editor-brain direct <input.json|-> --style apple   studio blocks timed to the voice (SCENE_ENGINE.md §28.1)
  *   editor-brain direct <input.json|-> --llm      the editorial story is written by Claude (ANTHROPIC_API_KEY),
  *                                                 checked by the rules; --model=<id> to choose the model
  *
@@ -32,7 +33,7 @@ export interface BrainCliIo {
   readStills?: (dir: string) => Array<{ name: string; data: string }>;
 }
 
-export const BRAIN_CLI_USAGE = 'usage: editor-brain direct <input.json|-> [--plan] [--llm [--model=<id>]]\n       editor-brain critique <plan.json|-> [--stills=<dir>] [--model=<id>]';
+export const BRAIN_CLI_USAGE = 'usage: editor-brain direct <input.json|-> [--plan] [--style apple|default] [--llm [--model=<id>]]\n       editor-brain critique <plan.json|-> [--stills=<dir>] [--model=<id>]';
 
 export interface BrainCliOptions {
   /** Model used by --llm. Default: Claude through the official SDK (needs ANTHROPIC_API_KEY). */
@@ -41,7 +42,14 @@ export interface BrainCliOptions {
 }
 
 export async function runBrainCli(args: readonly string[], io: BrainCliIo, options: BrainCliOptions = {}): Promise<number> {
-  const [command, input] = args.filter((a) => !a.startsWith('--'));
+  // --style takes a value ("--style apple" or "--style=apple").
+  const styleAt = args.indexOf('--style');
+  const style = args.find((a) => a.startsWith('--style='))?.slice('--style='.length) ?? (styleAt >= 0 ? args[styleAt + 1] : undefined);
+  const [command, input] = args.filter((a, i) => !a.startsWith('--') && !(styleAt >= 0 && i === styleAt + 1));
+  if (style !== undefined && style !== 'apple' && style !== 'default') {
+    io.stderr(`unknown style "${style}" (apple or default)`);
+    return 2;
+  }
   if (command === 'critique' && input) return runCritique(input, args, io, options);
   if (command !== 'direct' || !input) {
     io.stderr(BRAIN_CLI_USAGE);
@@ -51,6 +59,7 @@ export async function runBrainCli(args: readonly string[], io: BrainCliIo, optio
   try {
     brainInput = JSON.parse(io.readInput(input)) as BrainInput;
     if (!Array.isArray(brainInput.script) || typeof brainInput.assets !== 'object') throw new Error('input needs "script" (array) and "assets" (object)');
+    if (style) brainInput.style = style as 'apple' | 'default';
   } catch (e) {
     io.stderr(`cannot read input: ${(e as Error).message}`);
     return 2;

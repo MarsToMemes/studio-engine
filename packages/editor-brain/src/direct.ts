@@ -8,6 +8,7 @@
  * version 2 validated at `stage: 'final'` against VIDEO_EDITING_BIBLE.md.
  * Deterministic: the same input always gives the same plan.
  */
+import { applyAppleStyle } from './styles/apple.js';
 import {
   compileShotPlan,
   defaultMotionSkillRegistry,
@@ -315,6 +316,9 @@ export function directFromStory(input: BrainInput, story: Story): BrainResult {
     const proven = [u, ...window].some((x) => x.intent === 'proof' || x.intent === 'statistic' || shots.some((s) => s.metadata?.unit === x.id && (s.type === 'document' || s.type === 'chart')));
     if (!proven) decisions.push(`${u.id}: strong claim without visual proof in the next sentences (STORY-05): “${firstWords(u.text, 10)}…”`);
   }
+
+  // Edit style (after the sound designer: the effects follow the default composition's events).
+  if (input.style === 'apple') decisions.push(...applyAppleStyle(plan, units, input));
 
   // 9. QUALITY CONTROL
   const validation = validateShotPlan(plan, { stage: 'final', skillIds: skills.availableIds(), skillCatalog: skills });

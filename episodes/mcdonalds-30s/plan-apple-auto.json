@@ -1,0 +1,1256 @@
+{
+  "version": 2,
+  "fps": 30,
+  "width": 1920,
+  "height": 1080,
+  "assets": {
+    "narration": {
+      "id": "narration",
+      "kind": "audio",
+      "src": "mcd/voice.wav",
+      "durationInSeconds": 28.79,
+      "source": {
+        "provider": "ElevenLabs (voice \"Brad – Warm, Trusted Storyteller\"), generated for this episode",
+        "license": "ElevenLabs subscription (commercial use)",
+        "commercialUse": true,
+        "attributionRequired": false
+      }
+    },
+    "music": {
+      "id": "music",
+      "kind": "audio",
+      "src": "mcd/music.wav",
+      "durationInSeconds": 34,
+      "source": {
+        "provider": "own production (synthesised, episodes/mcdonalds-30s/music.mjs)",
+        "license": "own",
+        "commercialUse": true,
+        "attributionRequired": false
+      }
+    },
+    "counter": {
+      "id": "counter",
+      "kind": "image",
+      "src": "mcd/counter.png",
+      "width": 2560,
+      "height": 1440,
+      "source": {
+        "provider": "ElevenLabs image (Seedream 5 Lite), generated for this episode",
+        "license": "ElevenLabs subscription (commercial use)",
+        "commercialUse": true,
+        "attributionRequired": false,
+        "syntheticMedia": true
+      }
+    },
+    "report": {
+      "id": "report",
+      "kind": "image",
+      "src": "mcd/report.png",
+      "width": 1000,
+      "height": 1400,
+      "source": {
+        "provider": "own production: reconstruction of the 10-K revenue table",
+        "license": "own",
+        "commercialUse": true,
+        "attributionRequired": true,
+        "attribution": "Figures: McDonald's Corporation, Form 10-K 2023 (SEC)"
+      }
+    },
+    "sfx-impact": {
+      "id": "sfx-impact",
+      "kind": "audio",
+      "src": "sfx/impact.wav",
+      "durationInSeconds": 0.8,
+      "source": {
+        "provider": "own production",
+        "license": "own",
+        "commercialUse": true,
+        "attributionRequired": false
+      }
+    },
+    "sfx-glitch": {
+      "id": "sfx-glitch",
+      "kind": "audio",
+      "src": "sfx/glitch.wav",
+      "durationInSeconds": 0.5,
+      "source": {
+        "provider": "own production",
+        "license": "own",
+        "commercialUse": true,
+        "attributionRequired": false
+      }
+    }
+  },
+  "narration": {
+    "assetId": "narration",
+    "words": [
+      {
+        "text": "McDonald's",
+        "startMs": 90,
+        "endMs": 456
+      },
+      {
+        "text": "isn't",
+        "startMs": 456,
+        "endMs": 663
+      },
+      {
+        "text": "a",
+        "startMs": 663,
+        "endMs": 869
+      },
+      {
+        "text": "burger",
+        "startMs": 869,
+        "endMs": 1235
+      },
+      {
+        "text": "company.",
+        "startMs": 1235,
+        "endMs": 1760
+      },
+      {
+        "text": "Behind",
+        "startMs": 2000,
+        "endMs": 2309
+      },
+      {
+        "text": "every",
+        "startMs": 2309,
+        "endMs": 2751
+      },
+      {
+        "text": "counter,",
+        "startMs": 2751,
+        "endMs": 3060
+      },
+      {
+        "text": "there",
+        "startMs": 3060,
+        "endMs": 3333
+      },
+      {
+        "text": "is",
+        "startMs": 3333,
+        "endMs": 3487
+      },
+      {
+        "text": "something",
+        "startMs": 3487,
+        "endMs": 3878
+      },
+      {
+        "text": "else.",
+        "startMs": 3878,
+        "endMs": 4150
+      },
+      {
+        "text": "Over",
+        "startMs": 4710,
+        "endMs": 5072
+      },
+      {
+        "text": "sixty",
+        "startMs": 5072,
+        "endMs": 5434
+      },
+      {
+        "text": "percent",
+        "startMs": 5434,
+        "endMs": 5796
+      },
+      {
+        "text": "of",
+        "startMs": 5796,
+        "endMs": 6000
+      },
+      {
+        "text": "its",
+        "startMs": 6000,
+        "endMs": 6205
+      },
+      {
+        "text": "revenue",
+        "startMs": 6205,
+        "endMs": 6724
+      },
+      {
+        "text": "comes",
+        "startMs": 6724,
+        "endMs": 7086
+      },
+      {
+        "text": "from",
+        "startMs": 7086,
+        "endMs": 7291
+      },
+      {
+        "text": "franchisees.",
+        "startMs": 7291,
+        "endMs": 7810
+      },
+      {
+        "text": "The",
+        "startMs": 8270,
+        "endMs": 8467
+      },
+      {
+        "text": "annual",
+        "startMs": 8467,
+        "endMs": 8817
+      },
+      {
+        "text": "report",
+        "startMs": 8817,
+        "endMs": 9166
+      },
+      {
+        "text": "says",
+        "startMs": 9166,
+        "endMs": 9363
+      },
+      {
+        "text": "it",
+        "startMs": 9363,
+        "endMs": 9561
+      },
+      {
+        "text": "plainly:",
+        "startMs": 9561,
+        "endMs": 9910
+      },
+      {
+        "text": "franchisees",
+        "startMs": 10320,
+        "endMs": 11088
+      },
+      {
+        "text": "pay",
+        "startMs": 11088,
+        "endMs": 11390
+      },
+      {
+        "text": "rent",
+        "startMs": 11390,
+        "endMs": 11693
+      },
+      {
+        "text": "and",
+        "startMs": 11693,
+        "endMs": 11995
+      },
+      {
+        "text": "royalties.",
+        "startMs": 11995,
+        "endMs": 12530
+      },
+      {
+        "text": "And",
+        "startMs": 12890,
+        "endMs": 13104
+      },
+      {
+        "text": "rent",
+        "startMs": 13104,
+        "endMs": 13318
+      },
+      {
+        "text": "keeps",
+        "startMs": 13318,
+        "endMs": 13532
+      },
+      {
+        "text": "growing:",
+        "startMs": 13532,
+        "endMs": 13910
+      },
+      {
+        "text": "nine",
+        "startMs": 14260,
+        "endMs": 14604
+      },
+      {
+        "text": "point",
+        "startMs": 14604,
+        "endMs": 14798
+      },
+      {
+        "text": "eight",
+        "startMs": 14798,
+        "endMs": 14992
+      },
+      {
+        "text": "billion",
+        "startMs": 14992,
+        "endMs": 15336
+      },
+      {
+        "text": "dollars",
+        "startMs": 15336,
+        "endMs": 15679
+      },
+      {
+        "text": "in",
+        "startMs": 15679,
+        "endMs": 15873
+      },
+      {
+        "text": "twenty",
+        "startMs": 15873,
+        "endMs": 16217
+      },
+      {
+        "text": "twenty-three.",
+        "startMs": 16217,
+        "endMs": 16710
+      },
+      {
+        "text": "From",
+        "startMs": 16950,
+        "endMs": 17091
+      },
+      {
+        "text": "Chicago",
+        "startMs": 17091,
+        "endMs": 17449
+      },
+      {
+        "text": "to",
+        "startMs": 17449,
+        "endMs": 17590
+      },
+      {
+        "text": "Tokyo,",
+        "startMs": 17590,
+        "endMs": 17840
+      },
+      {
+        "text": "from",
+        "startMs": 17930,
+        "endMs": 18197
+      },
+      {
+        "text": "London",
+        "startMs": 18197,
+        "endMs": 18670
+      },
+      {
+        "text": "to",
+        "startMs": 18670,
+        "endMs": 18937
+      },
+      {
+        "text": "Sydney,",
+        "startMs": 18937,
+        "endMs": 19410
+      },
+      {
+        "text": "the",
+        "startMs": 19410,
+        "endMs": 19703
+      },
+      {
+        "text": "restaurants",
+        "startMs": 19703,
+        "endMs": 20445
+      },
+      {
+        "text": "sit",
+        "startMs": 20445,
+        "endMs": 20738
+      },
+      {
+        "text": "on",
+        "startMs": 20738,
+        "endMs": 21030
+      },
+      {
+        "text": "prime",
+        "startMs": 21030,
+        "endMs": 21548
+      },
+      {
+        "text": "land.",
+        "startMs": 21548,
+        "endMs": 21840
+      },
+      {
+        "text": "They",
+        "startMs": 22240,
+        "endMs": 22402
+      },
+      {
+        "text": "own",
+        "startMs": 22402,
+        "endMs": 22564
+      },
+      {
+        "text": "the",
+        "startMs": 22564,
+        "endMs": 22726
+      },
+      {
+        "text": "land",
+        "startMs": 22726,
+        "endMs": 22888
+      },
+      {
+        "text": "under",
+        "startMs": 22888,
+        "endMs": 23175
+      },
+      {
+        "text": "more",
+        "startMs": 23175,
+        "endMs": 23462
+      },
+      {
+        "text": "than",
+        "startMs": 23462,
+        "endMs": 23624
+      },
+      {
+        "text": "half",
+        "startMs": 23624,
+        "endMs": 23786
+      },
+      {
+        "text": "of",
+        "startMs": 23786,
+        "endMs": 23948
+      },
+      {
+        "text": "them.",
+        "startMs": 23948,
+        "endMs": 24110
+      },
+      {
+        "text": "McDonald's",
+        "startMs": 24350,
+        "endMs": 24720
+      },
+      {
+        "text": "makes",
+        "startMs": 24720,
+        "endMs": 25090
+      },
+      {
+        "text": "billions",
+        "startMs": 25090,
+        "endMs": 25460
+      },
+      {
+        "text": "from",
+        "startMs": 25460,
+        "endMs": 25670
+      },
+      {
+        "text": "real",
+        "startMs": 25670,
+        "endMs": 25879
+      },
+      {
+        "text": "estate.",
+        "startMs": 25879,
+        "endMs": 26410
+      },
+      {
+        "text": "Behind",
+        "startMs": 26730,
+        "endMs": 27100
+      },
+      {
+        "text": "the",
+        "startMs": 27100,
+        "endMs": 27310
+      },
+      {
+        "text": "burgers,",
+        "startMs": 27310,
+        "endMs": 27680
+      },
+      {
+        "text": "it's",
+        "startMs": 27680,
+        "endMs": 27874
+      },
+      {
+        "text": "a",
+        "startMs": 27874,
+        "endMs": 28067
+      },
+      {
+        "text": "landlord.",
+        "startMs": 28067,
+        "endMs": 28410
+      }
+    ],
+    "segments": [
+      {
+        "id": "u1",
+        "sourceStartMs": 90,
+        "sourceEndMs": 2000,
+        "startFrame": 0
+      },
+      {
+        "id": "u2",
+        "sourceStartMs": 2000,
+        "sourceEndMs": 4600,
+        "startFrame": 57
+      },
+      {
+        "id": "u3",
+        "sourceStartMs": 4710,
+        "sourceEndMs": 8260,
+        "startFrame": 135
+      },
+      {
+        "id": "u4",
+        "sourceStartMs": 8270,
+        "sourceEndMs": 12890,
+        "startFrame": 242
+      },
+      {
+        "id": "u5",
+        "sourceStartMs": 12890,
+        "sourceEndMs": 17070,
+        "startFrame": 381
+      },
+      {
+        "id": "u6",
+        "sourceStartMs": 16950,
+        "sourceEndMs": 22240,
+        "startFrame": 552
+      },
+      {
+        "id": "u7",
+        "sourceStartMs": 22240,
+        "sourceEndMs": 24350,
+        "startFrame": 722
+      },
+      {
+        "id": "u8",
+        "sourceStartMs": 24350,
+        "sourceEndMs": 26730,
+        "startFrame": 786
+      },
+      {
+        "id": "u9",
+        "sourceStartMs": 26730,
+        "sourceEndMs": 28810,
+        "startFrame": 858
+      }
+    ]
+  },
+  "music": {
+    "assetId": "music",
+    "gainDb": -18,
+    "duckDb": -6
+  },
+  "captions": {
+    "enabled": false,
+    "style": "caption-bold-pop",
+    "wordsPerCue": 3
+  },
+  "chapters": [
+    {
+      "id": "c1",
+      "title": "The real business",
+      "question": "How does McDonald's really make money?"
+    },
+    {
+      "id": "c2",
+      "title": "The real estate empire",
+      "question": "How big is it?"
+    }
+  ],
+  "scenes": [
+    {
+      "id": "c1-s1",
+      "chapterId": "c1",
+      "purpose": "Hook the viewer: McDonald's isn't a burger company",
+      "motifs": [
+        "motif-1"
+      ]
+    },
+    {
+      "id": "c2-s1",
+      "chapterId": "c2",
+      "purpose": "Reveal: They own the land under more than half of them",
+      "motifs": [
+        "motif-1"
+      ]
+    }
+  ],
+  "silences": [
+    {
+      "id": "silence-u7",
+      "beforeShotId": "u7",
+      "durationInFrames": 12,
+      "kinds": [
+        "music_drop",
+        "sfx_drop"
+      ]
+    }
+  ],
+  "memory": {
+    "visualMotifs": [
+      {
+        "id": "motif-1",
+        "description": "counter",
+        "assetId": "counter",
+        "introducedIn": "u2"
+      }
+    ],
+    "callbackCandidates": [
+      {
+        "motifId": "motif-1",
+        "callbackShotId": "u9",
+        "note": "the opening image returns in the conclusion"
+      }
+    ],
+    "introducedConcepts": [
+      {
+        "id": "concept-u1",
+        "label": "burger",
+        "introducedIn": "u1"
+      },
+      {
+        "id": "concept-u7",
+        "label": "half",
+        "introducedIn": "u7"
+      }
+    ]
+  },
+  "metadata": {
+    "generator": "editor-brain",
+    "brainVersion": 1,
+    "title": "McDonald's is a landlord"
+  },
+  "shots": [
+    {
+      "id": "u1",
+      "type": "text",
+      "durationInFrames": 57,
+      "text": "McDonald's isn't a burger company",
+      "highlightedWords": [
+        "burger"
+      ],
+      "sceneId": "c1-s1",
+      "beat": "setup",
+      "editorialIntent": "hook",
+      "importance": 5,
+      "analysis": {
+        "surprise": 4,
+        "informationDensity": 2,
+        "visualPotential": 4,
+        "tension": 2,
+        "proofRequired": false
+      },
+      "visualHierarchy": {
+        "primary": "statement",
+        "secondary": "emphasised: burger",
+        "background": "dark texture"
+      },
+      "reasons": {
+        "shot": "First sentence of the video: the hook.",
+        "motion": "Studio block \"studio-title\" (Apple style), timed to the voice.",
+        "camera": "A punch-in lands the key word.",
+        "music": "Tension under the argument.",
+        "sfx": "Impact on the punch."
+      },
+      "decidedBy": "rules",
+      "metadata": {
+        "unit": "u1"
+      },
+      "intensity": "strong",
+      "musicState": "tension",
+      "sfx": [
+        {
+          "sfx": "sfx-impact",
+          "at": 23,
+          "gainDb": -9
+        }
+      ],
+      "block": {
+        "item": "studio-title",
+        "variables": {
+          "text": "McDonald's isn't|a *burger* company.",
+          "sizes": "169,159",
+          "cues": "0.05,0.366,0.573,0.779,1.145",
+          "strike": 3,
+          "strikeAt": 1.265
+        }
+      }
+    },
+    {
+      "id": "u2",
+      "type": "image",
+      "durationInFrames": 89,
+      "media": "counter",
+      "framing": "wide",
+      "sceneId": "c1-s1",
+      "beat": "contradiction",
+      "editorialIntent": "contradiction",
+      "importance": 4,
+      "analysis": {
+        "surprise": 4,
+        "informationDensity": 2,
+        "visualPotential": 3,
+        "tension": 3,
+        "proofRequired": true
+      },
+      "visualHierarchy": {
+        "primary": "fast-food restaurant counter at night"
+      },
+      "reasons": {
+        "shot": "Contradiction cue \"something else\": counter. (media chosen by the author)",
+        "motion": "Studio block \"studio-image\" (Apple style), timed to the voice.",
+        "camera": "A slow push keeps the still alive and draws the eye in."
+      },
+      "decidedBy": "rules",
+      "metadata": {
+        "unit": "u2"
+      },
+      "intensity": "medium",
+      "musicState": "tension",
+      "block": {
+        "item": "studio-image",
+        "variables": {
+          "src": "mcd/counter.png",
+          "window": 56,
+          "revealAt": 0.15,
+          "zoom": 0.12,
+          "text": "Behind every counter,|there is *something else.*",
+          "sizes": "81,113",
+          "soft": "0",
+          "cues": "0.05,0.309,0.751,1.06,1.333,1.487,1.878",
+          "dims": "0.3:0.45:0;0.81:0.86:10"
+        }
+      }
+    },
+    {
+      "id": "u3",
+      "type": "number",
+      "durationInFrames": 96,
+      "number": {
+        "value": 60,
+        "suffix": "%",
+        "label": "of its revenue comes from franchisees"
+      },
+      "sceneId": "c1-s1",
+      "beat": "escalation",
+      "editorialIntent": "number",
+      "importance": 4,
+      "analysis": {
+        "surprise": 3,
+        "informationDensity": 3,
+        "visualPotential": 4,
+        "tension": 2,
+        "proofRequired": true
+      },
+      "visualHierarchy": {
+        "primary": "60%",
+        "secondary": "of its revenue comes from franchisees"
+      },
+      "reasons": {
+        "shot": "Contains a key figure: 60%.",
+        "motion": "Studio block \"studio-stat\" (Apple style), timed to the voice.",
+        "sfx": "The figure lands with a hit as it is spoken."
+      },
+      "decidedBy": "rules",
+      "metadata": {
+        "unit": "u3"
+      },
+      "intensity": "medium",
+      "musicState": "tension",
+      "sfx": [
+        {
+          "sfx": "sfx-impact",
+          "gainDb": -10
+        }
+      ],
+      "block": {
+        "item": "studio-stat",
+        "variables": {
+          "to": 60,
+          "suffix": "%",
+          "prefix": "",
+          "decimals": 0,
+          "countDuration": 1.1,
+          "kicker": "Over",
+          "kickerAt": 0.05,
+          "countAt": 0.05,
+          "ring": 60,
+          "label": "of its revenue comes|from *franchisees.*",
+          "labelCues": "0.719,0.923,1.128,1.647,2.009,2.214",
+          "source": "Source: McDonald's Form 10-K 2023"
+        }
+      }
+    },
+    {
+      "id": "u4",
+      "type": "document",
+      "durationInFrames": 139,
+      "media": "report",
+      "document": {
+        "source": "McDonald's Form 10-K 2023, revenue table",
+        "highlights": [
+          {
+            "x": 8,
+            "y": 36.5,
+            "width": 84,
+            "height": 9.3,
+            "at": 61
+          }
+        ]
+      },
+      "hold": "let the viewer read the highlighted line",
+      "sceneId": "c1-s1",
+      "beat": "proof",
+      "editorialIntent": "proof",
+      "importance": 4,
+      "analysis": {
+        "surprise": 2,
+        "informationDensity": 3,
+        "visualPotential": 5,
+        "tension": 2,
+        "proofRequired": false
+      },
+      "visualHierarchy": {
+        "primary": "McDonald's Form 10-K 2023, revenue table",
+        "secondary": "highlighted line",
+        "background": "dark texture"
+      },
+      "reasons": {
+        "shot": "Refers to a source (\"annual report\"): McDonald's Form 10-K 2023, revenue table proves it.",
+        "motion": "Studio block \"studio-document\" (Apple style), timed to the voice."
+      },
+      "decidedBy": "rules",
+      "metadata": {
+        "unit": "u4"
+      },
+      "intensity": "medium",
+      "musicState": "tension",
+      "block": {
+        "item": "studio-document",
+        "variables": {
+          "header": "McDONALD'S CORPORATION · FORM 10-K · 2023",
+          "heading": "Revenues",
+          "sentence": "Revenues from franchised restaurants include *rent* and *royalties* based on a percent of sales, with minimum rent payments.",
+          "highlightCues": "3.12,3.725",
+          "rows": "Rents: 9,840.0|Royalties: 5,530.9",
+          "rowsAt": "3.47,4.075",
+          "pushAt": 0.8,
+          "source": "Source: McDonald's Form 10-K 2023"
+        }
+      }
+    },
+    {
+      "id": "u5-a",
+      "type": "text",
+      "durationInFrames": 30,
+      "text": "And rent keeps growing",
+      "sceneId": "c1-s1",
+      "beat": "escalation",
+      "editorialIntent": "statistic",
+      "importance": 3,
+      "visualHierarchy": {
+        "primary": "statement",
+        "background": "dark texture"
+      },
+      "reasons": {
+        "shot": "No related image: the spoken words carry the rest of the sentence.",
+        "motion": "Studio block \"studio-bars\" (Apple style), timed to the voice, one block across u5-a + u5-b."
+      },
+      "decidedBy": "rules",
+      "metadata": {
+        "unit": "u5"
+      },
+      "intensity": "subtle",
+      "musicState": "tension",
+      "block": {
+        "item": "studio-bars",
+        "variables": {
+          "labels": "2019,2023",
+          "values": "7.5,9.8",
+          "prefix": "$",
+          "suffix": "B",
+          "decimals": 1,
+          "text": "Rent keeps *growing.*",
+          "sizes": "96",
+          "cues": "0.214,0.428,0.642",
+          "kicker": "Rent paid by franchisees",
+          "barCues": "0.892,1.37",
+          "delta": "+31%",
+          "deltaAt": 2.983,
+          "source": "Source: McDonald's Form 10-K 2019, 2023"
+        }
+      }
+    },
+    {
+      "id": "u5-b",
+      "type": "chart",
+      "durationInFrames": 96,
+      "chart": {
+        "kind": "barChart",
+        "labels": [
+          "2019",
+          "2023"
+        ],
+        "values": [
+          7.5,
+          9.8
+        ],
+        "unit": "B$",
+        "title": "Rent paid by franchisees"
+      },
+      "sceneId": "c1-s1",
+      "beat": "escalation",
+      "editorialIntent": "statistic",
+      "importance": 4,
+      "analysis": {
+        "surprise": 3,
+        "informationDensity": 3,
+        "visualPotential": 5,
+        "tension": 2,
+        "proofRequired": true
+      },
+      "visualHierarchy": {
+        "primary": "Rent paid by franchisees",
+        "secondary": "key value"
+      },
+      "reasons": {
+        "shot": "Chart data attached: the data builds with the voice.",
+        "motion": "Studio block \"studio-bars\" (Apple style), timed to the voice, one block across u5-a + u5-b."
+      },
+      "decidedBy": "rules",
+      "metadata": {
+        "unit": "u5"
+      },
+      "intensity": "medium",
+      "musicState": "tension",
+      "block": {
+        "item": "studio-bars",
+        "variables": {
+          "labels": "2019,2023",
+          "values": "7.5,9.8",
+          "prefix": "$",
+          "suffix": "B",
+          "decimals": 1,
+          "text": "Rent keeps *growing.*",
+          "sizes": "96",
+          "cues": "0.214,0.428,0.642",
+          "kicker": "Rent paid by franchisees",
+          "barCues": "0.892,1.37",
+          "delta": "+31%",
+          "deltaAt": 2.983,
+          "source": "Source: McDonald's Form 10-K 2019, 2023"
+        },
+        "startAt": 1
+      }
+    },
+    {
+      "id": "chapter-2",
+      "type": "chapter",
+      "durationInFrames": 45,
+      "text": "The real estate empire",
+      "subtext": "CHAPTER 2",
+      "sceneId": "c2-s1",
+      "beat": "transition",
+      "editorialIntent": "chapter",
+      "importance": 3,
+      "visualHierarchy": {
+        "primary": "chapter title",
+        "background": "black"
+      },
+      "transition": "hard_cut",
+      "reasons": {
+        "shot": "New chapter: How big is it?",
+        "motion": "Studio block \"studio-map\" (Apple style), timed to the voice, one block across chapter-2 + u6-a.",
+        "transition": "Apple style: a clean hard cut.",
+        "music": "The music builds towards the revelation."
+      },
+      "decidedBy": "rules",
+      "musicState": "build",
+      "block": {
+        "item": "studio-map",
+        "variables": {
+          "markers": "Chicago:-87.6298:41.8781:1.641;Tokyo:139.6917:35.6895:2.14;London:-0.1276:51.5072:2.747;Sydney:151.2093:-33.8688:3.487",
+          "dotsAt": 0,
+          "zoom": 0.07,
+          "text": "The real estate *empire.*",
+          "sizes": "76",
+          "titleAt": 0.15,
+          "kicker": "Chapter 2"
+        }
+      }
+    },
+    {
+      "id": "u6-a",
+      "type": "map",
+      "durationInFrames": 73,
+      "map": {
+        "center": [
+          31.789750000000005,
+          8.819199999999999
+        ],
+        "zoom": 0.25,
+        "markers": [
+          {
+            "label": "Chicago",
+            "coordinates": [
+              -87.6298,
+              41.8781
+            ]
+          },
+          {
+            "label": "Tokyo",
+            "coordinates": [
+              139.6917,
+              35.6895
+            ]
+          },
+          {
+            "label": "London",
+            "coordinates": [
+              -0.1276,
+              51.5072
+            ]
+          },
+          {
+            "label": "Sydney",
+            "coordinates": [
+              151.2093,
+              -33.8688
+            ]
+          }
+        ]
+      },
+      "sceneId": "c2-s1",
+      "beat": "setup",
+      "editorialIntent": "location",
+      "importance": 3,
+      "analysis": {
+        "surprise": 2,
+        "informationDensity": 5,
+        "visualPotential": 4,
+        "tension": 4,
+        "proofRequired": false
+      },
+      "visualHierarchy": {
+        "primary": "map",
+        "secondary": "Chicago, Tokyo, London, Sydney"
+      },
+      "reasons": {
+        "shot": "Names a place: Chicago, Tokyo, London, Sydney on the map.",
+        "motion": "Studio block \"studio-map\" (Apple style), timed to the voice, one block across chapter-2 + u6-a."
+      },
+      "decidedBy": "rules",
+      "metadata": {
+        "unit": "u6"
+      },
+      "intensity": "subtle",
+      "musicState": "build",
+      "block": {
+        "item": "studio-map",
+        "variables": {
+          "markers": "Chicago:-87.6298:41.8781:1.641;Tokyo:139.6917:35.6895:2.14;London:-0.1276:51.5072:2.747;Sydney:151.2093:-33.8688:3.487",
+          "dotsAt": 0,
+          "zoom": 0.07,
+          "text": "The real estate *empire.*",
+          "sizes": "76",
+          "titleAt": 0.15,
+          "kicker": "Chapter 2"
+        },
+        "startAt": 1.5
+      }
+    },
+    {
+      "id": "u6-b",
+      "type": "text",
+      "durationInFrames": 97,
+      "text": "the restaurants sit on prime land",
+      "sceneId": "c2-s1",
+      "beat": "setup",
+      "editorialIntent": "location",
+      "importance": 2,
+      "visualHierarchy": {
+        "primary": "statement",
+        "background": "dark texture"
+      },
+      "reasons": {
+        "shot": "No related image: the spoken words carry the rest of the sentence.",
+        "motion": "Studio block \"studio-title\" (Apple style), timed to the voice."
+      },
+      "decidedBy": "rules",
+      "metadata": {
+        "unit": "u6"
+      },
+      "intensity": "subtle",
+      "musicState": "build",
+      "block": {
+        "item": "studio-title",
+        "variables": {
+          "text": "The restaurants sit on|*prime land.*",
+          "sizes": "77,200",
+          "soft": "0",
+          "cues": "0.05,0.32,1.062,1.355,1.647,2.165"
+        }
+      }
+    },
+    {
+      "id": "u7",
+      "type": "revelation",
+      "durationInFrames": 64,
+      "text": "They own the land under more than half of them",
+      "highlightedWords": [
+        "half"
+      ],
+      "sceneId": "c2-s1",
+      "beat": "revelation",
+      "editorialIntent": "revelation",
+      "importance": 5,
+      "analysis": {
+        "surprise": 5,
+        "informationDensity": 3,
+        "visualPotential": 4,
+        "tension": 5,
+        "proofRequired": true
+      },
+      "visualHierarchy": {
+        "primary": "statement",
+        "secondary": "emphasised: half",
+        "background": "dark texture"
+      },
+      "reasons": {
+        "shot": "Intent given by the author.",
+        "motion": "Studio block \"studio-units\" (Apple style), timed to the voice.",
+        "camera": "A punch-in lands the key word.",
+        "music": "The music comes back with the revelation.",
+        "sfx": "Impact right after the silence: the revelation lands."
+      },
+      "decidedBy": "rules",
+      "metadata": {
+        "unit": "u7"
+      },
+      "intensity": "strong",
+      "musicState": "reveal",
+      "sfx": [
+        {
+          "sfx": "sfx-impact",
+          "at": 18,
+          "gainDb": -8
+        }
+      ],
+      "block": {
+        "item": "studio-units",
+        "variables": {
+          "text": "They own the land|under *more than half*|of them.",
+          "sizes": "88",
+          "total": 100,
+          "lit": 57,
+          "litDuration": 0.8,
+          "cues": "0.05,0.162,0.324,0.486,0.648,0.935,1.222,1.384,1.546,1.708",
+          "litAt": 0.935,
+          "counter": "%",
+          "counterLabel": "of the land under its restaurants",
+          "source": "Source: McDonald's Form 10-K 2023"
+        }
+      }
+    },
+    {
+      "id": "u8",
+      "type": "text",
+      "durationInFrames": 72,
+      "text": "McDonald's makes billions from real estate",
+      "highlightedWords": [
+        "estate"
+      ],
+      "sceneId": "c2-s1",
+      "beat": "aftermath",
+      "editorialIntent": "aftermath",
+      "importance": 3,
+      "analysis": {
+        "surprise": 2,
+        "informationDensity": 2,
+        "visualPotential": 3,
+        "tension": 2,
+        "proofRequired": false
+      },
+      "visualHierarchy": {
+        "primary": "statement",
+        "secondary": "emphasised: estate",
+        "background": "dark texture"
+      },
+      "reasons": {
+        "shot": "Follows a revelation: let it sink in.",
+        "motion": "Studio block \"studio-title\" (Apple style), timed to the voice.",
+        "music": "Aftermath: the music settles after the revelation."
+      },
+      "decidedBy": "rules",
+      "metadata": {
+        "unit": "u8"
+      },
+      "intensity": "subtle",
+      "musicState": "aftermath",
+      "block": {
+        "item": "studio-title",
+        "variables": {
+          "text": "McDonald's makes billions|from *real estate.*",
+          "sizes": "108,159",
+          "cues": "0.05,0.37,0.74,1.11,1.32,1.529"
+        }
+      }
+    },
+    {
+      "id": "u9",
+      "type": "image",
+      "durationInFrames": 92,
+      "media": "counter",
+      "framing": "wide",
+      "transition": "hard_cut",
+      "sceneId": "c2-s1",
+      "beat": "payoff",
+      "editorialIntent": "conclusion",
+      "importance": 4,
+      "analysis": {
+        "surprise": 2,
+        "informationDensity": 2,
+        "visualPotential": 3,
+        "tension": 2,
+        "proofRequired": false
+      },
+      "visualHierarchy": {
+        "primary": "fast-food restaurant counter at night"
+      },
+      "reasons": {
+        "shot": "Visual callback: counter returns, now seen differently.",
+        "camera": "Pulling out reveals the whole picture: the story closes.",
+        "transition": "Apple style: a clean hard cut.",
+        "motion": "Studio block \"studio-image\" (Apple style), timed to the voice."
+      },
+      "decidedBy": "rules",
+      "metadata": {
+        "unit": "u9"
+      },
+      "intensity": "medium",
+      "musicState": "aftermath",
+      "block": {
+        "item": "studio-image",
+        "variables": {
+          "src": "mcd/counter.png",
+          "window": 56,
+          "revealAt": 0.1,
+          "zoom": -0.08,
+          "text": "Behind the burgers,|it's a *landlord.*",
+          "sizes": "86,169",
+          "soft": "0",
+          "cues": "0.05,0.37,0.58,0.95,1.144,1.337",
+          "dims": "0.3:0.45:0;0.7:0.86:10",
+          "fadeOutAt": 2.517
+        }
+      }
+    }
+  ]
+}

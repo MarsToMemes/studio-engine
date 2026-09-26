@@ -8,6 +8,7 @@ export { MotionDirector, intensityOf } from './motion.js';
 export { designSfx, musicStates, pickSilences, SILENCE_SECONDS } from './sound.js';
 export { findPlaces, lookupPlace } from './gazetteer.js';
 export { findNumbers, emphasisWords, splitSentences, CUES } from './text.js';
+export { applyAppleStyle, titleSpec, narrationTimeline, unitWordStarts, locateTokens, groupRuns, type EditStyle } from './styles/apple.js';
 export { directEpisode, directFromStory, heuristicStory, BRAIN_VERSION, type Story } from './direct.js';
 export { runBrainCli, BRAIN_CLI_USAGE, type BrainCliIo, type BrainCliOptions } from './cli.js';
 export { mcdonaldsExample } from './examples/mcdonalds.js';

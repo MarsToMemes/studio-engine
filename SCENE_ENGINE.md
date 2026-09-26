@@ -1207,3 +1207,27 @@ Two consecutive shots can therefore show **one continuous block**: the second us
 
 A studio image takes a path from the public root (`mcd/counter.png`). Keep the image in `Shot.media` too, so the QC still lists its licence and synthetic-media disclosure.
 
+**Automatic: `editor-brain direct input.json --plan --style apple`** (`packages/editor-brain/src/styles/apple.ts`).
+
+Block per shot type:
+
+| Shot type | Block |
+|---|---|
+| text, revelation | `studio-title`, or `studio-units` when `hints.share` is given |
+| number | `studio-stat` |
+| bar chart | `studio-bars` |
+| document | `studio-document` when `hints.documentCard` is given, else the engine document |
+| map | `studio-map` |
+| image | `studio-image` |
+| chapter | merged into the map that follows, else `studio-title` with a kicker |
+| video | engine composition |
+
+**One block across shots**: a lead-in sentence and its chart (same sentence), a chapter card and its map, and the same data block continued in a scene.
+
+**Cues** come from the brain's word alignment. Figures written in digits are snapped to the first spoken number word ("$9.8" → "nine"). They are mapped to the timeline through the narration segments.
+
+**Gold words**: highlighted and emphasis words; otherwise the last word. A gold word takes the word before it when that is a content word, and quantifiers go with their figure ("more than half").
+
+**Facts the brain cannot guess come from `UnitHints`**: `share`, `documentCard`, `strike`, `source`. It never invents them.
+
+On the McDonald's episode the automatic plan reproduces the hand-made `plan-apple.json`: same blocks and runs, same durations, cues identical. Only line breaks, sizes and some gold words differ (`tests/apple-style.test.ts` checks the blocks and cues).

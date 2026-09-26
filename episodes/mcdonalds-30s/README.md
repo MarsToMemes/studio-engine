@@ -47,6 +47,8 @@ The LANDLORD overlay repeats the caption "it's a landlord" under it.
 | u6-b, u8 | `studio-title` |
 | u7 | `studio-units`: 57 of 100 units, "more than half" |
 
+Automatic since the Apple style exists in the brain: `node input.mjs > input.json`, then `editor-brain direct input.json --plan --style apple > plan-apple-auto.json`. `input.mjs` carries the facts the brain must not guess (the 57 % share, the 10-K sentence and rows, sources, the struck word). Result: 950 frames, −14.0 LUFS, QC PASS. `apple.mjs` stays as the hand-made reference.
+
 Render: `studio-render render plan-apple.json out/mcdonalds-30s-apple.mp4`. Result: 950 frames, 164 s cold, −14.0 LUFS. QC PASS, with one warning (SRC-04, synthetic image).
 
 To render again, copy `media/voice.mp3`, `media/counter.jpg` (as `counter.png`) and `media/report.png`, plus the music from `music.mjs`, into `packages/remotion/public/mcd/`, with the voice converted to WAV (`voice.wav`).

@@ -43,6 +43,14 @@ export interface UnitHints {
   map?: MapPayload;
   document?: DocumentPayload;
   places?: string[];
+  /** Apple style: a word of the sentence struck through as it ends ("isn't a ~burger~ company"). */
+  strike?: string;
+  /** Apple style: a share to show as lit units (studio-units), e.g. { value: 57, label: "of the land" }. Never guessed. */
+  share?: { value: number; of?: number; label?: string };
+  /** Apple style: the document rebuilt as a card (studio-document). `*word*` in the sentence is highlighted when spoken. */
+  documentCard?: { header?: string; heading?: string; sentence: string; rows?: string | Array<[string, string]>; column?: string; footnote?: string };
+  /** Source line shown under a figure. */
+  source?: string;
 }
 
 /** What an asset shows, so the visual director can match it to the narration. */
@@ -73,6 +81,8 @@ export interface BrainInput {
   /** Sound library: asset ids by category. */
   sfx?: Partial<Record<SfxCategory, string[]>>;
   captions?: boolean;
+  /** Edit style. `apple`: studio blocks timed to the voice, hard cuts, no burned-in captions. Default: the engine's compositions. */
+  style?: 'default' | 'apple';
   /** Length of the pauses kept between sentences. Default `standard`. */
   pacing?: Pacing;
   /**
