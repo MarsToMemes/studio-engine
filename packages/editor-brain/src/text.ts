@@ -11,7 +11,8 @@ export { normalizeWord };
 
 /** Splits narration into sentences (keeps the final punctuation). */
 export function splitSentences(text: string): string[] {
-  return (text.replace(/\s+/g, ' ').trim().match(/[^.!?…]+(?:[.!?…]+["»”’)]*|$)/g) ?? []).map((s) => s.trim()).filter(Boolean);
+  // A full stop between two digits is a decimal point ("$9.8 billion"), not the end of a sentence.
+  return (text.replace(/\s+/g, ' ').trim().match(/(?:[^.!?…]|\.(?=\d))+(?:[.!?…]+["»”’)]*|$)/g) ?? []).map((s) => s.trim()).filter(Boolean);
 }
 
 export const tokenize = (sentence: string): string[] => sentence.split(/\s+/).filter(Boolean);

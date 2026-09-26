@@ -4,6 +4,8 @@ import { FONT, GREY, growth, nums, str, strs, type GraphicProps } from './common
 
 const accentOf = (data: GraphicProps['layer']['data']) => str(data.accent, '#FFC72C');
 const fmt = (v: number) => formatCounter(v, { decimals: Number.isInteger(v) ? 0 : 1 });
+/** A value with its unit ("9.8 B$"): a bare number does not say what is counted. */
+const withUnit = (text: string, data: Record<string, unknown>) => (typeof data.unit === 'string' && data.unit ? `${text} ${data.unit}` : text);
 
 /** Horizontal bars sorted from first to last, with their rank (ranking_animation). */
 const RankingBars: React.FC<GraphicProps> = ({ layer, frame, fps }) => {
@@ -24,7 +26,7 @@ const RankingBars: React.FC<GraphicProps> = ({ layer, frame, fps }) => {
             {data.ranks ? <text x={30} y={y + rowH * 0.62} fill={i === 0 ? accentOf(data) : '#fff'} fontSize={40} fontWeight={800} fontFamily={FONT}>{i + 1}</text> : null}
             <text x={90} y={y + rowH * 0.6} fill="#fff" fontSize={32} fontFamily={FONT}>{row.label}</text>
             <rect x={330} y={y + rowH * 0.18} width={w} height={rowH * 0.6} rx={10} fill={i === 0 ? accentOf(data) : GREY} />
-            <text x={345 + w} y={y + rowH * 0.62} fill="#fff" fontSize={34} fontWeight={800} fontFamily={FONT}>{fmt(row.v * g)}</text>
+            <text x={345 + w} y={y + rowH * 0.62} fill="#fff" fontSize={34} fontWeight={800} fontFamily={FONT}>{withUnit(fmt(row.v * g), data)}</text>
           </g>
         );
       })}
@@ -49,7 +51,7 @@ export const BarChart: React.FC<GraphicProps> = (props) => {
           <g key={i} opacity={g > 0 ? 1 : 0}>
             <rect x={i * w + w * 0.2} y={520 - h} width={w * 0.6} height={h} rx={12} fill={i === values.length - 1 ? accentOf(data) : GREY} />
             <text x={i * w + w / 2} y={570} fill="#fff" fontSize={32} textAnchor="middle" fontFamily={FONT}>{labels[i]}</text>
-            <text x={i * w + w / 2} y={505 - h} fill="#fff" fontSize={40} fontWeight={800} textAnchor="middle" fontFamily={FONT}>{fmt(v * g)}</text>
+            <text x={i * w + w / 2} y={505 - h} fill="#fff" fontSize={40} fontWeight={800} textAnchor="middle" fontFamily={FONT}>{withUnit(fmt(v * g), data)}</text>
           </g>
         );
       })}
@@ -80,7 +82,7 @@ export const LineChart: React.FC<GraphicProps> = ({ layer, frame, fps }) => {
       <polyline points={line} fill="none" stroke={accent} strokeWidth={8} strokeLinejoin="round" strokeLinecap="round" />
       {pts.map((q, i) => (i <= done ? <circle key={i} cx={q.x} cy={q.y} r={10} fill={accent} /> : null))}
       {labels.map((l, i) => <text key={i} x={pts[i]?.x ?? 0} y={560} fill="#fff" fontSize={30} textAnchor="middle" fontFamily={FONT}>{l}</text>)}
-      <text x={tip.x} y={tip.y - 26} fill="#fff" fontSize={40} fontWeight={800} textAnchor="middle" fontFamily={FONT}>{fmt(counterValue(values[0] ?? 0, values[Math.min(values.length - 1, done + (frac > 0.5 ? 1 : 0))] ?? 0, 1))}</text>
+      <text x={tip.x} y={tip.y - 26} fill="#fff" fontSize={40} fontWeight={800} textAnchor="middle" fontFamily={FONT}>{withUnit(fmt(counterValue(values[0] ?? 0, values[Math.min(values.length - 1, done + (frac > 0.5 ? 1 : 0))] ?? 0, 1)), data)}</text>
     </svg>
   );
 };

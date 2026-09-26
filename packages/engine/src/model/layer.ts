@@ -86,6 +86,11 @@ export interface LayerBase {
   type: LayerType;
   name?: string;
   zIndex: number;
+  /**
+   * Drawn in screen space: the scene camera (zoom, pan, shake) does not move
+   * it. For what must stay put and readable: captions, source labels, lower thirds.
+   */
+  screenSpace?: boolean;
   /** Relative to the scene start. Defaults to 0. */
   startFrame?: Frames;
   /** Defaults to "until the end of the scene". */

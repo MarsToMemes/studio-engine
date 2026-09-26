@@ -5,3 +5,4 @@ coverage/
 
 # Render cache (studio-render)
 .studio-cache/
+episodes/*/out/

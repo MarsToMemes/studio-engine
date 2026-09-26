@@ -311,3 +311,17 @@ describe('v1 → v2 migration', () => {
     expect(migrateShotPlan(v2)).toBe(v2);
   });
 });
+
+describe('screen space', () => {
+  it('captions and source labels are not moved by the scene camera', () => {
+    const r = compileShotPlan(buildEditorialPlan());
+    if (!r.ok) throw new Error('compile');
+    const layers = r.project.scenes.flatMap((s) => s.layers);
+    const captions = layers.filter((l) => l.type === 'caption');
+    const sources = layers.filter((l) => l.id.endsWith(':source'));
+    expect(captions.length).toBeGreaterThan(0);
+    expect(sources.length).toBeGreaterThan(0);
+    expect([...captions, ...sources].every((l) => l.screenSpace === true)).toBe(true);
+    expect(layers.filter((l) => l.id.endsWith(':media')).every((l) => !l.screenSpace)).toBe(true);
+  });
+});

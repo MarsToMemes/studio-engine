@@ -1,0 +1,606 @@
+{
+  "title": "McDonald's is a landlord",
+  "fps": 30,
+  "width": 1920,
+  "height": 1080,
+  "script": [
+    {
+      "kind": "chapter",
+      "title": "The real business",
+      "question": "How does McDonald's really make money?"
+    },
+    {
+      "kind": "text",
+      "text": "McDonald's isn't a burger company."
+    },
+    {
+      "kind": "text",
+      "text": "Behind every counter, there is something else.",
+      "hints": {
+        "media": "counter"
+      }
+    },
+    {
+      "kind": "text",
+      "text": "Over 60% of its revenue comes from franchisees."
+    },
+    {
+      "kind": "text",
+      "text": "The annual report says it plainly: franchisees pay rent and royalties."
+    },
+    {
+      "kind": "text",
+      "text": "And rent keeps growing: $9.8 billion in 2023.",
+      "hints": {
+        "chart": {
+          "kind": "barChart",
+          "labels": [
+            "2019",
+            "2023"
+          ],
+          "values": [
+            7.5,
+            9.8
+          ],
+          "unit": "B$",
+          "title": "Rent paid by franchisees",
+          "source": "McDonald's Form 10-K 2019 and 2023"
+        }
+      }
+    },
+    {
+      "kind": "chapter",
+      "title": "The real estate empire",
+      "question": "How big is it?"
+    },
+    {
+      "kind": "text",
+      "text": "From Chicago to Tokyo, from London to Sydney, the restaurants sit on prime land."
+    },
+    {
+      "kind": "text",
+      "text": "They own the land under more than half of them.",
+      "hints": {
+        "intent": "revelation"
+      }
+    },
+    {
+      "kind": "text",
+      "text": "McDonald's makes billions from real estate."
+    },
+    {
+      "kind": "text",
+      "text": "Behind the burgers, it's a landlord."
+    }
+  ],
+  "assets": {
+    "narration": {
+      "id": "narration",
+      "kind": "audio",
+      "src": "mcd/voice.wav",
+      "durationInSeconds": 28.79,
+      "source": {
+        "provider": "ElevenLabs (voice \"Brad – Warm, Trusted Storyteller\"), generated for this episode",
+        "license": "ElevenLabs subscription (commercial use)",
+        "commercialUse": true,
+        "attributionRequired": false
+      }
+    },
+    "music": {
+      "id": "music",
+      "kind": "audio",
+      "src": "mcd/music.wav",
+      "durationInSeconds": 34,
+      "source": {
+        "provider": "own production (synthesised, episodes/mcdonalds-30s/music.mjs)",
+        "license": "own",
+        "commercialUse": true,
+        "attributionRequired": false
+      }
+    },
+    "counter": {
+      "id": "counter",
+      "kind": "image",
+      "src": "mcd/counter.png",
+      "width": 2560,
+      "height": 1440,
+      "source": {
+        "provider": "ElevenLabs image (Seedream 5 Lite), generated for this episode",
+        "license": "ElevenLabs subscription (commercial use)",
+        "commercialUse": true,
+        "attributionRequired": false,
+        "syntheticMedia": true
+      }
+    },
+    "report": {
+      "id": "report",
+      "kind": "image",
+      "src": "mcd/report.png",
+      "width": 1000,
+      "height": 1400,
+      "source": {
+        "provider": "own production: reconstruction of the 10-K revenue table",
+        "license": "own",
+        "commercialUse": true,
+        "attributionRequired": true,
+        "attribution": "Figures: McDonald's Corporation, Form 10-K 2023 (SEC)"
+      }
+    },
+    "sfx-impact": {
+      "id": "sfx-impact",
+      "kind": "audio",
+      "src": "sfx/impact.wav",
+      "durationInSeconds": 0.8,
+      "source": {
+        "provider": "own production",
+        "license": "own",
+        "commercialUse": true,
+        "attributionRequired": false
+      }
+    },
+    "sfx-glitch": {
+      "id": "sfx-glitch",
+      "kind": "audio",
+      "src": "sfx/glitch.wav",
+      "durationInSeconds": 0.5,
+      "source": {
+        "provider": "own production",
+        "license": "own",
+        "commercialUse": true,
+        "attributionRequired": false
+      }
+    }
+  },
+  "catalog": [
+    {
+      "assetId": "counter",
+      "description": "fast-food restaurant counter at night",
+      "tags": [
+        "restaurant",
+        "counter",
+        "burger",
+        "store",
+        "franchise"
+      ]
+    },
+    {
+      "assetId": "report",
+      "description": "McDonald's Form 10-K 2023, revenue table",
+      "tags": [
+        "document",
+        "annual report",
+        "revenue",
+        "franchisees",
+        "rent",
+        "royalties"
+      ],
+      "regions": [
+        {
+          "text": "franchisees rent royalties",
+          "x": 8,
+          "y": 36.5,
+          "width": 84,
+          "height": 9.3
+        }
+      ]
+    }
+  ],
+  "narration": {
+    "assetId": "narration",
+    "words": [
+      {
+        "text": "McDonald's",
+        "startMs": 90,
+        "endMs": 456
+      },
+      {
+        "text": "isn't",
+        "startMs": 456,
+        "endMs": 663
+      },
+      {
+        "text": "a",
+        "startMs": 663,
+        "endMs": 869
+      },
+      {
+        "text": "burger",
+        "startMs": 869,
+        "endMs": 1235
+      },
+      {
+        "text": "company.",
+        "startMs": 1235,
+        "endMs": 1760
+      },
+      {
+        "text": "Behind",
+        "startMs": 2000,
+        "endMs": 2309
+      },
+      {
+        "text": "every",
+        "startMs": 2309,
+        "endMs": 2751
+      },
+      {
+        "text": "counter,",
+        "startMs": 2751,
+        "endMs": 3060
+      },
+      {
+        "text": "there",
+        "startMs": 3060,
+        "endMs": 3333
+      },
+      {
+        "text": "is",
+        "startMs": 3333,
+        "endMs": 3487
+      },
+      {
+        "text": "something",
+        "startMs": 3487,
+        "endMs": 3878
+      },
+      {
+        "text": "else.",
+        "startMs": 3878,
+        "endMs": 4150
+      },
+      {
+        "text": "Over",
+        "startMs": 4710,
+        "endMs": 5072
+      },
+      {
+        "text": "sixty",
+        "startMs": 5072,
+        "endMs": 5434
+      },
+      {
+        "text": "percent",
+        "startMs": 5434,
+        "endMs": 5796
+      },
+      {
+        "text": "of",
+        "startMs": 5796,
+        "endMs": 6000
+      },
+      {
+        "text": "its",
+        "startMs": 6000,
+        "endMs": 6205
+      },
+      {
+        "text": "revenue",
+        "startMs": 6205,
+        "endMs": 6724
+      },
+      {
+        "text": "comes",
+        "startMs": 6724,
+        "endMs": 7086
+      },
+      {
+        "text": "from",
+        "startMs": 7086,
+        "endMs": 7291
+      },
+      {
+        "text": "franchisees.",
+        "startMs": 7291,
+        "endMs": 7810
+      },
+      {
+        "text": "The",
+        "startMs": 8270,
+        "endMs": 8467
+      },
+      {
+        "text": "annual",
+        "startMs": 8467,
+        "endMs": 8817
+      },
+      {
+        "text": "report",
+        "startMs": 8817,
+        "endMs": 9166
+      },
+      {
+        "text": "says",
+        "startMs": 9166,
+        "endMs": 9363
+      },
+      {
+        "text": "it",
+        "startMs": 9363,
+        "endMs": 9561
+      },
+      {
+        "text": "plainly:",
+        "startMs": 9561,
+        "endMs": 9910
+      },
+      {
+        "text": "franchisees",
+        "startMs": 10320,
+        "endMs": 11088
+      },
+      {
+        "text": "pay",
+        "startMs": 11088,
+        "endMs": 11390
+      },
+      {
+        "text": "rent",
+        "startMs": 11390,
+        "endMs": 11693
+      },
+      {
+        "text": "and",
+        "startMs": 11693,
+        "endMs": 11995
+      },
+      {
+        "text": "royalties.",
+        "startMs": 11995,
+        "endMs": 12530
+      },
+      {
+        "text": "And",
+        "startMs": 12890,
+        "endMs": 13104
+      },
+      {
+        "text": "rent",
+        "startMs": 13104,
+        "endMs": 13318
+      },
+      {
+        "text": "keeps",
+        "startMs": 13318,
+        "endMs": 13532
+      },
+      {
+        "text": "growing:",
+        "startMs": 13532,
+        "endMs": 13910
+      },
+      {
+        "text": "nine",
+        "startMs": 14260,
+        "endMs": 14604
+      },
+      {
+        "text": "point",
+        "startMs": 14604,
+        "endMs": 14798
+      },
+      {
+        "text": "eight",
+        "startMs": 14798,
+        "endMs": 14992
+      },
+      {
+        "text": "billion",
+        "startMs": 14992,
+        "endMs": 15336
+      },
+      {
+        "text": "dollars",
+        "startMs": 15336,
+        "endMs": 15679
+      },
+      {
+        "text": "in",
+        "startMs": 15679,
+        "endMs": 15873
+      },
+      {
+        "text": "twenty",
+        "startMs": 15873,
+        "endMs": 16217
+      },
+      {
+        "text": "twenty-three.",
+        "startMs": 16217,
+        "endMs": 16710
+      },
+      {
+        "text": "From",
+        "startMs": 16950,
+        "endMs": 17091
+      },
+      {
+        "text": "Chicago",
+        "startMs": 17091,
+        "endMs": 17449
+      },
+      {
+        "text": "to",
+        "startMs": 17449,
+        "endMs": 17590
+      },
+      {
+        "text": "Tokyo,",
+        "startMs": 17590,
+        "endMs": 17840
+      },
+      {
+        "text": "from",
+        "startMs": 17930,
+        "endMs": 18197
+      },
+      {
+        "text": "London",
+        "startMs": 18197,
+        "endMs": 18670
+      },
+      {
+        "text": "to",
+        "startMs": 18670,
+        "endMs": 18937
+      },
+      {
+        "text": "Sydney,",
+        "startMs": 18937,
+        "endMs": 19410
+      },
+      {
+        "text": "the",
+        "startMs": 19410,
+        "endMs": 19703
+      },
+      {
+        "text": "restaurants",
+        "startMs": 19703,
+        "endMs": 20445
+      },
+      {
+        "text": "sit",
+        "startMs": 20445,
+        "endMs": 20738
+      },
+      {
+        "text": "on",
+        "startMs": 20738,
+        "endMs": 21030
+      },
+      {
+        "text": "prime",
+        "startMs": 21030,
+        "endMs": 21548
+      },
+      {
+        "text": "land.",
+        "startMs": 21548,
+        "endMs": 21840
+      },
+      {
+        "text": "They",
+        "startMs": 22240,
+        "endMs": 22402
+      },
+      {
+        "text": "own",
+        "startMs": 22402,
+        "endMs": 22564
+      },
+      {
+        "text": "the",
+        "startMs": 22564,
+        "endMs": 22726
+      },
+      {
+        "text": "land",
+        "startMs": 22726,
+        "endMs": 22888
+      },
+      {
+        "text": "under",
+        "startMs": 22888,
+        "endMs": 23175
+      },
+      {
+        "text": "more",
+        "startMs": 23175,
+        "endMs": 23462
+      },
+      {
+        "text": "than",
+        "startMs": 23462,
+        "endMs": 23624
+      },
+      {
+        "text": "half",
+        "startMs": 23624,
+        "endMs": 23786
+      },
+      {
+        "text": "of",
+        "startMs": 23786,
+        "endMs": 23948
+      },
+      {
+        "text": "them.",
+        "startMs": 23948,
+        "endMs": 24110
+      },
+      {
+        "text": "McDonald's",
+        "startMs": 24350,
+        "endMs": 24720
+      },
+      {
+        "text": "makes",
+        "startMs": 24720,
+        "endMs": 25090
+      },
+      {
+        "text": "billions",
+        "startMs": 25090,
+        "endMs": 25460
+      },
+      {
+        "text": "from",
+        "startMs": 25460,
+        "endMs": 25670
+      },
+      {
+        "text": "real",
+        "startMs": 25670,
+        "endMs": 25879
+      },
+      {
+        "text": "estate.",
+        "startMs": 25879,
+        "endMs": 26410
+      },
+      {
+        "text": "Behind",
+        "startMs": 26730,
+        "endMs": 27100
+      },
+      {
+        "text": "the",
+        "startMs": 27100,
+        "endMs": 27310
+      },
+      {
+        "text": "burgers,",
+        "startMs": 27310,
+        "endMs": 27680
+      },
+      {
+        "text": "it's",
+        "startMs": 27680,
+        "endMs": 27874
+      },
+      {
+        "text": "a",
+        "startMs": 27874,
+        "endMs": 28067
+      },
+      {
+        "text": "landlord.",
+        "startMs": 28067,
+        "endMs": 28410
+      }
+    ]
+  },
+  "music": {
+    "assetId": "music"
+  },
+  "sfx": {
+    "impact": [
+      "sfx-impact"
+    ],
+    "glitch": [
+      "sfx-glitch"
+    ]
+  },
+  "captions": true,
+  "pacing": "standard"
+}

@@ -16,7 +16,13 @@ export const SceneView: React.FC<{ scene: CompiledScene; options: ResolvedRender
       <AbsoluteFill style={(edge?.style ?? {}) as React.CSSProperties}>
         <BackgroundView background={scene.scene.background} assets={assets} />
         <AbsoluteFill style={frame.cameraStyle as React.CSSProperties}>
-          {frame.layers.map((l) => (
+          {frame.layers.filter((l) => !l.compiled.layer.screenSpace).map((l) => (
+            <LayerView key={l.compiled.layer.id} frame={l} scene={scene} sceneFrame={sceneFrame} options={options} assets={assets} />
+          ))}
+        </AbsoluteFill>
+        {/* Screen space: captions, source labels… stay put whatever the camera does. */}
+        <AbsoluteFill>
+          {frame.layers.filter((l) => l.compiled.layer.screenSpace).map((l) => (
             <LayerView key={l.compiled.layer.id} frame={l} scene={scene} sceneFrame={sceneFrame} options={options} assets={assets} />
           ))}
         </AbsoluteFill>

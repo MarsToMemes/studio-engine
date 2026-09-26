@@ -263,7 +263,7 @@ function composeLayers(shot: Shot, plan: ShotPlan, theme: DocumentaryTheme, canv
       const source = shot.document?.source ?? shot.subtext;
       // Bottom-left by default; top-left when captions use the bottom band (bible CAP-04).
       const captioned = Boolean(plan.captions?.enabled && (plan.captions.showOn ?? DEFAULT_CAPTION_SHOT_TYPES).includes(shot.type));
-      if (source) add('source', textLayer(id('source'), `Source: ${source}`, { fontFamily: theme.fontFamily, fontSize: 30, fontWeight: 600, color: theme.text, textAlign: 'left', background: { color: 'rgba(18,18,18,0.8)', paddingX: 18, paddingY: 10, radius: 4 } }, captioned ? box('top-left', 4, 4, 60, 7) : box('bottom-left', 4, -4, 60, 7), 45));
+      if (source) add('source', { ...textLayer(id('source'), `Source: ${source}`, { fontFamily: theme.fontFamily, fontSize: 30, fontWeight: 600, color: theme.text, textAlign: 'left', background: { color: 'rgba(18,18,18,0.8)', paddingX: 18, paddingY: 10, radius: 4 } }, captioned ? box('top-left', 4, 4, 60, 7) : box('bottom-left', 4, -4, 60, 7), 45), screenSpace: true });
       if (shot.text) add('text', textLayer(id('text'), shot.text, headlineStyle(theme, 56, theme.accent), box('top-center', 0, 4, 86, 10), 40, emphasis));
       break;
     }
@@ -418,7 +418,7 @@ export function compileShotPlan(plan: ShotPlan, options: CompileShotPlanOptions 
       const track = captionTrack(shot.id, words, plan.captions?.wordsPerCue ?? 3);
       if (track) {
         scene.captions = track;
-        const layer = createLayer('caption', { id: `${shot.id}:captions`, trackId: track.id, style: captionStyle, zIndex: 60, position: box('bottom-center', 0, -6, 90, 16) });
+        const layer = createLayer('caption', { id: `${shot.id}:captions`, trackId: track.id, style: captionStyle, zIndex: 60, position: box('bottom-center', 0, -6, 90, 16), screenSpace: true });
         scene.layers.push(layer);
         roles.captions = layer;
       }

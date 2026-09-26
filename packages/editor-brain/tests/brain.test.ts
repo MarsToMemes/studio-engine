@@ -22,6 +22,7 @@ describe('language helpers', () => {
     expect(emphasisWords("McDonald's isn't a burger company.".split(' '), "McDonald's isn't a burger company.")).toEqual(['burger']);
     expect(emphasisWords('They make BILLIONS from real estate.'.split(' '), '')).toEqual(['BILLIONS']);
     expect(splitSentences('One. Two! Three? And four…')).toEqual(['One.', 'Two!', 'Three?', 'And four…']);
+    expect(splitSentences('Rent keeps growing: $9.8 billion in 2023. Then 1.5%.')).toEqual(['Rent keeps growing: $9.8 billion in 2023.', 'Then 1.5%.']);
   });
 });
 

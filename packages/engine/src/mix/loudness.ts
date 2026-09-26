@@ -21,7 +21,7 @@ export interface LoudnessTarget {
 /** The final mix: YouTube plays at -14 LUFS (MUS-09). The voice alone: -16 LUFS (MUS-01). */
 export const LOUDNESS_TARGETS = {
   master: { integrated: -14, tolerance: 1, truePeak: -1, lra: 11, rule: 'MUS-09' },
-  voice: { integrated: -16, tolerance: 1, truePeak: -1.5, lra: 7, rule: 'MUS-01' },
+  voice: { integrated: -16, tolerance: 1, truePeak: -1, lra: 7, rule: 'MUS-01' },
 } as const satisfies Record<string, LoudnessTarget>;
 
 export interface LoudnessMeasure {

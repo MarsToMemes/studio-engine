@@ -321,6 +321,7 @@ function checkLayer(ctx: Ctx, l: unknown, path: string, sceneDuration: number | 
   if (!isNonEmptyString(l.id)) ctx.issues.error(`${path}.id`, 'layer.id.invalid', 'layer id must be a non-empty string');
   if (!checkEnum(ctx, l.type, LAYER_TYPES, `${path}.type`, 'layer.type.unknown')) return;
   if (!isFiniteNumber(l.zIndex)) ctx.issues.error(`${path}.zIndex`, 'layer.zIndex.invalid', 'zIndex must be a number');
+  if (l.screenSpace !== undefined && typeof l.screenSpace !== 'boolean') ctx.issues.error(`${path}.screenSpace`, 'layer.screenSpace.invalid', 'screenSpace must be a boolean');
 
   const startOk = checkFrameField(ctx, l, 'startFrame', path);
   const durOk = checkFrameField(ctx, l, 'durationInFrames', path, { positive: true });
