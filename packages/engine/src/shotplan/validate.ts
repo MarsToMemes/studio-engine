@@ -5,6 +5,7 @@
  * Warnings: editorial lint from the documentary motion language — they never
  * block a render, because unknown skills / transitions fall back safely.
  */
+import { checkHyperFramesUse, type HyperFramesCatalog } from '../hyperframes/index.js';
 import type { AssetKind } from '../model/assets.js';
 import { isFiniteNumber, isNonEmptyString, isObject, isOneOf, isPositiveInteger, isNonNegativeInteger, isString } from '../validation/guards.js';
 import { IssueCollector, type ValidationIssue, type ValidationResult } from '../validation/issues.js';
@@ -53,6 +54,8 @@ export interface ShotPlanValidationOptions {
   stage?: ValidationStage;
   /** Installed skills (categories), for the restraint rule MOT-03. `compileShotPlan` passes its registry. */
   skillCatalog?: SkillCatalog;
+  /** HyperFrames catalog: when given, `block` / `overlays` items and variables are checked against it. */
+  hyperframes?: HyperFramesCatalog;
 }
 
 /** Words of a text, normalised for highlight matching. */
@@ -149,20 +152,37 @@ function collectShotPlanIssues(input: unknown, options: ShotPlanValidationOption
     }
     if (shot.intensity !== undefined && !isOneOf(shot.intensity, INTENSITIES)) issues.error(`${p}.intensity`, 'shot.intensity', 'intensity must be subtle, medium or strong');
 
-    const kinds = MEDIA_KINDS[shot.type];
-    if (MEDIA_REQUIRED.includes(shot.type) || shot.media !== undefined) checkAsset(shot.media, `${p}.media`, kinds ?? ['image', 'svg', 'video']);
-    if (TEXT_REQUIRED.includes(shot.type) && !isNonEmptyString(shot.text)) issues.error(`${p}.text`, 'shot.text.required', `a ${shot.type} shot needs text`);
-
-    if (shot.type === 'number' && !(isObject(shot.number) && isFiniteNumber(shot.number.value))) issues.error(`${p}.number`, 'shot.number.required', 'a number shot needs number.value');
-    if (shot.type === 'chart') {
-      const c = shot.chart;
-      if (!isObject(c) || !isOneOf(c.kind, ['barChart', 'lineChart', 'pieChart'] as const) || !Array.isArray(c.labels) || !Array.isArray(c.values) || c.values.length === 0 || c.labels.length !== c.values.length || !c.values.every(isFiniteNumber)) {
-        issues.error(`${p}.chart`, 'shot.chart.invalid', 'chart needs a kind and labels/values arrays of the same non-zero length');
-      }
+    const hfIssues = (use: unknown, at: string) => {
+      for (const x of checkHyperFramesUse(use, at, options.hyperframes)) (x.severity === 'error' ? issues.error : issues.warn).call(issues, x.path, x.code, x.message);
+    };
+    if (shot.block !== undefined) hfIssues(shot.block, `${p}.block`);
+    if (shot.overlays !== undefined) {
+      if (!Array.isArray(shot.overlays)) issues.error(`${p}.overlays`, 'hyperframes.overlays', 'overlays must be an array');
+      else shot.overlays.forEach((o, oi) => {
+        hfIssues(o, `${p}.overlays[${oi}]`);
+        if (isObject(o) && isNonNegativeInteger(o.startFrame) && isPositiveInteger(shot.durationInFrames) && o.startFrame >= shot.durationInFrames) issues.warn(`${p}.overlays[${oi}].startFrame`, 'hyperframes.outside', 'overlay starts after the shot ends');
+      });
     }
-    if (shot.type === 'map') {
-      const m = shot.map;
-      if (!isObject(m) || !Array.isArray(m.center) || m.center.length !== 2 || !m.center.every(isFiniteNumber)) issues.error(`${p}.map`, 'shot.map.invalid', 'map needs center: [longitude, latitude]');
+    // A block replaces the type's default visual: its payload is optional.
+    const blocked = shot.block !== undefined;
+
+    const kinds = MEDIA_KINDS[shot.type];
+    if ((MEDIA_REQUIRED.includes(shot.type) && !blocked) || shot.media !== undefined) checkAsset(shot.media, `${p}.media`, kinds ?? ['image', 'svg', 'video']);
+    if (TEXT_REQUIRED.includes(shot.type) && !blocked && !isNonEmptyString(shot.text)) issues.error(`${p}.text`, 'shot.text.required', `a ${shot.type} shot needs text`);
+
+    // Payload checks apply to the default composition only.
+    if (!blocked) {
+      if (shot.type === 'number' && !(isObject(shot.number) && isFiniteNumber(shot.number.value))) issues.error(`${p}.number`, 'shot.number.required', 'a number shot needs number.value');
+      if (shot.type === 'chart') {
+        const c = shot.chart;
+        if (!isObject(c) || !isOneOf(c.kind, ['barChart', 'lineChart', 'pieChart'] as const) || !Array.isArray(c.labels) || !Array.isArray(c.values) || c.values.length === 0 || c.labels.length !== c.values.length || !c.values.every(isFiniteNumber)) {
+          issues.error(`${p}.chart`, 'shot.chart.invalid', 'chart needs a kind and labels/values arrays of the same non-zero length');
+        }
+      }
+      if (shot.type === 'map') {
+        const m = shot.map;
+        if (!isObject(m) || !Array.isArray(m.center) || m.center.length !== 2 || !m.center.every(isFiniteNumber)) issues.error(`${p}.map`, 'shot.map.invalid', 'map needs center: [longitude, latitude]');
+      }
     }
     if (shot.document?.highlights !== undefined) {
       if (!Array.isArray(shot.document.highlights)) issues.error(`${p}.document.highlights`, 'shot.document.invalid', 'highlights must be an array');

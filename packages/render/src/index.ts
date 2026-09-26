@@ -10,3 +10,4 @@ export * from './engine.js';
 export * from './qc.js';
 export * from './cli.js';
 export * from './cache.js';
+export * from './hyperframes.js';

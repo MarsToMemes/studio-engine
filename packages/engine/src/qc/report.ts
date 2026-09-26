@@ -95,7 +95,7 @@ export function runQc(input: QcInput): QcReport {
   const add = (c: QcCheck) => checks.push(c);
 
   // --- Plan -----------------------------------------------------------------
-  const validation = validateShotPlan(plan, { stage: stage === 'final' ? 'final' : 'draft' });
+  const validation = validateShotPlan(plan, { stage: stage === 'final' ? 'final' : 'draft', ...(input.compile?.hyperframes ? { hyperframes: input.compile.hyperframes } : {}) });
   for (const e of validation.errors) add({ id: `plan.${e.code}`, rule: e.rule ?? 'TECH-02', status: 'fail', message: `${e.path}: ${e.message}` });
   for (const w of validation.warnings) add({ id: `plan.${w.code}`, ...(w.rule ? { rule: w.rule } : {}), status: 'warn', message: `${w.path}: ${w.message}` });
   if (!validation.errors.length) add({ id: 'plan.valid', rule: 'TECH-02', status: 'pass', message: `the plan is valid (${stage === 'final' ? 'final' : 'draft'} validation)` });
@@ -104,6 +104,7 @@ export function runQc(input: QcInput): QcReport {
   if (compiled.ok) {
     for (const n of compiled.notes) {
       if (/unresolved|unknown/.test(n)) add({ id: 'plan.reference', rule: 'TECH-06', status: 'warn', message: n });
+      else if (n.includes('[SRC-01]')) add({ id: 'source.hyperframes', rule: 'SRC-01', status: 'warn', message: n });
       else notes.push(n);
     }
   }

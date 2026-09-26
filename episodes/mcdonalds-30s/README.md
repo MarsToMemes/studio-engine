@@ -13,6 +13,22 @@ Built end to end with studio-engine, from a checked script to a mastered 1080p M
 | Render | `studio-render render plan.json out/mcdonalds-30s.mp4 --fallback` | 950 frames, 1080p, −14.0 LUFS |
 | QC | `studio-render qc plan.json out/mcdonalds-30s.mp4` | PASS, 1 warning (SRC-04: synthetic image) |
 
+## HyperFrames version
+
+`node hyperframes.mjs` writes `plan-hyperframes.json`: the same plan with five shots taken from the HyperFrames catalog (SCENE_ENGINE.md §28):
+
+| Shot | Item |
+|---|---|
+| chapter-2 | `split-flap-board` "REAL ESTATE EMPIRE" (played at 2.4×) |
+| u6-b | `vox-annotate`, "prime" highlighted, note "location, location, location" |
+| u7 | `marker-highlight`, "land" circled on the impact |
+| u8 | `line-swap` "McDonald's makes billions" → "from real estate." |
+| u9 | overlay `shutter-slam` "LANDLORD" |
+
+Render: `npm run hyperframes:sync -w @studio-engine/remotion` once, then `studio-render render plan-hyperframes.json out/mcdonalds-30s-hyperframes.mp4`. Result: 950 frames, 104 s cold, −14.0 LUFS, QC PASS (same SRC-04 warning).
+
+The LANDLORD overlay repeats the caption "it's a landlord" under it.
+
 To render again, copy `media/voice.mp3`, `media/counter.jpg` (as `counter.png`) and `media/report.png`, plus the music from `music.mjs`, into `packages/remotion/public/mcd/`, with the voice converted to WAV (`voice.wav`).
 
 Figures, checked against McDonald's Form 10-K reports:

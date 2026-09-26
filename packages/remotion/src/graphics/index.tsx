@@ -9,6 +9,7 @@ import type { ReferenceRendererGraphicKind } from '@studio-engine/scene-engine';
 import { BarChart, Comparison, LineChart, PieChart } from './Charts';
 import { Counter } from './Counter';
 import { Progress, Timeline } from './Extra';
+import { HyperFrames } from './HyperFrames';
 import { MapTiles } from './MapTiles';
 import { StatCard } from './StatCard';
 import { WorldMap } from './WorldMap';
@@ -25,6 +26,7 @@ export const GRAPHIC_COMPONENTS: { readonly [K in ReferenceRendererGraphicKind]:
   mapTiles: MapTiles,
   progress: Progress,
   timeline: Timeline,
+  hyperframes: HyperFrames,
 };
 
 export type { GraphicProps };

@@ -1098,7 +1098,7 @@ At 1080p, a single-pass Remotion render of the same episode takes 114 s on 4 cor
 ## 26. Testing
 
 ```
-npm test          # 355 engine + 43 editor-brain + 7 render + 25 studio tests (Vitest)
+npm test          # 371 engine + 43 editor-brain + 7 render + 25 studio tests (Vitest)
 npm run e2e -w @studio-engine/studio   # browser smoke test (after npm run build -w @studio-engine/studio)
 npm run check     # typecheck + build + tests, all workspaces
 ```
@@ -1110,7 +1110,7 @@ Covered: scene/layer creation and registries, validation (~50 targeted error/war
 ## 27. Known limitations and next steps
 
 - **Non-CSS effects** (grain, vignette, color grade, LUT, chromatic aberration, pixelate) are modeled and validated but the reference Remotion renderer does not draw them yet (needs shaders / SVG filters).
-- **Graphic kinds**: the reference renderer draws `counter`, `statCard`, `barChart`, `lineChart`, `pieChart`, `comparison`, `map`, `mapTiles`, `progress` and `timeline`; `icon`, `svg`, `lowerThird` and `custom` have no component (no available skill produces them).
+- **Graphic kinds**: the reference renderer draws `counter`, `statCard`, `barChart`, `lineChart`, `pieChart`, `comparison`, `map`, `mapTiles`, `progress`, `timeline` and `hyperframes` (§28); `icon`, `svg`, `lowerThird` and `custom` have no component (no available skill produces them).
 - **`city_zoom` with real tiles** has not been rendered here (tile hosts blocked by the container's network policy); only the offline style is verified. Render time per frame depends on the tile provider.
 - **Motion Library previews are stills**: they show the composition, not the motion.
 - **Asset masks** (`mask.type: 'asset'`) need asset URL resolution and are left to the renderer (`maskToCss` returns `{}`).
@@ -1133,3 +1133,50 @@ Covered: scene/layer creation and registries, validation (~50 targeted error/war
 - **Loudness is measured on the render**, not in the preview. A mono music file comes out about 3 dB lower in Remotion's stereo mix; the loudness pass absorbs it, but the levels of `MUSIC_STATE_LEVELS` are relative, not absolute dBFS.
 - **Shot split** (cut a shot in two at the playhead) is not implemented: it needs a media in-point on shots (`Shot` has no trim field yet).
 - Not in scope by design: the AI model itself.
+
+---
+
+## 28. HyperFrames catalog (165 blocks, 223 components)
+
+The whole registry of [HyperFrames](https://github.com/heygen-com/hyperframes) (HeyGen, Apache-2.0, commit `8798e40`) renders inside episodes: HTML pages animated by paused GSAP timelines, drawn by Remotion in an iframe.
+
+**Import.** `npm run hyperframes:sync -w @studio-engine/remotion` (or `HYPERFRAMES_DIR=<clone>`) writes `packages/remotion/public/hyperframes/` (git-ignored, ~70 MB):
+- `blocks/`, `components/`: the registry at the pinned commit;
+- `npm/`: every `cdn.jsdelivr.net` / cdnjs / DRACO reference, fetched from the npm registry (only the files used and their relative ES imports: GSAP, three.js ×5 versions, d3, topojson, atlases, lottie-web, clipper);
+- `fonts/`: Google Fonts replaced by `@fontsource` files (latin subset, 22 families);
+- `hyperframe.runtime.js` (`@hyperframes/core@0.8.78`), `hf-bridge.js`, `host.html`;
+- `catalog.json`, also committed as `packages/engine/hyperframes-catalog.json`.
+
+Nothing is loaded from the network at render time.
+
+**Protocol.** The sync injects, at the head of every page, `hf-bridge.js` then the runtime. The bridge reproduces what the HyperFrames producer injects: `window.__hfVariables` (from `?hfv=`), the render-capture flag, and `window.__hf = { duration, seek }` mapped on the runtime's `__player`. `HyperFrames.tsx` waits for `__hf.duration > 0` and the fonts, then for each frame calls `__hf.seek(t)` under `delayRender` and holds it for two paints. Frames are deterministic in any order (chunks, concurrency).
+
+- **Blocks** (`mount: 'page'`) load their own page.
+- **Snippets** (all components, 3 blocks whose root is a `<template>`) are mounted by `host.html` through `data-composition-src`, as in the catalog's demo pages. The host takes a box (percent), design tokens and a background. The snippet fetch is held until the declared fonts are loaded, because snippets measure their text when they mount.
+
+**In a plan.**
+- `Shot.block: HyperFramesUse` draws an item full frame and replaces the type's default composition. The type's payload becomes optional, the scene type becomes `custom`, and `motionSkill` is not applied (the block animates itself). Captions, sound, transitions and camera still apply.
+- `Shot.overlays: HyperFramesUse[]` layers items over the shot at z 50 (above text, below captions), in screen space, with `startFrame` / `durationInFrames` clamped to the shot.
+- `HyperFramesUse`: `item`, `variables`, `startAt` (s), `speed`, and for snippets `box`, `theme`, `background`.
+- Components receive the documentary theme as tokens (`--brand` = yellow, `--accent` = red, `--bg`, `--fg`, fonts). Their `accent: green | blue` enum maps to `--brand` / `--accent`; some components hard-code other colors.
+- Elastic components (70, no own duration) are stretched to the layer.
+
+**Validation** (`checkHyperFramesUse`, given `{ hyperframes: catalog }`; the render package loads the catalog itself when a plan uses blocks):
+- errors: unknown item, variable of the wrong type or enum value, item that does not render headless (`unsupported`, from the probe);
+- warnings: undeclared variable, fixed-content block given variables, files the registry lists but does not ship (`missingFiles`: the carousels' album covers, 28 items).
+
+Items that embed media (25, e.g. `nyc-paris-flight`, `organic-light-leak-overlay`) add a QC warning `source.hyperframes` (SRC-01): verify their rights before publishing.
+
+**Probe.** `npm run hyperframes:probe -w @studio-engine/remotion` loads every item in headless Chromium through the same URLs, captures a poster at 60 % and writes `motion-library/hyperframes/PROBE.json` and `sheet-*.jpg`. At `8798e40`: **386/388 render**.
+- Failing: `frost-sequence-camera-orbit` (WebGPU only) and `vfx-shatter` (experimental `drawElementImage`).
+- `liquid-glass-*` fall back without WebGPU.
+- A poster at 60 % proves the item loads and seeks, not that every frame is right.
+
+**What the catalog is, honestly.** It is built for product and UI promos: app mock-ups, code, chat and social posts, transition demos. Of the 165 blocks, 109 have fixed content (no variables); `world-map`, `us-map*`, `spain-map`, `nyc-paris-flight`, `north-korea-locked-down` and `data-chart` show their demo data. Most components are primitives meant for a sized card; full frame, several render small. The episode `episodes/mcdonalds-30s/hyperframes.mjs` uses the five that fit: `split-flap-board`, `vox-annotate`, `marker-highlight`, `line-swap`, `shutter-slam`.
+
+**Limits.**
+- The FFmpeg draft draws a card naming the block.
+- A custom `--public` folder must contain `hyperframes/`, or the render stops with the command to run.
+- Block audio (e.g. embedded SFX) is not mixed.
+- GSAP's "Standard no-charge" licence is not OSI-approved and excludes tools competing with Webflow; GSAP is fetched at sync time, not committed.
+

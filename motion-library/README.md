@@ -94,3 +94,7 @@ Les rejets sont listés avec leur raison ; ils ne sont jamais ajoutés au plan. 
 
 Sinon, le moteur se replie sur `map_zoom` (SVG). `map.attribution` est affichée à l'écran (MAP-05).
 Les tuiles ne sont **pas** fournies ici : leur licence et leur quota dépendent du fournisseur choisi.
+
+## Catalogue HyperFrames
+
+`hyperframes/` contient les planches de contact (`sheet-*.jpg`, une vignette à 60 % de la durée par élément) et `PROBE.json`, le résultat du chargement de chacun des 388 éléments dans Chromium headless (386 rendent). Pour les régénérer : `npm run hyperframes:sync -w @studio-engine/remotion`, puis `npm run hyperframes:probe -w @studio-engine/remotion`. Détails dans `SCENE_ENGINE.md` §28.

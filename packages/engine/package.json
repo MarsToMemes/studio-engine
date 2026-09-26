@@ -11,11 +11,13 @@
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js"
     },
-    "./package.json": "./package.json"
+    "./package.json": "./package.json",
+    "./hyperframes-catalog.json": "./hyperframes-catalog.json"
   },
   "files": [
     "dist",
-    "bin"
+    "bin",
+    "hyperframes-catalog.json"
   ],
   "sideEffects": false,
   "scripts": {

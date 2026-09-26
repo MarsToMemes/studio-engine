@@ -47,7 +47,7 @@ export const BLEND_MODES = exhaustive<BlendMode>()([
   'difference', 'exclusion', 'hue', 'saturation', 'color', 'luminosity',
 ]);
 export const SHAPE_KINDS = exhaustive<ShapeKind>()(['rect', 'ellipse', 'line', 'polygon', 'path']);
-export const GRAPHIC_KINDS = exhaustive<GraphicKind>()(['counter', 'statCard', 'barChart', 'lineChart', 'pieChart', 'comparison', 'map', 'mapTiles', 'progress', 'timeline', 'icon', 'svg', 'lowerThird', 'custom']);
+export const GRAPHIC_KINDS = exhaustive<GraphicKind>()(['counter', 'statCard', 'barChart', 'lineChart', 'pieChart', 'comparison', 'map', 'mapTiles', 'progress', 'timeline', 'icon', 'svg', 'lowerThird', 'hyperframes', 'custom']);
 export const OVERLAY_KINDS = exhaustive<OverlayKind>()(['color', 'gradient', 'vignette', 'grain', 'lightLeak', 'texture', 'letterbox', 'asset']);
 export const ASSET_KINDS = exhaustive<AssetKind>()(['video', 'image', 'audio', 'lottie', 'dotlottie', 'font', 'svg', 'json']);
 export const AUDIO_ROLES = exhaustive<AudioRole>()(['music', 'sfx', 'ambience', 'voiceover', 'source']);

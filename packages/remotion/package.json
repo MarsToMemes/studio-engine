@@ -11,7 +11,9 @@
     "previews": "node scripts/previews.mjs",
     "loudness": "node ../render/bin/studio-render.mjs loudness",
     "qc": "node ../render/bin/studio-render.mjs qc",
-    "render:episode": "node ../render/bin/studio-render.mjs render"
+    "render:episode": "node ../render/bin/studio-render.mjs render",
+    "hyperframes:sync": "node scripts/hyperframes-sync.mjs",
+    "hyperframes:probe": "node scripts/hyperframes-probe.mjs"
   },
   "dependencies": {
     "@fontsource/inter": "5.3.0",
@@ -39,6 +41,7 @@
     "@types/geojson": "^7946.0.16",
     "@types/react": "^19.2.0",
     "@types/topojson-client": "^3.1.5",
+    "playwright-core": "^1.56.1",
     "typescript": "^5.9.3"
   },
   "exports": {

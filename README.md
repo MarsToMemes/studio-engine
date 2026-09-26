@@ -19,6 +19,7 @@ packages/
 - **[VIDEO_EDITING_BIBLE.md](./VIDEO_EDITING_BIBLE.md)**: the editorial reference. Every rule has an id (`RHY-03`), a severity and an enforcement mode. The code catalogue is generated from it (`npm run bible -w @studio-engine/scene-engine`), and validation issues cite the rule they enforce.
 - **[SCENE_ENGINE.md](./SCENE_ENGINE.md)**: architecture and API.
 - **[motion-library/](./motion-library/README.md)**: the 73 motion skills (8 adapted from HyperFrames) with one preview each (`catalog.json`), and the manifest of licensed asset packs.
+- **HyperFrames catalog** (165 blocks, 223 components, Apache-2.0) usable in plans through `Shot.block` / `Shot.overlays`: [SCENE_ENGINE.md §28](./SCENE_ENGINE.md), contact sheets and probe in [motion-library/hyperframes/](./motion-library/hyperframes/).
 - **[LOCAL_ENGINE_INTEGRATION.md](./LOCAL_ENGINE_INTEGRATION.md)**: contract with the local `montage.py` / FFmpeg engine, which this repository complements and never replaces.
 
 ```bash

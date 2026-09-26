@@ -8,6 +8,7 @@
  * Nothing here can fail on a missing skill, SFX or transition: they fall back
  * and are reported in `notes`.
  */
+import { findHyperFramesItem, hyperframesLayerData, type HyperFramesCatalog, type HyperFramesUse } from '../hyperframes/index.js';
 import { createLayer, createProject, createScene } from '../core/factories.js';
 import { resolveLayerBox } from '../core/layout.js';
 import type { AudioTrack } from '../model/audio.js';
@@ -30,7 +31,7 @@ import type { Shot, ShotPlan, TranscriptWord } from './types.js';
 import { isHookShot, normalizeWord, validateShotPlan, type ShotPlanValidationOptions } from './validate.js';
 
 /** Semantic handles on the layers a shot produced, for motion skills to target. */
-export type ShotLayerRole = 'media' | 'text' | 'subtext' | 'number' | 'chart' | 'map' | 'document' | 'highlight' | 'source' | 'captions' | 'accent';
+export type ShotLayerRole = 'media' | 'text' | 'subtext' | 'number' | 'chart' | 'map' | 'document' | 'highlight' | 'source' | 'captions' | 'accent' | 'block' | 'overlay';
 
 export interface ComposedShot {
   shot: Shot;
@@ -176,11 +177,21 @@ function containRect(boxPx: { x: number; y: number; width: number; height: numbe
   return { x: boxPx.x + (boxPx.width - w) / 2, y: boxPx.y, width: w, height: boxPx.height };
 }
 
+/**
+ * HyperFrames snippets (components) read design tokens: the documentary
+ * theme is passed as tokens, the use's own `theme` wins. Their accent enum
+ * maps green → --brand (our yellow), blue → --accent (our red).
+ */
+function hyperframesUse(use: HyperFramesUse, theme: DocumentaryTheme): HyperFramesUse {
+  const tokens = { '--bg': theme.background, '--fg': theme.text, '--brand': theme.accent, '--accent': theme.alert, '--font-display': theme.fontFamily, '--font-body': theme.fontFamily };
+  return { ...use, theme: { ...tokens, ...use.theme } };
+}
+
 // ---------------------------------------------------------------------------
 // Base composition per shot type
 // ---------------------------------------------------------------------------
 
-function composeLayers(shot: Shot, plan: ShotPlan, theme: DocumentaryTheme, canvas: Dimensions): { layers: Layer[]; roles: ComposedShot['roles'] } {
+function composeLayers(shot: Shot, plan: ShotPlan, theme: DocumentaryTheme, canvas: Dimensions, hyperframes?: HyperFramesCatalog): { layers: Layer[]; roles: ComposedShot['roles'] } {
   const roles: ComposedShot['roles'] = {};
   const layers: Layer[] = [];
   const add = (role: ShotLayerRole, layer: Layer) => {
@@ -190,6 +201,12 @@ function composeLayers(shot: Shot, plan: ShotPlan, theme: DocumentaryTheme, canv
   };
   const id = (suffix: string) => `${shot.id}:${suffix}`;
   const emphasis = shot.text ? emphasisIndices(shot.text, shot.highlightedWords) : [];
+
+  // A HyperFrames block replaces the type's default composition.
+  if (shot.block) {
+    add('block', createLayer('graphic', { id: id('block'), kind: 'hyperframes', data: hyperframesLayerData(hyperframesUse(shot.block, theme), hyperframes, shot.durationInFrames / plan.fps), zIndex: 20, position: box('center', 0, 0) }));
+    return { layers, roles };
+  }
 
   switch (shot.type) {
     case 'image':
@@ -362,8 +379,9 @@ export function compileShotPlan(plan: ShotPlan, options: CompileShotPlanOptions 
   if (captionStyle?.activeWord) captionStyle.activeWord = { ...captionStyle.activeWord, color: theme.accent };
 
   project.scenes = plan.shots.map((shot, i): Scene => {
-    const { layers, roles } = composeLayers(shot, plan, theme, canvas);
-    const scene = createScene(SCENE_TYPES[shot.type], {
+    const { layers, roles } = composeLayers(shot, plan, theme, canvas, options.hyperframes);
+    // A block shot has none of its type's layers: a custom scene (the shot type stays in metadata).
+    const scene = createScene(shot.block ? 'custom' : SCENE_TYPES[shot.type], {
       id: shot.id,
       durationInFrames: shot.durationInFrames,
       background: { type: 'color', color: theme.background },
@@ -424,8 +442,31 @@ export function compileShotPlan(plan: ShotPlan, options: CompileShotPlanOptions 
       }
     }
 
-    // Motion skill (Motion Skill Registry, injected).
-    if (shot.motionSkill) {
+    // HyperFrames overlays, above the shot's text, under the captions.
+    (shot.overlays ?? []).forEach((o, k) => {
+      const start = Math.min(o.startFrame ?? 0, shot.durationInFrames - 1);
+      const length = Math.max(1, Math.min(o.durationInFrames ?? shot.durationInFrames, shot.durationInFrames - start));
+      const layer = createLayer('graphic', {
+        id: `${shot.id}:overlay-${k}`,
+        kind: 'hyperframes',
+        data: hyperframesLayerData(hyperframesUse(o, theme), options.hyperframes, length / plan.fps),
+        zIndex: 50,
+        position: box('center', 0, 0),
+        startFrame: start,
+        durationInFrames: length,
+        screenSpace: true,
+      });
+      scene.layers.push(layer);
+      if (!roles.overlay) roles.overlay = layer;
+    });
+    for (const use of [...(shot.block ? [shot.block] : []), ...(shot.overlays ?? [])]) {
+      const media = findHyperFramesItem(options.hyperframes, use.item)?.embeddedMedia ?? [];
+      if (media.length) notes.push(`${shot.id}: [SRC-01] HyperFrames "${use.item}" embeds media (${media.slice(0, 3).join(', ')}${media.length > 3 ? '…' : ''}): verify the rights before publishing`);
+    }
+
+    // Motion skill (Motion Skill Registry, injected). A block carries its own motion.
+    if (shot.motionSkill && shot.block) notes.push(`${shot.id}: motion skill "${shot.motionSkill}" not applied, the HyperFrames block animates itself`);
+    else if (shot.motionSkill) {
       if (applySkill) {
         const r = applySkill({ shot, scene, roles }, { fps: plan.fps, canvas, theme, presets, words });
         if (r.note) notes.push(`${shot.id}: ${r.note}`);

@@ -14,7 +14,7 @@ import type { Intensity, ShotType } from '../shotplan/types.js';
 import type { MotionSkill, SkillCategory, SkillDefinition } from './types.js';
 
 /** Graphic kinds drawn by the reference Remotion renderer (packages/remotion). */
-export const REFERENCE_RENDERER_GRAPHIC_KINDS = ['counter', 'statCard', 'barChart', 'lineChart', 'pieChart', 'comparison', 'map', 'mapTiles', 'progress', 'timeline'] as const satisfies readonly GraphicKind[];
+export const REFERENCE_RENDERER_GRAPHIC_KINDS = ['counter', 'statCard', 'barChart', 'lineChart', 'pieChart', 'comparison', 'map', 'mapTiles', 'progress', 'timeline', 'hyperframes'] as const satisfies readonly GraphicKind[];
 export type ReferenceRendererGraphicKind = (typeof REFERENCE_RENDERER_GRAPHIC_KINDS)[number];
 
 /** Last resort before "no motion": one sober skill that animates any shot of the type. */

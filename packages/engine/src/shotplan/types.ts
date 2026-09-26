@@ -16,6 +16,7 @@
 import type { Beat, ShotCameraMove, DecidedBy, EditorialIntent, EditorialLevel, Framing, MusicState, SilenceKind } from './vocabulary.js';
 import type { AssetRegistry } from '../model/assets.js';
 import type { JsonObject, JsonValue } from '../model/primitives.js';
+import type { HyperFramesUse } from '../hyperframes/index.js';
 
 export type ShotType = 'image' | 'video' | 'text' | 'number' | 'document' | 'chart' | 'map' | 'revelation' | 'chapter';
 
@@ -106,6 +107,14 @@ export interface Shot {
   chart?: ChartPayload;
   map?: MapPayload;
   document?: DocumentPayload;
+  /**
+   * HyperFrames catalog item drawn full frame as the shot's visual. It replaces
+   * the type's default composition (the type's payload becomes optional);
+   * captions, sound and transitions still apply.
+   */
+  block?: HyperFramesUse;
+  /** HyperFrames items layered over the shot: lower thirds, light leaks, callouts… */
+  overlays?: HyperFramesUse[];
   metadata?: JsonObject;
 
   // --- Editorial layer (version 2). Optional in version 1 plans. -------------

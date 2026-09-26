@@ -1,0 +1,3696 @@
+{
+ "commit": "8798e40",
+ "total": 388,
+ "passed": 386,
+ "results": [
+  {
+   "name": "ai-chat-reveal",
+   "type": "block",
+   "ok": true,
+   "reason": "",
+   "duration": 19.3333,
+   "ms": 567,
+   "errors": []
+  },
+  {
+   "name": "app-showcase",
+   "type": "block",
+   "ok": true,
+   "reason": "",
+   "duration": 5.5,
+   "ms": 1186,
+   "errors": []
+  },
+  {
+   "name": "apple-money-count",
+   "type": "block",
+   "ok": true,
+   "reason": "",
+   "duration": 5,
+   "ms": 420,
+   "errors": []
+  },
+  {
+   "name": "bar-chart-race",
+   "type": "block",
+   "ok": true,
+   "reason": "",
+   "duration": 12,
+   "ms": 222,
+   "errors": []
+  },
+  {
+   "name": "beat-freeze-cut",
+   "type": "block",
+   "ok": true,
+   "reason": "",
+   "duration": 6,
+   "ms": 1156,
+   "errors": []
+  },
+  {
+   "name": "blue-sweater-intro-video",
+   "type": "block",
+   "ok": true,
+   "reason": "",
+   "duration": 12,
+   "ms": 527,
+   "errors": []
+  },
+  {
+   "name": "camcorder-hud",
+   "type": "block",
+   "ok": true,
+   "reason": "",
+   "duration": 4,
+   "ms": 153,
+   "errors": []
+  },
+  {
+   "name": "camera-dolly-zoom",
+   "type": "block",
+   "ok": true,
+   "reason": "",
+   "duration": 4,
+   "ms": 366,
+   "errors": []
+  },
+  {
+   "name": "canopy-part-title",
+   "type": "block",
+   "ok": true,
+   "reason": "",
+   "duration": 12,
+   "ms": 7773,
+   "errors": []
+  },
+  {
+   "name": "carousel-circle-1",
+   "type": "block",
+   "ok": true,
+   "reason": "",
+   "duration": 6,
+   "ms": 278,
+   "errors": [
+    "404 /hyperframes/blocks/carousel-circle-1/assets/carousel-images/artist-bob-seger.jpg",
+    "404 /hyperframes/blocks/carousel-circle-1/assets/carousel-images/artist-dire-straits.jpg",
+    "404 /hyperframes/blocks/carousel-circle-1/assets/carousel-images/artist-faces.jpg",
+    "404 /hyperframes/blocks/carousel-circle-1/assets/carousel-images/artist-little-feat.jpg",
+    "404 /hyperframes/blocks/carousel-circle-1/assets/carousel-images/artist-north-mississippi-allstars.jpg"
+   ]
+  },
+  {
+   "name": "carousel-circle-2",
+   "type": "block",
+   "ok": true,
+   "reason": "",
+   "duration": 6,
+   "ms": 210,
+   "errors": [
+    "404 /hyperframes/blocks/carousel-circle-2/assets/carousel-images/artist-bob-seger.jpg",
+    "404 /hyperframes/blocks/carousel-circle-2/assets/carousel-images/artist-dire-straits.jpg",
+    "404 /hyperframes/blocks/carousel-circle-2/assets/carousel-images/artist-faces.jpg",
+    "404 /hyperframes/blocks/carousel-circle-2/assets/carousel-images/artist-little-feat.jpg",
+    "404 /hyperframes/blocks/carousel-circle-2/assets/carousel-images/artist-north-mississippi-allstars.jpg"
+   ]
+  },
+  {
+   "name": "carousel-circle-3",
+   "type": "block",
+   "ok": true,
+   "reason": "",
+   "duration": 6,
+   "ms": 218,
+   "errors": [
+    "404 /hyperframes/blocks/carousel-circle-3/assets/carousel-images/artist-bob-seger.jpg",
+    "404 /hyperframes/blocks/carousel-circle-3/assets/carousel-images/artist-dire-straits.jpg",
+    "404 /hyperframes/blocks/carousel-circle-3/assets/carousel-images/artist-faces.jpg",
+    "404 /hyperframes/blocks/carousel-circle-3/assets/carousel-images/artist-little-feat.jpg",
+    "404 /hyperframes/blocks/carousel-circle-3/assets/carousel-images/artist-north-mississippi-allstars.jpg"
+   ]
+  },
+  {
+   "name": "carousel-circle-4",
+   "type": "block",
+   "ok": true,
+   "reason": "",
+   "duration": 6,
+   "ms": 182,
+   "errors": [
+    "404 /hyperframes/blocks/carousel-circle-4/assets/carousel-images/artist-bob-seger.jpg",
+    "404 /hyperframes/blocks/carousel-circle-4/assets/carousel-images/artist-dire-straits.jpg",
+    "404 /hyperframes/blocks/carousel-circle-4/assets/carousel-images/artist-faces.jpg",
+    "404 /hyperframes/blocks/carousel-circle-4/assets/carousel-images/artist-little-feat.jpg",
+    "404 /hyperframes/blocks/carousel-circle-4/assets/carousel-images/artist-north-mississippi-allstars.jpg"
+   ]
+  },
+  {
+   "name": "carousel-circle-5",
+   "type": "block",
+   "ok": true,
+   "reason": "",
+   "duration": 6,
+   "ms": 201,
+   "errors": [
+    "404 /hyperframes/blocks/carousel-circle-5/assets/carousel-images/artist-bob-seger.jpg",
+    "404 /hyperframes/blocks/carousel-circle-5/assets/carousel-images/artist-dire-straits.jpg",
+    "404 /hyperframes/blocks/carousel-circle-5/assets/carousel-images/artist-faces.jpg",
+    "404 /hyperframes/blocks/carousel-circle-5/assets/carousel-images/artist-little-feat.jpg",
+    "404 /hyperframes/blocks/carousel-circle-5/assets/carousel-images/artist-north-mississippi-allstars.jpg"
+   ]
+  },
+  {
+   "name": "carousel-orbit-1",
+   "type": "block",
+   "ok": true,
+   "reason": "",
+   "duration": 6,
+   "ms": 3741,
+   "errors": [
+    "404 /hyperframes/blocks/carousel-orbit-1/assets/carousel-images/artist-bob-seger.jpg",
+    "404 /hyperframes/blocks/carousel-orbit-1/assets/carousel-images/artist-dire-straits.jpg",
+    "404 /hyperframes/blocks/carousel-orbit-1/assets/carousel-images/artist-faces.jpg",
+    "404 /hyperframes/blocks/carousel-orbit-1/assets/carousel-images/artist-little-feat.jpg",
+    "404 /hyperframes/blocks/carousel-orbit-1/assets/carousel-images/artist-north-mississippi-allstars.jpg"
+   ]
+  },
+  {
+   "name": "carousel-orbit-2",
+   "type": "block",
+   "ok": true,
+   "reason": "",
+   "duration": 6,
+   "ms": 4378,
+   "errors": [
+    "404 /hyperframes/blocks/carousel-orbit-2/assets/carousel-images/artist-bob-seger.jpg",
+    "404 /hyperframes/blocks/carousel-orbit-2/assets/carousel-images/artist-dire-straits.jpg",
+    "404 /hyperframes/blocks/carousel-orbit-2/assets/carousel-images/artist-faces.jpg",
+    "404 /hyperframes/blocks/carousel-orbit-2/assets/carousel-images/artist-little-feat.jpg",
+    "404 /hyperframes/blocks/carousel-orbit-2/assets/carousel-images/artist-north-mississippi-allstars.jpg"
+   ]
+  },
+  {
+   "name": "carousel-orbit-3",
+   "type": "block",
+   "ok": true,
+   "reason": "",
+   "duration": 6,
+   "ms": 3291,
+   "errors": [
+    "404 /hyperframes/blocks/carousel-orbit-3/assets/carousel-images/artist-bob-seger.jpg",
+    "404 /hyperframes/blocks/carousel-orbit-3/assets/carousel-images/artist-dire-straits.jpg",
+    "404 /hyperframes/blocks/carousel-orbit-3/assets/carousel-images/artist-faces.jpg",
+    "404 /hyperframes/blocks/carousel-orbit-3/assets/carousel-images/artist-little-feat.jpg",
+    "404 /hyperframes/blocks/carousel-orbit-3/assets/carousel-images/artist-north-mississippi-allstars.jpg"
+   ]
+  },
+  {
+   "name": "carousel-orbit-4",
+   "type": "block",
+   "ok": true,
+   "reason": "",
+   "duration": 6,
+   "ms": 3964,
+   "errors": [
+    "404 /hyperframes/blocks/carousel-orbit-4/assets/carousel-images/artist-bob-seger.jpg",
+    "404 /hyperframes/blocks/carousel-orbit-4/assets/carousel-images/artist-dire-straits.jpg",
+    "404 /hyperframes/blocks/carousel-orbit-4/assets/carousel-images/artist-faces.jpg",
+    "404 /hyperframes/blocks/carousel-orbit-4/assets/carousel-images/artist-little-feat.jpg",
+    "404 /hyperframes/blocks/carousel-orbit-4/assets/carousel-images/artist-north-mississippi-allstars.jpg"
+   ]
+  },
+  {
+   "name": "carousel-orbit-5",
+   "type": "block",
+   "ok": true,
+   "reason": "",
+   "duration": 6,
+   "ms": 2926,
+   "errors": [
+    "404 /hyperframes/blocks/carousel-orbit-5/assets/carousel-images/artist-bob-seger.jpg",
+    "404 /hyperframes/blocks/carousel-orbit-5/assets/carousel-images/artist-dire-straits.jpg",
+    "404 /hyperframes/blocks/carousel-orbit-5/assets/carousel-images/artist-faces.jpg",
+    "404 /hyperframes/blocks/carousel-orbit-5/assets/carousel-images/artist-little-feat.jpg",
+    "404 /hyperframes/blocks/carousel-orbit-5/assets/carousel-images/artist-north-mississippi-allstars.jpg"
+   ]
+  },
+  {
+   "name": "carousel-path-1",
+   "type": "block",
+   "ok": true,
+   "reason": "",
+   "duration": 6,
+   "ms": 1113,
+   "errors": [
+    "404 /hyperframes/blocks/carousel-path-1/assets/carousel-images/artist-bob-seger.jpg",
+    "404 /hyperframes/blocks/carousel-path-1/assets/carousel-images/artist-dire-straits.jpg",
+    "404 /hyperframes/blocks/carousel-path-1/assets/carousel-images/artist-faces.jpg",
+    "404 /hyperframes/blocks/carousel-path-1/assets/carousel-images/artist-little-feat.jpg",
+    "404 /hyperframes/blocks/carousel-path-1/assets/carousel-images/artist-north-mississippi-allstars.jpg"
+   ]
+  },
+  {
+   "name": "carousel-path-2",
+   "type": "block",
+   "ok": true,
+   "reason": "",
+   "duration": 6,
+   "ms": 230,
+   "errors": [
+    "404 /hyperframes/blocks/carousel-path-2/assets/carousel-images/artist-bob-seger.jpg",
+    "404 /hyperframes/blocks/carousel-path-2/assets/carousel-images/artist-dire-straits.jpg",
+    "404 /hyperframes/blocks/carousel-path-2/assets/carousel-images/artist-faces.jpg",
+    "404 /hyperframes/blocks/carousel-path-2/assets/carousel-images/artist-little-feat.jpg",
+    "404 /hyperframes/blocks/carousel-path-2/assets/carousel-images/artist-north-mississippi-allstars.jpg"
+   ]
+  },
+  {
+   "name": "carousel-path-3",
+   "type": "block",
+   "ok": true,
+   "reason": "",
+   "duration": 6,
+   "ms": 260,
+   "errors": [
+    "404 /hyperframes/blocks/carousel-path-3/assets/carousel-images/artist-bob-seger.jpg",
+    "404 /hyperframes/blocks/carousel-path-3/assets/carousel-images/artist-dire-straits.jpg",
+    "404 /hyperframes/blocks/carousel-path-3/assets/carousel-images/artist-faces.jpg",
+    "404 /hyperframes/blocks/carousel-path-3/assets/carousel-images/artist-little-feat.jpg",
+    "404 /hyperframes/blocks/carousel-path-3/assets/carousel-images/artist-north-mississippi-allstars.jpg"
+   ]
+  },
+  {
+   "name": "carousel-path-4",
+   "type": "block",
+   "ok": true,
+   "reason": "",
+   "duration": 6,
+   "ms": 285,
+   "errors": [
+    "404 /hyperframes/blocks/carousel-path-4/assets/carousel-images/artist-bob-seger.jpg",
+    "404 /hyperframes/blocks/carousel-path-4/assets/carousel-images/artist-dire-straits.jpg",
+    "404 /hyperframes/blocks/carousel-path-4/assets/carousel-images/artist-faces.jpg",
+    "404 /hyperframes/blocks/carousel-path-4/assets/carousel-images/artist-little-feat.jpg",
+    "404 /hyperframes/blocks/carousel-path-4/assets/carousel-images/artist-north-mississippi-allstars.jpg"
+   ]
+  },
+  {
+   "name": "carousel-path-5",
+   "type": "block",
+   "ok": true,
+   "reason": "",
+   "duration": 6,
+   "ms": 255,
+   "errors": [
+    "404 /hyperframes/blocks/carousel-path-5/assets/carousel-images/artist-bob-seger.jpg",
+    "404 /hyperframes/blocks/carousel-path-5/assets/carousel-images/artist-dire-straits.jpg",
+    "404 /hyperframes/blocks/carousel-path-5/assets/carousel-images/artist-faces.jpg",
+    "404 /hyperframes/blocks/carousel-path-5/assets/carousel-images/artist-little-feat.jpg",
+    "404 /hyperframes/blocks/carousel-path-5/assets/carousel-images/artist-north-mississippi-allstars.jpg"
+   ]
+  },
+  {
+   "name": "carousel-text-circle-1",
+   "type": "block",
+   "ok": true,
+   "reason": "",
+   "duration": 5,
+   "ms": 207,
+   "errors": [
+    "404 /hyperframes/blocks/carousel-text-circle-1/assets/carousel-images/artist-bob-seger.jpg",
+    "404 /hyperframes/blocks/carousel-text-circle-1/assets/carousel-images/artist-dire-straits.jpg",
+    "404 /hyperframes/blocks/carousel-text-circle-1/assets/carousel-images/artist-faces.jpg",
+    "404 /hyperframes/blocks/carousel-text-circle-1/assets/carousel-images/artist-little-feat.jpg",
+    "404 /hyperframes/blocks/carousel-text-circle-1/assets/carousel-images/artist-north-mississippi-allstars.jpg"
+   ]
+  },
+  {
+   "name": "carousel-text-circle-2",
+   "type": "block",
+   "ok": true,
+   "reason": "",
+   "duration": 5,
+   "ms": 181,
+   "errors": [
+    "404 /hyperframes/blocks/carousel-text-circle-2/assets/carousel-images/artist-bob-seger.jpg",
+    "404 /hyperframes/blocks/carousel-text-circle-2/assets/carousel-images/artist-dire-straits.jpg",
+    "404 /hyperframes/blocks/carousel-text-circle-2/assets/carousel-images/artist-faces.jpg",
+    "404 /hyperframes/blocks/carousel-text-circle-2/assets/carousel-images/artist-little-feat.jpg",
+    "404 /hyperframes/blocks/carousel-text-circle-2/assets/carousel-images/artist-north-mississippi-allstars.jpg"
+   ]
+  },
+  {
+   "name": "carousel-text-circle-3",
+   "type": "block",
+   "ok": true,
+   "reason": "",
+   "duration": 5,
+   "ms": 199,
+   "errors": [
+    "404 /hyperframes/blocks/carousel-text-circle-3/assets/carousel-images/artist-bob-seger.jpg",
+    "404 /hyperframes/blocks/carousel-text-circle-3/assets/carousel-images/artist-dire-straits.jpg",
+    "404 /hyperframes/blocks/carousel-text-circle-3/assets/carousel-images/artist-faces.jpg",
+    "404 /hyperframes/blocks/carousel-text-circle-3/assets/carousel-images/artist-little-feat.jpg",
+    "404 /hyperframes/blocks/carousel-text-circle-3/assets/carousel-images/artist-north-mississippi-allstars.jpg"
+   ]
+  },
+  {
+   "name": "carousel-text-circle-4",
+   "type": "block",
+   "ok": true,
+   "reason": "",
+   "duration": 5,
+   "ms": 165,
+   "errors": [
+    "404 /hyperframes/blocks/carousel-text-circle-4/assets/carousel-images/artist-bob-seger.jpg",
+    "404 /hyperframes/blocks/carousel-text-circle-4/assets/carousel-images/artist-dire-straits.jpg",
+    "404 /hyperframes/blocks/carousel-text-circle-4/assets/carousel-images/artist-faces.jpg",
+    "404 /hyperframes/blocks/carousel-text-circle-4/assets/carousel-images/artist-little-feat.jpg",
+    "404 /hyperframes/blocks/carousel-text-circle-4/assets/carousel-images/artist-north-mississippi-allstars.jpg"
+   ]
+  },
+  {
+   "name": "carousel-text-circle-5",
+   "type": "block",
+   "ok": true,
+   "reason": "",
+   "duration": 5,
+   "ms": 183,
+   "errors": [
+    "404 /hyperframes/blocks/carousel-text-circle-5/assets/carousel-images/artist-bob-seger.jpg",
+    "404 /hyperframes/blocks/carousel-text-circle-5/assets/carousel-images/artist-dire-straits.jpg",
+    "404 /hyperframes/blocks/carousel-text-circle-5/assets/carousel-images/artist-faces.jpg",
+    "404 /hyperframes/blocks/carousel-text-circle-5/assets/carousel-images/artist-little-feat.jpg",
+    "404 /hyperframes/blocks/carousel-text-circle-5/assets/carousel-images/artist-north-mississippi-allstars.jpg"
+   ]
+  },
+  {
+   "name": "carousel-vision-1",
+   "type": "block",
+   "ok": true,
+   "reason": "",
+   "duration": 6,
+   "ms": 1410,
+   "errors": [
+    "404 /hyperframes/blocks/carousel-vision-1/assets/carousel-images/artist-bob-seger.jpg",
+    "404 /hyperframes/blocks/carousel-vision-1/assets/carousel-images/artist-dire-straits.jpg",
+    "404 /hyperframes/blocks/carousel-vision-1/assets/carousel-images/artist-faces.jpg",
+    "404 /hyperframes/blocks/carousel-vision-1/assets/carousel-images/artist-little-feat.jpg",
+    "404 /hyperframes/blocks/carousel-vision-1/assets/carousel-images/artist-north-mississippi-allstars.jpg"
+   ]
+  },
+  {
+   "name": "carousel-vision-2",
+   "type": "block",
+   "ok": true,
+   "reason": "",
+   "duration": 6,
+   "ms": 1870,
+   "errors": [
+    "404 /hyperframes/blocks/carousel-vision-2/assets/carousel-images/artist-bob-seger.jpg",
+    "404 /hyperframes/blocks/carousel-vision-2/assets/carousel-images/artist-dire-straits.jpg",
+    "404 /hyperframes/blocks/carousel-vision-2/assets/carousel-images/artist-faces.jpg",
+    "404 /hyperframes/blocks/carousel-vision-2/assets/carousel-images/artist-little-feat.jpg",
+    "404 /hyperframes/blocks/carousel-vision-2/assets/carousel-images/artist-north-mississippi-allstars.jpg"
+   ]
+  },
+  {
+   "name": "carousel-vision-3",
+   "type": "block",
+   "ok": true,
+   "reason": "",
+   "duration": 6,
+   "ms": 1567,
+   "errors": [
+    "404 /hyperframes/blocks/carousel-vision-3/assets/carousel-images/artist-bob-seger.jpg",
+    "404 /hyperframes/blocks/carousel-vision-3/assets/carousel-images/artist-dire-straits.jpg",
+    "404 /hyperframes/blocks/carousel-vision-3/assets/carousel-images/artist-faces.jpg",
+    "404 /hyperframes/blocks/carousel-vision-3/assets/carousel-images/artist-little-feat.jpg",
+    "404 /hyperframes/blocks/carousel-vision-3/assets/carousel-images/artist-north-mississippi-allstars.jpg"
+   ]
+  },
+  {
+   "name": "carousel-vision-4",
+   "type": "block",
+   "ok": true,
+   "reason": "",
+   "duration": 6,
+   "ms": 1542,
+   "errors": [
+    "404 /hyperframes/blocks/carousel-vision-4/assets/carousel-images/artist-bob-seger.jpg",
+    "404 /hyperframes/blocks/carousel-vision-4/assets/carousel-images/artist-dire-straits.jpg",
+    "404 /hyperframes/blocks/carousel-vision-4/assets/carousel-images/artist-faces.jpg",
+    "404 /hyperframes/blocks/carousel-vision-4/assets/carousel-images/artist-little-feat.jpg",
+    "404 /hyperframes/blocks/carousel-vision-4/assets/carousel-images/artist-north-mississippi-allstars.jpg"
+   ]
+  },
+  {
+   "name": "carousel-vision-5",
+   "type": "block",
+   "ok": true,
+   "reason": "",
+   "duration": 6,
+   "ms": 1899,
+   "errors": [
+    "404 /hyperframes/blocks/carousel-vision-5/assets/carousel-images/artist-bob-seger.jpg",
+    "404 /hyperframes/blocks/carousel-vision-5/assets/carousel-images/artist-dire-straits.jpg",
+    "404 /hyperframes/blocks/carousel-vision-5/assets/carousel-images/artist-faces.jpg",
+    "404 /hyperframes/blocks/carousel-vision-5/assets/carousel-images/artist-little-feat.jpg",
+    "404 /hyperframes/blocks/carousel-vision-5/assets/carousel-images/artist-north-mississippi-allstars.jpg"
+   ]
+  },
+  {
+   "name": "chatgpt-exchange",
+   "type": "block",
+   "ok": true,
+   "reason": "",
+   "duration": 14.9,
+   "ms": 876,
+   "errors": []
+  },
+  {
+   "name": "chromatic-radial-split",
+   "type": "block",
+   "ok": true,
+   "reason": "",
+   "duration": 4,
+   "ms": 571,
+   "errors": []
+  },
+  {
+   "name": "cinematic-zoom",
+   "type": "block",
+   "ok": true,
+   "reason": "",
+   "duration": 4,
+   "ms": 755,
+   "errors": []
+  },
+  {
+   "name": "claude-exchange",
+   "type": "block",
+   "ok": true,
+   "reason": "",
+   "duration": 21.4,
+   "ms": 505,
+   "errors": []
+  },
+  {
+   "name": "code-3d-extrude",
+   "type": "block",
+   "ok": true,
+   "reason": "",
+   "duration": 8,
+   "ms": 419,
+   "errors": []
+  },
+  {
+   "name": "code-diff",
+   "type": "block",
+   "ok": true,
+   "reason": "",
+   "duration": 6,
+   "ms": 823,
+   "errors": []
+  },
+  {
+   "name": "code-highlight",
+   "type": "block",
+   "ok": true,
+   "reason": "",
+   "duration": 5,
+   "ms": 634,
+   "errors": []
+  },
+  {
+   "name": "code-morph",
+   "type": "block",
+   "ok": true,
+   "reason": "",
+   "duration": 7,
+   "ms": 605,
+   "errors": []
+  },
+  {
+   "name": "code-particle-assemble",
+   "type": "block",
+   "ok": true,
+   "reason": "",
+   "duration": 8,
+   "ms": 297,
+   "errors": []
+  },
+  {
+   "name": "code-scroll",
+   "type": "block",
+   "ok": true,
+   "reason": "",
+   "duration": 6,
+   "ms": 606,
+   "errors": []
+  },
+  {
+   "name": "code-shader-dissolve",
+   "type": "block",
+   "ok": true,
+   "reason": "",
+   "duration": 7,
+   "ms": 360,
+   "errors": []
+  },
+  {
+   "name": "code-slice-hero",
+   "type": "block",
+   "ok": true,
+   "reason": "",
+   "duration": 8,
+   "ms": 451,
+   "errors": []
+  },
+  {
+   "name": "code-snippet-apple-terminal-pro",
+   "type": "block",
+   "ok": true,
+   "reason": "",
+   "duration": 6.8,
+   "ms": 409,
+   "errors": []
+  },
+  {
+   "name": "code-snippet-dark-2026",
+   "type": "block",
+   "ok": true,
+   "reason": "",
+   "duration": 11,
+   "ms": 666,
+   "errors": []
+  },
+  {
+   "name": "code-snippet-dark-modern",
+   "type": "block",
+   "ok": true,
+   "reason": "",
+   "duration": 11,
+   "ms": 455,
+   "errors": []
+  },
+  {
+   "name": "code-typing",
+   "type": "block",
+   "ok": true,
+   "reason": "",
+   "duration": 5,
+   "ms": 958,
+   "errors": []
+  },
+  {
+   "name": "cosmic-orb",
+   "type": "block",
+   "ok": true,
+   "reason": "",
+   "duration": 10,
+   "ms": 3647,
+   "errors": []
+  },
+  {
+   "name": "cross-warp-morph",
+   "type": "block",
+   "ok": true,
+   "reason": "",
+   "duration": 4,
+   "ms": 464,
+   "errors": []
+  },
+  {
+   "name": "cuboid-carousel",
+   "type": "block",
+   "ok": true,
+   "reason": "",
+   "duration": 6.6666667,
+   "ms": 7865,
+   "errors": []
+  },
+  {
+   "name": "data-chart",
+   "type": "block",
+   "ok": true,
+   "reason": "",
+   "duration": 15,
+   "ms": 203,
+   "errors": []
+  },
+  {
+   "name": "domain-warp-dissolve",
+   "type": "block",
+   "ok": true,
+   "reason": "",
+   "duration": 4,
+   "ms": 662,
+   "errors": []
+  },
+  {
+   "name": "editorial-flash-overlay",
+   "type": "block",
+   "ok": true,
+   "reason": "",
+   "duration": 4,
+   "ms": 729,
+   "errors": []
+  },
+  {
+   "name": "flash-through-white",
+   "type": "block",
+   "ok": true,
+   "reason": "",
+   "duration": 4,
+   "ms": 1097,
+   "errors": []
+  },
+  {
+   "name": "flowchart",
+   "type": "block",
+   "ok": true,
+   "reason": "",
+   "duration": 12,
+   "ms": 431,
+   "errors": []
+  },
+  {
+   "name": "flowchart-vertical",
+   "type": "block",
+   "ok": true,
+   "reason": "",
+   "duration": 12,
+   "ms": 471,
+   "errors": []
+  },
+  {
+   "name": "freeze-frame-dressing",
+   "type": "block",
+   "ok": true,
+   "reason": "",
+   "duration": 4,
+   "ms": 336,
+   "errors": []
+  },
+  {
+   "name": "frost-sequence-camera-orbit",
+   "type": "block",
+   "ok": false,
+   "reason": "page.evaluate: Error: Frost: no WebGPU adapter",
+   "duration": 22.5,
+   "ms": 508,
+   "errors": [
+    "Frost initialization/render failed: Error: Frost: no WebGPU adapter\n    at http://127.0.0.1:37735/hyperframes/blocks/frost-sequence-camera-orbit/assets/frost.js:1063:336163",
+    "Frost: no WebGPU adapter"
+   ]
+  },
+  {
+   "name": "gallery-tunnel",
+   "type": "block",
+   "ok": true,
+   "reason": "",
+   "duration": 12,
+   "ms": 750,
+   "errors": []
+  },
+  {
+   "name": "glass-shard-title",
+   "type": "block",
+   "ok": true,
+   "reason": "",
+   "duration": 12.16,
+   "ms": 1680,
+   "errors": [
+    "404 /hyperframes/blocks/glass-shard-title/assets/matcap-1.png",
+    "Event"
+   ]
+  },
+  {
+   "name": "glitch",
+   "type": "block",
+   "ok": true,
+   "reason": "",
+   "duration": 4,
+   "ms": 413,
+   "errors": []
+  },
+  {
+   "name": "gravitational-lens",
+   "type": "block",
+   "ok": true,
+   "reason": "",
+   "duration": 4,
+   "ms": 491,
+   "errors": []
+  },
+  {
+   "name": "halftone-field",
+   "type": "block",
+   "ok": true,
+   "reason": "",
+   "duration": 10,
+   "ms": 830,
+   "errors": []
+  },
+  {
+   "name": "heygen-avatar-promo-card",
+   "type": "block",
+   "ok": true,
+   "reason": "",
+   "duration": 10,
+   "ms": 286,
+   "errors": [
+    "404 /hyperframes/blocks/heygen-avatar-promo-card/assets/fonts/eb-garamond-latin-400-normal.woff2",
+    "404 /hyperframes/blocks/heygen-avatar-promo-card/assets/fonts/inter-latin-600-normal.woff2",
+    "404 /hyperframes/blocks/heygen-avatar-promo-card/assets/fonts/eb-garamond-latin-700-normal.woff2",
+    "404 /hyperframes/blocks/heygen-avatar-promo-card/assets/fonts/inter-latin-500-normal.woff2",
+    "404 /hyperframes/blocks/heygen-avatar-promo-card/assets/fonts/inter-latin-400-normal.woff2"
+   ]
+  },
+  {
+   "name": "hw-frame",
+   "type": "block",
+   "ok": true,
+   "reason": "",
+   "duration": 8,
+   "ms": 277,
+   "errors": []
+  },
+  {
+   "name": "hw-path-text",
+   "type": "block",
+   "ok": true,
+   "reason": "",
+   "duration": 6,
+   "ms": 143,
+   "errors": []
+  },
+  {
+   "name": "hw-pipeline",
+   "type": "block",
+   "ok": true,
+   "reason": "",
+   "duration": 7,
+   "ms": 180,
+   "errors": []
+  },
+  {
+   "name": "hw-scribble-transition",
+   "type": "block",
+   "ok": true,
+   "reason": "",
+   "duration": 2.2,
+   "ms": 201,
+   "errors": []
+  },
+  {
+   "name": "hw-text-cloud",
+   "type": "block",
+   "ok": true,
+   "reason": "",
+   "duration": 6,
+   "ms": 158,
+   "errors": []
+  },
+  {
+   "name": "hw-title",
+   "type": "block",
+   "ok": true,
+   "reason": "",
+   "duration": 6,
+   "ms": 141,
+   "errors": []
+  },
+  {
+   "name": "hw-write-title",
+   "type": "block",
+   "ok": true,
+   "reason": "",
+   "duration": 6,
+   "ms": 346,
+   "errors": []
+  },
+  {
+   "name": "instagram-follow",
+   "type": "block",
+   "ok": true,
+   "reason": "",
+   "duration": 4.5,
+   "ms": 141,
+   "errors": []
+  },
+  {
+   "name": "ios26-liquid-glass",
+   "type": "block",
+   "ok": true,
+   "reason": "",
+   "duration": 15,
+   "ms": 2417,
+   "errors": []
+  },
+  {
+   "name": "light-leak",
+   "type": "block",
+   "ok": true,
+   "reason": "",
+   "duration": 4,
+   "ms": 385,
+   "errors": []
+  },
+  {
+   "name": "liquid-glass-notification",
+   "type": "block",
+   "ok": true,
+   "reason": "",
+   "duration": 8,
+   "ms": 1079,
+   "errors": [
+    "LiquidGlass: WebGPU not available"
+   ]
+  },
+  {
+   "name": "liquid-glass-widgets",
+   "type": "block",
+   "ok": true,
+   "reason": "",
+   "duration": 8,
+   "ms": 745,
+   "errors": [
+    "LiquidGlass: WebGPU not available"
+   ]
+  },
+  {
+   "name": "logo-outro",
+   "type": "block",
+   "ok": true,
+   "reason": "",
+   "duration": 6,
+   "ms": 275,
+   "errors": []
+  },
+  {
+   "name": "lottie-character-walk",
+   "type": "block",
+   "ok": true,
+   "reason": "",
+   "duration": 7.5,
+   "ms": 210,
+   "errors": []
+  },
+  {
+   "name": "lower-third-bild",
+   "type": "block",
+   "ok": true,
+   "reason": "",
+   "duration": 8,
+   "ms": 199,
+   "errors": []
+  },
+  {
+   "name": "lt-accent-underline",
+   "type": "block",
+   "ok": true,
+   "reason": "",
+   "duration": 4.8,
+   "ms": 190,
+   "errors": []
+  },
+  {
+   "name": "lt-bold-block",
+   "type": "block",
+   "ok": true,
+   "reason": "",
+   "duration": 4.8,
+   "ms": 159,
+   "errors": []
+  },
+  {
+   "name": "lt-clean-bar",
+   "type": "block",
+   "ok": true,
+   "reason": "",
+   "duration": 4.8,
+   "ms": 184,
+   "errors": []
+  },
+  {
+   "name": "lt-color-block",
+   "type": "block",
+   "ok": true,
+   "reason": "",
+   "duration": 4.8,
+   "ms": 202,
+   "errors": []
+  },
+  {
+   "name": "lt-dark-card",
+   "type": "block",
+   "ok": true,
+   "reason": "",
+   "duration": 4.8,
+   "ms": 207,
+   "errors": []
+  },
+  {
+   "name": "lt-kicker-name",
+   "type": "block",
+   "ok": true,
+   "reason": "",
+   "duration": 4.8,
+   "ms": 183,
+   "errors": []
+  },
+  {
+   "name": "lt-mask-reveal",
+   "type": "block",
+   "ok": true,
+   "reason": "",
+   "duration": 4.8,
+   "ms": 193,
+   "errors": []
+  },
+  {
+   "name": "lt-neon-border",
+   "type": "block",
+   "ok": true,
+   "reason": "",
+   "duration": 4.8,
+   "ms": 1154,
+   "errors": []
+  },
+  {
+   "name": "lt-side-rule",
+   "type": "block",
+   "ok": true,
+   "reason": "",
+   "duration": 4.8,
+   "ms": 628,
+   "errors": []
+  },
+  {
+   "name": "lt-soft-pill",
+   "type": "block",
+   "ok": true,
+   "reason": "",
+   "duration": 4.8,
+   "ms": 154,
+   "errors": []
+  },
+  {
+   "name": "lt-stack-bars",
+   "type": "block",
+   "ok": true,
+   "reason": "",
+   "duration": 4.8,
+   "ms": 145,
+   "errors": []
+  },
+  {
+   "name": "macos-notification",
+   "type": "block",
+   "ok": true,
+   "reason": "",
+   "duration": 5,
+   "ms": 337,
+   "errors": []
+  },
+  {
+   "name": "macos-tahoe-liquid-glass",
+   "type": "block",
+   "ok": true,
+   "reason": "",
+   "duration": 15,
+   "ms": 2974,
+   "errors": []
+  },
+  {
+   "name": "message-thread-reveal",
+   "type": "block",
+   "ok": true,
+   "reason": "",
+   "duration": 25.7667,
+   "ms": 693,
+   "errors": []
+  },
+  {
+   "name": "mk-background",
+   "type": "block",
+   "ok": true,
+   "reason": "",
+   "duration": 10,
+   "ms": 491,
+   "errors": []
+  },
+  {
+   "name": "mk-callout-highlight",
+   "type": "block",
+   "ok": true,
+   "reason": "",
+   "duration": 8,
+   "ms": 125,
+   "errors": []
+  },
+  {
+   "name": "mk-clone-wall-transition",
+   "type": "block",
+   "ok": true,
+   "reason": "",
+   "duration": 2.4,
+   "ms": 258,
+   "errors": []
+  },
+  {
+   "name": "mk-line-graph",
+   "type": "block",
+   "ok": true,
+   "reason": "",
+   "duration": 7,
+   "ms": 147,
+   "errors": []
+  },
+  {
+   "name": "mk-placeholder-grid",
+   "type": "block",
+   "ok": true,
+   "reason": "",
+   "duration": 8,
+   "ms": 175,
+   "errors": []
+  },
+  {
+   "name": "mk-progress-stat",
+   "type": "block",
+   "ok": true,
+   "reason": "",
+   "duration": 7,
+   "ms": 191,
+   "errors": []
+  },
+  {
+   "name": "mk-specs-list",
+   "type": "block",
+   "ok": true,
+   "reason": "",
+   "duration": 8,
+   "ms": 144,
+   "errors": []
+  },
+  {
+   "name": "news-ticker",
+   "type": "block",
+   "ok": true,
+   "reason": "",
+   "duration": 7,
+   "ms": 362,
+   "errors": []
+  },
+  {
+   "name": "north-korea-locked-down",
+   "type": "block",
+   "ok": true,
+   "reason": "",
+   "duration": 7,
+   "ms": 779,
+   "errors": []
+  },
+  {
+   "name": "notes-reveal",
+   "type": "block",
+   "ok": true,
+   "reason": "",
+   "duration": 24.85,
+   "ms": 903,
+   "errors": []
+  },
+  {
+   "name": "notification-cascade",
+   "type": "block",
+   "ok": true,
+   "reason": "",
+   "duration": 14,
+   "ms": 321,
+   "errors": []
+  },
+  {
+   "name": "nyc-paris-flight",
+   "type": "block",
+   "ok": true,
+   "reason": "",
+   "duration": 6,
+   "ms": 1153,
+   "errors": []
+  },
+  {
+   "name": "orbit-card",
+   "type": "block",
+   "ok": true,
+   "reason": "",
+   "duration": 10,
+   "ms": 1200,
+   "errors": []
+  },
+  {
+   "name": "organic-light-leak-overlay",
+   "type": "block",
+   "ok": true,
+   "reason": "",
+   "duration": 4,
+   "ms": 2805,
+   "errors": []
+  },
+  {
+   "name": "oscilloscope-trace",
+   "type": "block",
+   "ok": true,
+   "reason": "",
+   "duration": 6,
+   "ms": 4698,
+   "errors": []
+  },
+  {
+   "name": "rack-focus",
+   "type": "block",
+   "ok": true,
+   "reason": "",
+   "duration": 6,
+   "ms": 1092,
+   "errors": []
+  },
+  {
+   "name": "reddit-post",
+   "type": "block",
+   "ok": true,
+   "reason": "",
+   "duration": 5,
+   "ms": 190,
+   "errors": []
+  },
+  {
+   "name": "ridged-burn",
+   "type": "block",
+   "ok": true,
+   "reason": "",
+   "duration": 4,
+   "ms": 393,
+   "errors": []
+  },
+  {
+   "name": "ripple-waves",
+   "type": "block",
+   "ok": true,
+   "reason": "",
+   "duration": 4,
+   "ms": 442,
+   "errors": []
+  },
+  {
+   "name": "sdf-iris",
+   "type": "block",
+   "ok": true,
+   "reason": "",
+   "duration": 4,
+   "ms": 397,
+   "errors": []
+  },
+  {
+   "name": "share-sheet-carousel",
+   "type": "block",
+   "ok": true,
+   "reason": "",
+   "duration": 7.2333,
+   "ms": 548,
+   "errors": []
+  },
+  {
+   "name": "slack-notification-ad",
+   "type": "block",
+   "ok": true,
+   "reason": "",
+   "duration": 12,
+   "ms": 1636,
+   "errors": []
+  },
+  {
+   "name": "spain-map",
+   "type": "block",
+   "ok": true,
+   "reason": "",
+   "duration": 12,
+   "ms": 1126,
+   "errors": []
+  },
+  {
+   "name": "spiral-galaxy",
+   "type": "block",
+   "ok": true,
+   "reason": "",
+   "duration": 10,
+   "ms": 1621,
+   "errors": []
+  },
+  {
+   "name": "split-flap-board",
+   "type": "block",
+   "ok": true,
+   "reason": "",
+   "duration": 3.5,
+   "ms": 413,
+   "errors": []
+  },
+  {
+   "name": "spotify-card",
+   "type": "block",
+   "ok": true,
+   "reason": "",
+   "duration": 5,
+   "ms": 515,
+   "errors": []
+  },
+  {
+   "name": "swirl-vortex",
+   "type": "block",
+   "ok": true,
+   "reason": "",
+   "duration": 4,
+   "ms": 576,
+   "errors": []
+  },
+  {
+   "name": "thermal-distortion",
+   "type": "block",
+   "ok": true,
+   "reason": "",
+   "duration": 4,
+   "ms": 507,
+   "errors": []
+  },
+  {
+   "name": "thread-message-stack",
+   "type": "block",
+   "ok": true,
+   "reason": "",
+   "duration": 8,
+   "ms": 611,
+   "errors": []
+  },
+  {
+   "name": "tiktok-follow",
+   "type": "block",
+   "ok": true,
+   "reason": "",
+   "duration": 4.5,
+   "ms": 141,
+   "errors": []
+  },
+  {
+   "name": "transitions-3d",
+   "type": "block",
+   "ok": true,
+   "reason": "",
+   "duration": 11,
+   "ms": 163,
+   "errors": []
+  },
+  {
+   "name": "transitions-blur",
+   "type": "block",
+   "ok": true,
+   "reason": "",
+   "duration": 20,
+   "ms": 175,
+   "errors": []
+  },
+  {
+   "name": "transitions-cover",
+   "type": "block",
+   "ok": true,
+   "reason": "",
+   "duration": 21,
+   "ms": 166,
+   "errors": []
+  },
+  {
+   "name": "transitions-destruction",
+   "type": "block",
+   "ok": true,
+   "reason": "",
+   "duration": 14,
+   "ms": 150,
+   "errors": []
+  },
+  {
+   "name": "transitions-dissolve",
+   "type": "block",
+   "ok": true,
+   "reason": "",
+   "duration": 24,
+   "ms": 152,
+   "errors": []
+  },
+  {
+   "name": "transitions-distortion",
+   "type": "block",
+   "ok": true,
+   "reason": "",
+   "duration": 21,
+   "ms": 169,
+   "errors": []
+  },
+  {
+   "name": "transitions-grid",
+   "type": "block",
+   "ok": true,
+   "reason": "",
+   "duration": 11,
+   "ms": 178,
+   "errors": []
+  },
+  {
+   "name": "transitions-light",
+   "type": "block",
+   "ok": true,
+   "reason": "",
+   "duration": 21,
+   "ms": 164,
+   "errors": []
+  },
+  {
+   "name": "transitions-mechanical",
+   "type": "block",
+   "ok": true,
+   "reason": "",
+   "duration": 15,
+   "ms": 157,
+   "errors": []
+  },
+  {
+   "name": "transitions-other",
+   "type": "block",
+   "ok": true,
+   "reason": "",
+   "duration": 20,
+   "ms": 142,
+   "errors": []
+  },
+  {
+   "name": "transitions-push",
+   "type": "block",
+   "ok": true,
+   "reason": "",
+   "duration": 24,
+   "ms": 164,
+   "errors": []
+  },
+  {
+   "name": "transitions-radial",
+   "type": "block",
+   "ok": true,
+   "reason": "",
+   "duration": 20,
+   "ms": 167,
+   "errors": []
+  },
+  {
+   "name": "transitions-scale",
+   "type": "block",
+   "ok": true,
+   "reason": "",
+   "duration": 15,
+   "ms": 194,
+   "errors": []
+  },
+  {
+   "name": "ui-3d-reveal",
+   "type": "block",
+   "ok": true,
+   "reason": "",
+   "duration": 13.3,
+   "ms": 657,
+   "errors": []
+  },
+  {
+   "name": "us-map",
+   "type": "block",
+   "ok": true,
+   "reason": "",
+   "duration": 12,
+   "ms": 1051,
+   "errors": []
+  },
+  {
+   "name": "us-map-bubble",
+   "type": "block",
+   "ok": true,
+   "reason": "",
+   "duration": 12,
+   "ms": 1551,
+   "errors": []
+  },
+  {
+   "name": "us-map-flow",
+   "type": "block",
+   "ok": true,
+   "reason": "",
+   "duration": 12,
+   "ms": 2123,
+   "errors": []
+  },
+  {
+   "name": "us-map-hex",
+   "type": "block",
+   "ok": true,
+   "reason": "",
+   "duration": 10,
+   "ms": 1689,
+   "errors": []
+  },
+  {
+   "name": "vfx-anamorphic-flare",
+   "type": "block",
+   "ok": true,
+   "reason": "",
+   "duration": 10,
+   "ms": 1127,
+   "errors": []
+  },
+  {
+   "name": "vfx-iphone-device",
+   "type": "block",
+   "ok": true,
+   "reason": "",
+   "duration": 15,
+   "ms": 1115,
+   "errors": []
+  },
+  {
+   "name": "vfx-liquid-background",
+   "type": "block",
+   "ok": true,
+   "reason": "",
+   "duration": 12,
+   "ms": 2393,
+   "errors": []
+  },
+  {
+   "name": "vfx-liquid-glass",
+   "type": "block",
+   "ok": true,
+   "reason": "",
+   "duration": 20,
+   "ms": 8047,
+   "errors": []
+  },
+  {
+   "name": "vfx-magnetic",
+   "type": "block",
+   "ok": true,
+   "reason": "",
+   "duration": 15,
+   "ms": 475,
+   "errors": []
+  },
+  {
+   "name": "vfx-portal",
+   "type": "block",
+   "ok": true,
+   "reason": "",
+   "duration": 10,
+   "ms": 535,
+   "errors": []
+  },
+  {
+   "name": "vfx-shatter",
+   "type": "block",
+   "ok": false,
+   "reason": "page.waitForFunction: Timeout 30000ms exceeded.",
+   "duration": 0,
+   "ms": 30188,
+   "errors": [
+    "ctxA.drawElementImage is not a function"
+   ]
+  },
+  {
+   "name": "vfx-text-cursor",
+   "type": "block",
+   "ok": true,
+   "reason": "",
+   "duration": 8,
+   "ms": 5168,
+   "errors": []
+  },
+  {
+   "name": "vpn-youtube-spot",
+   "type": "block",
+   "ok": true,
+   "reason": "",
+   "duration": 7.75,
+   "ms": 8093,
+   "errors": []
+  },
+  {
+   "name": "week-in-merges",
+   "type": "block",
+   "ok": true,
+   "reason": "",
+   "duration": 16,
+   "ms": 303,
+   "errors": []
+  },
+  {
+   "name": "weight-wave",
+   "type": "block",
+   "ok": true,
+   "reason": "",
+   "duration": 6,
+   "ms": 170,
+   "errors": []
+  },
+  {
+   "name": "whip-pan",
+   "type": "block",
+   "ok": true,
+   "reason": "",
+   "duration": 4,
+   "ms": 410,
+   "errors": []
+  },
+  {
+   "name": "wireframe-portal-title",
+   "type": "block",
+   "ok": true,
+   "reason": "",
+   "duration": 8,
+   "ms": 6139,
+   "errors": []
+  },
+  {
+   "name": "world-map",
+   "type": "block",
+   "ok": true,
+   "reason": "",
+   "duration": 14,
+   "ms": 2032,
+   "errors": []
+  },
+  {
+   "name": "x-post",
+   "type": "block",
+   "ok": true,
+   "reason": "",
+   "duration": 5,
+   "ms": 1127,
+   "errors": []
+  },
+  {
+   "name": "yt-comment-card",
+   "type": "block",
+   "ok": true,
+   "reason": "",
+   "duration": 8,
+   "ms": 207,
+   "errors": []
+  },
+  {
+   "name": "yt-lcd-background",
+   "type": "block",
+   "ok": true,
+   "reason": "",
+   "duration": 10,
+   "ms": 691,
+   "errors": []
+  },
+  {
+   "name": "yt-logo-intro",
+   "type": "block",
+   "ok": true,
+   "reason": "",
+   "duration": 6,
+   "ms": 500,
+   "errors": []
+  },
+  {
+   "name": "yt-lower-third",
+   "type": "block",
+   "ok": true,
+   "reason": "",
+   "duration": 4.5,
+   "ms": 174,
+   "errors": []
+  },
+  {
+   "name": "yt-prism-title",
+   "type": "block",
+   "ok": true,
+   "reason": "",
+   "duration": 6,
+   "ms": 435,
+   "errors": []
+  },
+  {
+   "name": "yt-vertical-fill",
+   "type": "block",
+   "ok": true,
+   "reason": "",
+   "duration": 8,
+   "ms": 467,
+   "errors": []
+  },
+  {
+   "name": "animated-bar-chart",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 5,
+   "ms": 146,
+   "errors": []
+  },
+  {
+   "name": "arc-motion-path",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 5,
+   "ms": 254,
+   "errors": []
+  },
+  {
+   "name": "ascii-render-pass",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 4,
+   "ms": 251,
+   "errors": []
+  },
+  {
+   "name": "ascii-trail-reveal",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 4,
+   "ms": 1065,
+   "errors": []
+  },
+  {
+   "name": "aurora-drift",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 4,
+   "ms": 814,
+   "errors": []
+  },
+  {
+   "name": "avatar-cloud",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 5,
+   "ms": 489,
+   "errors": []
+  },
+  {
+   "name": "avatar-group-hover",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 5,
+   "ms": 177,
+   "errors": []
+  },
+  {
+   "name": "badge-pop",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 5,
+   "ms": 178,
+   "errors": []
+  },
+  {
+   "name": "beat-accent",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 4,
+   "ms": 148,
+   "errors": []
+  },
+  {
+   "name": "beat-pulse-background",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 4,
+   "ms": 645,
+   "errors": []
+  },
+  {
+   "name": "beat-timeline",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 5.5,
+   "ms": 463,
+   "errors": []
+  },
+  {
+   "name": "before-after-wipe",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 4,
+   "ms": 292,
+   "errors": []
+  },
+  {
+   "name": "blur-in",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 4,
+   "ms": 162,
+   "errors": []
+  },
+  {
+   "name": "blur-out-up",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 5,
+   "ms": 130,
+   "errors": []
+  },
+  {
+   "name": "bottom-up-letters",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 4,
+   "ms": 137,
+   "errors": []
+  },
+  {
+   "name": "browser-device-stage",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 5,
+   "ms": 352,
+   "errors": []
+  },
+  {
+   "name": "camera-rig-depth-stack",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 5,
+   "ms": 415,
+   "errors": []
+  },
+  {
+   "name": "camera-scan-gate",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 4,
+   "ms": 733,
+   "errors": []
+  },
+  {
+   "name": "camera-shake",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 6,
+   "ms": 1062,
+   "errors": []
+  },
+  {
+   "name": "caption-blend-difference",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 30,
+   "ms": 148,
+   "errors": [
+    "404 /hyperframes/components/root/root.html"
+   ]
+  },
+  {
+   "name": "caption-camera-follow",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 9,
+   "ms": 445,
+   "errors": []
+  },
+  {
+   "name": "caption-clip-wipe",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 8,
+   "ms": 237,
+   "errors": []
+  },
+  {
+   "name": "caption-editorial-emphasis",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 8,
+   "ms": 250,
+   "errors": []
+  },
+  {
+   "name": "caption-emoji-pop",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 8,
+   "ms": 238,
+   "errors": [
+    "404 /hyperframes/caption-overrides.json"
+   ]
+  },
+  {
+   "name": "caption-glitch-rgb",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 8,
+   "ms": 281,
+   "errors": []
+  },
+  {
+   "name": "caption-gradient-fill",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 8,
+   "ms": 246,
+   "errors": []
+  },
+  {
+   "name": "caption-highlight",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 8,
+   "ms": 251,
+   "errors": []
+  },
+  {
+   "name": "caption-kinetic-slam",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 8,
+   "ms": 241,
+   "errors": []
+  },
+  {
+   "name": "caption-matrix-decode",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 8,
+   "ms": 229,
+   "errors": []
+  },
+  {
+   "name": "caption-neon-accent",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 8,
+   "ms": 251,
+   "errors": [
+    "404 /hyperframes/caption-overrides.json"
+   ]
+  },
+  {
+   "name": "caption-neon-glow",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 8,
+   "ms": 252,
+   "errors": []
+  },
+  {
+   "name": "caption-parallax-layers",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 8,
+   "ms": 812,
+   "errors": []
+  },
+  {
+   "name": "caption-particle-burst",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 8,
+   "ms": 402,
+   "errors": []
+  },
+  {
+   "name": "caption-pill-karaoke",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 8,
+   "ms": 229,
+   "errors": [
+    "404 /hyperframes/caption-overrides.json"
+   ]
+  },
+  {
+   "name": "caption-texture",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 8,
+   "ms": 233,
+   "errors": [
+    "404 /hyperframes/compositions/components/lava.png"
+   ]
+  },
+  {
+   "name": "caption-weight-shift",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 8,
+   "ms": 234,
+   "errors": [
+    "404 /hyperframes/caption-overrides.json"
+   ]
+  },
+  {
+   "name": "card-resize",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 5,
+   "ms": 150,
+   "errors": []
+  },
+  {
+   "name": "char-slam-explode",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 3.5,
+   "ms": 155,
+   "errors": []
+  },
+  {
+   "name": "chart-story",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 5,
+   "ms": 155,
+   "errors": []
+  },
+  {
+   "name": "chat-message",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 3,
+   "ms": 141,
+   "errors": []
+  },
+  {
+   "name": "chat-thread",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 12,
+   "ms": 276,
+   "errors": []
+  },
+  {
+   "name": "chromatic-aberration-wipe",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 5,
+   "ms": 219,
+   "errors": []
+  },
+  {
+   "name": "code-terminal-run",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 5,
+   "ms": 204,
+   "errors": []
+  },
+  {
+   "name": "colorama-wipe",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 3.6,
+   "ms": 237,
+   "errors": []
+  },
+  {
+   "name": "comparison-split",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 4,
+   "ms": 482,
+   "errors": []
+  },
+  {
+   "name": "confetti",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 5,
+   "ms": 428,
+   "errors": []
+  },
+  {
+   "name": "conic-progress-ring",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 4,
+   "ms": 254,
+   "errors": []
+  },
+  {
+   "name": "constellation-hub",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 4.5,
+   "ms": 196,
+   "errors": []
+  },
+  {
+   "name": "count-up",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 3,
+   "ms": 235,
+   "errors": []
+  },
+  {
+   "name": "cta-close",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 3.5,
+   "ms": 148,
+   "errors": []
+  },
+  {
+   "name": "cta-lockup",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 4,
+   "ms": 235,
+   "errors": []
+  },
+  {
+   "name": "cursor-glyph-trail",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 4,
+   "ms": 181,
+   "errors": []
+  },
+  {
+   "name": "cut-the-curve",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 1,
+   "ms": 327,
+   "errors": []
+  },
+  {
+   "name": "decline-chart",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 4,
+   "ms": 448,
+   "errors": []
+  },
+  {
+   "name": "device-frame-stage",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 5,
+   "ms": 336,
+   "errors": []
+  },
+  {
+   "name": "directional-wipe",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 5,
+   "ms": 211,
+   "errors": []
+  },
+  {
+   "name": "drift-hold",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 4,
+   "ms": 310,
+   "errors": []
+  },
+  {
+   "name": "dynamic-grid",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 6,
+   "ms": 133,
+   "errors": []
+  },
+  {
+   "name": "echo-trail",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 3.5,
+   "ms": 134,
+   "errors": []
+  },
+  {
+   "name": "extended-keyframe",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 8,
+   "ms": 222,
+   "errors": []
+  },
+  {
+   "name": "facet-morph",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 5,
+   "ms": 289,
+   "errors": []
+  },
+  {
+   "name": "fade-through",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 5,
+   "ms": 200,
+   "errors": []
+  },
+  {
+   "name": "focus-blur-resolve",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 5,
+   "ms": 137,
+   "errors": []
+  },
+  {
+   "name": "focus-rack",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 3.5,
+   "ms": 512,
+   "errors": []
+  },
+  {
+   "name": "focus-swap",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 1.5,
+   "ms": 452,
+   "errors": []
+  },
+  {
+   "name": "gesture-tap",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 3,
+   "ms": 301,
+   "errors": []
+  },
+  {
+   "name": "gloss-sweep",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 2.5,
+   "ms": 215,
+   "errors": []
+  },
+  {
+   "name": "grade-split-reveal",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 6,
+   "ms": 26096,
+   "errors": []
+  },
+  {
+   "name": "grain-field",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 4,
+   "ms": 663,
+   "errors": []
+  },
+  {
+   "name": "grain-overlay",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 5,
+   "ms": 13441,
+   "errors": []
+  },
+  {
+   "name": "grid-card-assemble",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 4.5,
+   "ms": 13250,
+   "errors": []
+  },
+  {
+   "name": "grid-pixelate-wipe",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 8,
+   "ms": 169,
+   "errors": []
+  },
+  {
+   "name": "halftone-dissolve",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 3.5,
+   "ms": 339,
+   "errors": []
+  },
+  {
+   "name": "headline-slam",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 3.5,
+   "ms": 256,
+   "errors": []
+  },
+  {
+   "name": "hw-arrow",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 4,
+   "ms": 251,
+   "errors": [
+    "404 /hyperframes/assets/fonts/Caveat-700-latin.woff2"
+   ]
+  },
+  {
+   "name": "hw-boil",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 4,
+   "ms": 234,
+   "errors": [
+    "404 /hyperframes/assets/fonts/Caveat-700-latin.woff2"
+   ]
+  },
+  {
+   "name": "hw-box-label",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 4,
+   "ms": 247,
+   "errors": [
+    "404 /hyperframes/assets/fonts/Caveat-700-latin.woff2"
+   ]
+  },
+  {
+   "name": "hw-callout-circle",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 4,
+   "ms": 266,
+   "errors": [
+    "404 /hyperframes/assets/fonts/Caveat-700-latin.woff2"
+   ]
+  },
+  {
+   "name": "hw-underline",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 4,
+   "ms": 279,
+   "errors": [
+    "404 /hyperframes/assets/fonts/Caveat-700-latin.woff2"
+   ]
+  },
+  {
+   "name": "icon-morph-beat",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 2.5,
+   "ms": 309,
+   "errors": []
+  },
+  {
+   "name": "icon-swap",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 5,
+   "ms": 128,
+   "errors": []
+  },
+  {
+   "name": "ink-bleed-reveal",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 4,
+   "ms": 672,
+   "errors": []
+  },
+  {
+   "name": "inline-highlight",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 4,
+   "ms": 305,
+   "errors": []
+  },
+  {
+   "name": "input-feedback",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 5,
+   "ms": 160,
+   "errors": []
+  },
+  {
+   "name": "iris-reveal",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 3.5,
+   "ms": 276,
+   "errors": []
+  },
+  {
+   "name": "keyframe-scrub-stack",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 5,
+   "ms": 263,
+   "errors": []
+  },
+  {
+   "name": "kinetic-center-build",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 2,
+   "ms": 257,
+   "errors": []
+  },
+  {
+   "name": "kinetic-type-swap",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 4,
+   "ms": 135,
+   "errors": []
+  },
+  {
+   "name": "light-sweep-pass",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 4,
+   "ms": 442,
+   "errors": []
+  },
+  {
+   "name": "line-by-line-slide",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 5,
+   "ms": 248,
+   "errors": []
+  },
+  {
+   "name": "line-swap",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 3.5,
+   "ms": 145,
+   "errors": []
+  },
+  {
+   "name": "locked-nucleus-orbit",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 4,
+   "ms": 331,
+   "errors": []
+  },
+  {
+   "name": "logo-brand-close",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 4,
+   "ms": 147,
+   "errors": []
+  },
+  {
+   "name": "logo-sting",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 2.2,
+   "ms": 233,
+   "errors": []
+  },
+  {
+   "name": "logo-wall",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 5,
+   "ms": 158,
+   "errors": []
+  },
+  {
+   "name": "marker-checklist-card",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 4.5,
+   "ms": 293,
+   "errors": [
+    "404 /hyperframes/assets/fonts/courier-prime-700.woff2",
+    "404 /hyperframes/assets/fonts/permanent-marker-400.woff2"
+   ]
+  },
+  {
+   "name": "marker-highlight",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 3.5,
+   "ms": 233,
+   "errors": []
+  },
+  {
+   "name": "match-cut",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 4,
+   "ms": 287,
+   "errors": []
+  },
+  {
+   "name": "matrix-decode",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 5,
+   "ms": 135,
+   "errors": []
+  },
+  {
+   "name": "menu-morph",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 5,
+   "ms": 155,
+   "errors": []
+  },
+  {
+   "name": "mesh-gradient-bg",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 5,
+   "ms": 255,
+   "errors": []
+  },
+  {
+   "name": "micro-transitions",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 5,
+   "ms": 150,
+   "errors": []
+  },
+  {
+   "name": "mk-emphasis-type",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 4,
+   "ms": 233,
+   "errors": []
+  },
+  {
+   "name": "mk-usage-arc",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 4,
+   "ms": 248,
+   "errors": []
+  },
+  {
+   "name": "modal-morph",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 4,
+   "ms": 269,
+   "errors": []
+  },
+  {
+   "name": "morph-swap",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 3.5,
+   "ms": 217,
+   "errors": []
+  },
+  {
+   "name": "morph-text",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 15,
+   "ms": 342,
+   "errors": []
+  },
+  {
+   "name": "motion-blur",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 6,
+   "ms": 127,
+   "errors": [
+    "404 /hyperframes/components/my-composition/my-composition.html"
+   ]
+  },
+  {
+   "name": "multi-device-splay",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 4.5,
+   "ms": 598,
+   "errors": []
+  },
+  {
+   "name": "multiplayer-cursors",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 6,
+   "ms": 371,
+   "errors": []
+  },
+  {
+   "name": "native-notification-pop",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 3,
+   "ms": 704,
+   "errors": []
+  },
+  {
+   "name": "notes-typing",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 10,
+   "ms": 326,
+   "errors": []
+  },
+  {
+   "name": "notification-pileup",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 8,
+   "ms": 553,
+   "errors": []
+  },
+  {
+   "name": "notification-stack",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 4,
+   "ms": 301,
+   "errors": []
+  },
+  {
+   "name": "number-pop-in",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 5,
+   "ms": 141,
+   "errors": []
+  },
+  {
+   "name": "number-wheel",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 5,
+   "ms": 139,
+   "errors": []
+  },
+  {
+   "name": "offset-path-traveler",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 4,
+   "ms": 225,
+   "errors": []
+  },
+  {
+   "name": "onboarding-stepper-flow",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 5,
+   "ms": 136,
+   "errors": []
+  },
+  {
+   "name": "ordered-dither-pass",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 3.5,
+   "ms": 259,
+   "errors": []
+  },
+  {
+   "name": "outline-draw",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 4,
+   "ms": 303,
+   "errors": []
+  },
+  {
+   "name": "oversized-cursor",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 4.2,
+   "ms": 161,
+   "errors": []
+  },
+  {
+   "name": "overwhelm-surround",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 4.5,
+   "ms": 285,
+   "errors": []
+  },
+  {
+   "name": "page-slide",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 5,
+   "ms": 137,
+   "errors": []
+  },
+  {
+   "name": "pan-stations",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 4,
+   "ms": 443,
+   "errors": []
+  },
+  {
+   "name": "panel-reveal",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 5,
+   "ms": 170,
+   "errors": []
+  },
+  {
+   "name": "parallax-device-dive",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 4.5,
+   "ms": 366,
+   "errors": []
+  },
+  {
+   "name": "parallax-unzoom",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 6,
+   "ms": 125,
+   "errors": []
+  },
+  {
+   "name": "parallax-zoom",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 6,
+   "ms": 134,
+   "errors": []
+  },
+  {
+   "name": "particle-image-reveal",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 4,
+   "ms": 164,
+   "errors": []
+  },
+  {
+   "name": "particle-text-dissolve",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 4,
+   "ms": 216,
+   "errors": []
+  },
+  {
+   "name": "per-word-crossfade",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 5,
+   "ms": 134,
+   "errors": []
+  },
+  {
+   "name": "per-word-rise",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 3.5,
+   "ms": 148,
+   "errors": []
+  },
+  {
+   "name": "perspective-marquee",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 5,
+   "ms": 166,
+   "errors": []
+  },
+  {
+   "name": "physical-exit",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 3,
+   "ms": 138,
+   "errors": []
+  },
+  {
+   "name": "press-ripple",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 3,
+   "ms": 177,
+   "errors": []
+  },
+  {
+   "name": "pull-back-reveal",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 4.5,
+   "ms": 1287,
+   "errors": []
+  },
+  {
+   "name": "pull-to-refresh",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 4,
+   "ms": 684,
+   "errors": []
+  },
+  {
+   "name": "push-in",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 4,
+   "ms": 380,
+   "errors": []
+  },
+  {
+   "name": "radial-surround",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 5,
+   "ms": 151,
+   "errors": []
+  },
+  {
+   "name": "rgb-glitch-text",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 5,
+   "ms": 136,
+   "errors": []
+  },
+  {
+   "name": "rubber-band-bumper",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 2.5,
+   "ms": 850,
+   "errors": []
+  },
+  {
+   "name": "scan-band",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 3.5,
+   "ms": 778,
+   "errors": []
+  },
+  {
+   "name": "scramble-reveal",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 3,
+   "ms": 411,
+   "errors": []
+  },
+  {
+   "name": "screen-flow-carousel",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 5,
+   "ms": 306,
+   "errors": []
+  },
+  {
+   "name": "scroll-camera-story",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 5.5,
+   "ms": 359,
+   "errors": []
+  },
+  {
+   "name": "scroll-feed",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 4,
+   "ms": 3726,
+   "errors": []
+  },
+  {
+   "name": "segmentation-flood",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 4.5,
+   "ms": 211,
+   "errors": []
+  },
+  {
+   "name": "separator",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 4,
+   "ms": 143,
+   "errors": []
+  },
+  {
+   "name": "settings-toggle-flow",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 5,
+   "ms": 142,
+   "errors": []
+  },
+  {
+   "name": "shared-axis-y",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 5,
+   "ms": 132,
+   "errors": []
+  },
+  {
+   "name": "shared-axis-z",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 5,
+   "ms": 133,
+   "errors": []
+  },
+  {
+   "name": "sheet-spring-up",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 4,
+   "ms": 134,
+   "errors": []
+  },
+  {
+   "name": "shimmer-sweep",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 6,
+   "ms": 135,
+   "errors": []
+  },
+  {
+   "name": "shutter-slam",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 6,
+   "ms": 261,
+   "errors": []
+  },
+  {
+   "name": "signup-flow",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 5,
+   "ms": 134,
+   "errors": []
+  },
+  {
+   "name": "simulated-cursor",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 5,
+   "ms": 124,
+   "errors": []
+  },
+  {
+   "name": "skeleton-reveal",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 5,
+   "ms": 185,
+   "errors": []
+  },
+  {
+   "name": "slit-scan-reveal",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 4,
+   "ms": 295,
+   "errors": []
+  },
+  {
+   "name": "slot-machine-roll",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 5,
+   "ms": 153,
+   "errors": []
+  },
+  {
+   "name": "social-proof-card",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 4,
+   "ms": 246,
+   "errors": []
+  },
+  {
+   "name": "soft-blob-touch",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 4,
+   "ms": 568,
+   "errors": []
+  },
+  {
+   "name": "soft-blur-in",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 5,
+   "ms": 149,
+   "errors": []
+  },
+  {
+   "name": "split-tilt-cards",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 4.5,
+   "ms": 432,
+   "errors": []
+  },
+  {
+   "name": "spotlight-card",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 5,
+   "ms": 403,
+   "errors": []
+  },
+  {
+   "name": "spring-pop",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 2,
+   "ms": 233,
+   "errors": []
+  },
+  {
+   "name": "spring-stack-shuffle",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 4,
+   "ms": 289,
+   "errors": []
+  },
+  {
+   "name": "stagger-cascade",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 4,
+   "ms": 275,
+   "errors": []
+  },
+  {
+   "name": "stagger-lattice",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 5,
+   "ms": 159,
+   "errors": []
+  },
+  {
+   "name": "staggered-fade-up",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 5,
+   "ms": 138,
+   "errors": []
+  },
+  {
+   "name": "star-rating-fill",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 4,
+   "ms": 359,
+   "errors": []
+  },
+  {
+   "name": "state-chip-rail",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 5,
+   "ms": 182,
+   "errors": []
+  },
+  {
+   "name": "sticky-mock-swap",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 6,
+   "ms": 326,
+   "errors": []
+  },
+  {
+   "name": "stitched-text-draw",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 4,
+   "ms": 321,
+   "errors": []
+  },
+  {
+   "name": "stop-motion-cadence",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 4,
+   "ms": 188,
+   "errors": []
+  },
+  {
+   "name": "store-badge-lockup",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 4,
+   "ms": 280,
+   "errors": []
+  },
+  {
+   "name": "streaming-text",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 5.5,
+   "ms": 150,
+   "errors": []
+  },
+  {
+   "name": "strikethrough-replace",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 5,
+   "ms": 148,
+   "errors": []
+  },
+  {
+   "name": "success-check",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 5,
+   "ms": 143,
+   "errors": []
+  },
+  {
+   "name": "svg-line-draw-loader",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 5,
+   "ms": 148,
+   "errors": []
+  },
+  {
+   "name": "svg-mask-reveal",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 4,
+   "ms": 575,
+   "errors": []
+  },
+  {
+   "name": "svg-stroke-trace",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 3.5,
+   "ms": 321,
+   "errors": []
+  },
+  {
+   "name": "swipe-rail",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 4,
+   "ms": 291,
+   "errors": []
+  },
+  {
+   "name": "tabs-slide-indicator",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 5,
+   "ms": 131,
+   "errors": []
+  },
+  {
+   "name": "telemetry-hud",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 4.5,
+   "ms": 243,
+   "errors": []
+  },
+  {
+   "name": "terminal-simulator",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 5,
+   "ms": 141,
+   "errors": []
+  },
+  {
+   "name": "testimonial-card",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 4,
+   "ms": 265,
+   "errors": []
+  },
+  {
+   "name": "testimonial-proof-card",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 4.5,
+   "ms": 239,
+   "errors": []
+  },
+  {
+   "name": "text-match-cut",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 3,
+   "ms": 222,
+   "errors": []
+  },
+  {
+   "name": "text-shimmer",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 3,
+   "ms": 254,
+   "errors": []
+  },
+  {
+   "name": "text-stagger",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 5,
+   "ms": 133,
+   "errors": []
+  },
+  {
+   "name": "text-state-swap",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 5,
+   "ms": 134,
+   "errors": []
+  },
+  {
+   "name": "texture-mask-text",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 5,
+   "ms": 117,
+   "errors": []
+  },
+  {
+   "name": "three-orbiting-cards",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 5,
+   "ms": 131,
+   "errors": [
+    "404 /npm/three@0.184.0/build/three.module.js"
+   ]
+  },
+  {
+   "name": "ticker-takeover",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 4.5,
+   "ms": 209,
+   "errors": []
+  },
+  {
+   "name": "tilt-card",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 5,
+   "ms": 426,
+   "errors": []
+  },
+  {
+   "name": "titlecard-calm",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 4,
+   "ms": 349,
+   "errors": []
+  },
+  {
+   "name": "titlecard-lockup",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 4,
+   "ms": 359,
+   "errors": []
+  },
+  {
+   "name": "toggle-flip",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 4,
+   "ms": 428,
+   "errors": []
+  },
+  {
+   "name": "top-down-letters",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 5,
+   "ms": 361,
+   "errors": []
+  },
+  {
+   "name": "touch-indicator",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 3,
+   "ms": 339,
+   "errors": []
+  },
+  {
+   "name": "tracing-beam",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 4.5,
+   "ms": 419,
+   "errors": []
+  },
+  {
+   "name": "tracking-in",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 4,
+   "ms": 255,
+   "errors": []
+  },
+  {
+   "name": "trust-strip",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 3.5,
+   "ms": 222,
+   "errors": []
+  },
+  {
+   "name": "type-match-cut",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 4,
+   "ms": 847,
+   "errors": []
+  },
+  {
+   "name": "typed-prompt",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 4,
+   "ms": 460,
+   "errors": []
+  },
+  {
+   "name": "typewriter",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 5,
+   "ms": 249,
+   "errors": []
+  },
+  {
+   "name": "typing-indicator",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 4.5,
+   "ms": 243,
+   "errors": []
+  },
+  {
+   "name": "ui-focus-zoom",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 4.5,
+   "ms": 431,
+   "errors": []
+  },
+  {
+   "name": "variable-axis-type",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 1.6,
+   "ms": 250,
+   "errors": []
+  },
+  {
+   "name": "variable-font-flex",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 3.5,
+   "ms": 338,
+   "errors": []
+  },
+  {
+   "name": "vector-editor-rig",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 4.5,
+   "ms": 959,
+   "errors": []
+  },
+  {
+   "name": "velocity-throw-snap",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 4,
+   "ms": 658,
+   "errors": []
+  },
+  {
+   "name": "vignette",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 5,
+   "ms": 282,
+   "errors": []
+  },
+  {
+   "name": "vox-annotate",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 4,
+   "ms": 231,
+   "errors": []
+  },
+  {
+   "name": "whip-pan-cut",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 1.2,
+   "ms": 566,
+   "errors": []
+  },
+  {
+   "name": "whiteboard-ink",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 5,
+   "ms": 529,
+   "errors": []
+  },
+  {
+   "name": "wordmark-tiles",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 6.5,
+   "ms": 401,
+   "errors": []
+  },
+  {
+   "name": "x-follow-card",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 5,
+   "ms": 241,
+   "errors": []
+  },
+  {
+   "name": "yt-camera-move",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 4,
+   "ms": 561,
+   "errors": []
+  },
+  {
+   "name": "yt-circle-pointer",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 5,
+   "ms": 348,
+   "errors": []
+  },
+  {
+   "name": "yt-feather-highlight",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 5,
+   "ms": 438,
+   "errors": []
+  },
+  {
+   "name": "yt-screen-warp",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 4,
+   "ms": 897,
+   "errors": []
+  },
+  {
+   "name": "zoom-through-transition",
+   "type": "component",
+   "ok": true,
+   "reason": "",
+   "duration": 3,
+   "ms": 817,
+   "errors": []
+  }
+ ]
+}

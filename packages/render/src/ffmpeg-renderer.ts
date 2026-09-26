@@ -98,6 +98,11 @@ export function draftSegment(shot: Shot, height: number, fadeIn: boolean): Draft
   const small = Math.round(height * 0.028);
   const stack = (blocks: Block[]) => stackTexts(blocks.filter((b) => b.text), 0.5, height);
   const zoom: DraftSegment['zoom'] = shot.camera === 'pull_out' ? 'out' : shot.camera === 'static' ? 'none' : 'in';
+  if (shot.block) {
+    // HyperFrames pages need a browser: the draft names the block and its title.
+    const title = shot.block.variables?.title ?? shot.block.variables?.headline ?? shot.text ?? '';
+    return { kind: 'card', texts: stack([{ text: `HYPERFRAMES · ${shot.block.item}`.toUpperCase(), size: small, color: T.accent, maxChars: 60 }, { text: String(title).toUpperCase(), size: big, color: '#FFFFFF' }]), zoom: 'none', fadeIn };
+  }
   switch (shot.type) {
     case 'image':
       return { kind: 'image', media: shot.media!, texts: [], zoom, fadeIn };

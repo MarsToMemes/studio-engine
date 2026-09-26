@@ -1,4 +1,5 @@
 /** Quality control of a rendered episode (engine `runQc`), with FFmpeg doing the decoding. */
+import { loadHyperFramesCatalog, planUsesHyperFrames } from './hyperframes.js';
 import { mkdirSync, mkdtempSync, readFileSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
@@ -61,6 +62,7 @@ export interface QcRunOptions {
 
 export async function qcEpisode(tools: FfmpegTools, plan: ShotPlan, render: string | undefined, options: QcRunOptions = {}): Promise<QcReport> {
   const input: Parameters<typeof runQc>[0] = { plan, stage: options.stage ?? 'final', ...(options.review ? { review: options.review } : {}) };
+  if (planUsesHyperFrames(plan)) input.compile = { hyperframes: loadHyperFramesCatalog() };
   if (render) {
     input.probe = parseFfprobe(ffprobeJson(tools, render));
     Object.assign(input, await analysePictures(tools, render, plan.fps));

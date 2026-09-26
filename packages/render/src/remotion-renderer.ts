@@ -16,6 +16,7 @@ import { assetFingerprint, bundleVersion, sha256 } from './files.js';
 import { muxAndMaster } from './master.js';
 import { hasUnmutedVideo, mixAudio, mixKey } from './mixer.js';
 import type { RenderEngine, RenderRequest, RenderResult } from './types.js';
+import { hyperframesMissing, loadHyperFramesCatalog, planUsesHyperFrames } from './hyperframes.js';
 
 const here = dirname(fileURLToPath(import.meta.url));
 
@@ -43,7 +44,7 @@ export function defaultEntryPoint(): string {
 
 export function compileRequest(request: RenderRequest): VideoProject {
   if (request.project) return request.project;
-  const r = compileShotPlan(request.plan);
+  const r = compileShotPlan(request.plan, planUsesHyperFrames(request.plan) ? { hyperframes: loadHyperFramesCatalog() } : {});
   if (!r.ok) throw new Error(`the plan does not compile:\n${r.errors.map((e) => `${e.path}: ${e.message}`).join('\n')}`);
   return r.project;
 }
@@ -71,6 +72,8 @@ export class RemotionRenderer implements RenderEngine {
     const chunkDir = join(cacheDir, 'chunks');
     mkdirSync(chunkDir, { recursive: true });
     const project = compileRequest(request);
+    const missing = hyperframesMissing(project, request.publicDir ?? resolve(here, '..', '..', 'remotion', 'public'));
+    if (missing) throw new Error(missing);
     const scale = request.scale ?? 1;
     const crf = this.options.crf ?? 18;
 
