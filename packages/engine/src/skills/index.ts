@@ -2,6 +2,7 @@ import { DATA_SKILLS } from './data.js';
 import { DOCUMENT_SKILLS } from './documents.js';
 import { EDITORIAL_SKILLS } from './editorial.js';
 import { EXTENDED_SKILLS } from './extended.js';
+import { HYPERFRAMES_SKILLS } from './hyperframes.js';
 import { IMAGE_SKILLS } from './images.js';
 import { MAP_SKILLS } from './maps.js';
 import { NUMBER_SKILLS } from './numbers.js';
@@ -30,6 +31,7 @@ export const BUILT_IN_SKILLS: readonly SkillDefinition[] = [
   ...REVEAL_SKILLS,
   ...EDITORIAL_SKILLS,
   ...EXTENDED_SKILLS,
+  ...HYPERFRAMES_SKILLS,
 ].map((s) => (FAMILIES[s.id] ? { ...s, family: FAMILIES[s.id]! } : s));
 
 /** Fallback chains of every built-in skill, usable even where a skill is not installed. */

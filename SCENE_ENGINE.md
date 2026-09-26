@@ -671,7 +671,7 @@ compileShotPlan(plan, { skills: false })                   // no motion
 - **Events.** Each application records editorial events (`keyword`, `number`, `highlight`, `reveal`, `impact`, `glitch`, `whoosh`, `chapter`, `text`) with their frame in `scene.metadata.extra.events` — the input of automatic sound design (Phase 8).
 - **Parameters** (`motionParams`) are validated against the skill definition; invalid values fall back to defaults with a note.
 
-Catalog (65 skills; previews in `motion-library/`):
+Catalog (73 skills; previews in `motion-library/`):
 
 | Category | Skills |
 |---|---|
@@ -683,6 +683,26 @@ Catalog (65 skills; previews in `motion-library/`):
 | maps | `map_zoom`, `map_route`, `location_pin`, `country_highlight`, `business_expansion`, `flight_route`, `city_zoom` (MapLibre) |
 | reveals | `glitch_reveal`, `flash_reveal`, `blackout_reveal`, `zoom_reveal`, `text_reveal`, `light_reveal`, `impact_reveal` |
 | editorial | `chapter_card`, `source_card`, `quote_card`, `lower_third`, `full_screen_statement`, `warning_card`, `key_fact`, `timeline_event` |
+
+**HyperFrames pack** (`skills/hyperframes.ts`).
+
+- **What it is.** Eight rules of HeyGen's HyperFrames (`skills/hyperframes-animation/rules`, Apache-2.0), reimplemented frame by frame with engine primitives. There is no GSAP, no DOM measuring and no randomness: the per-word variations come from the word's index (golden angle).
+- **The eight skills**:
+
+  | HyperFrames rule | Skill | What it does |
+  |---|---|---|
+  | counting-dynamic-scale | `count_scale` | the figure grows from about 60 % to full size while it counts |
+  | asr-keyword-glow | `keyword_glow` | each key word glows (a tight core and a wide halo, accent colour) and swells slightly when it is spoken; attack, sustain, then release to a resting glow |
+  | 3d-text-depth-layers | `depth_layers` | 4 to 8 copies stacked diagonally behind the line, alpha stepping down, built from the back |
+  | depth-of-field-blur | `rack_focus` | over an image with words, the picture blurs and dims while the words stay sharp; a bare image racks from soft to sharp |
+  | depth-scatter-assemble | `scatter_assemble` | each word flies in from its own point of a depth cloud and locks into the line |
+  | kinetic-beat-slam | `beat_slam` | one word per beat (0.4 s, squeezed on short shots), with alternating slam / side-snap / rise entrances |
+  | ambient-glow-bloom | `glow_bloom` | a radial glow blooms behind the figure and breathes, never above 0.45 opacity |
+  | multi-phase-camera | `phase_camera` | the camera settles from a slight close-up, holds, then pushes slowly, with an x/y micro-drift at a 1 : 1.3 frequency ratio |
+
+- **Engine addition**: two kinetic styles, `scatter` and `beat`, whose state depends on the word's index.
+- **Brain**: the editorial grammar offers `keyword_glow` (hooks, important facts), `count_scale` (figures) and `scatter_assemble` (revelations). `depth_layers` and `beat_slam` are alternatives, the latter only for 7 words or fewer.
+- **Agent skills**: the two HyperFrames motion skills are installed as a reference in `.claude/skills/`, pinned in `skills-lock.json`. `CLAUDE.md` says how to use them here: port a rule as a Motion Skill, never write HyperFrames HTML or add GSAP.
 
 Registry v2 skills (Phase 5), in short:
 
@@ -1078,7 +1098,7 @@ At 1080p, a single-pass Remotion render of the same episode takes 114 s on 4 cor
 ## 26. Testing
 
 ```
-npm test          # 340 engine + 43 editor-brain + 7 render + 25 studio tests (Vitest)
+npm test          # 355 engine + 43 editor-brain + 7 render + 25 studio tests (Vitest)
 npm run e2e -w @studio-engine/studio   # browser smoke test (after npm run build -w @studio-engine/studio)
 npm run check     # typecheck + build + tests, all workspaces
 ```

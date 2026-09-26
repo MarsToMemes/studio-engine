@@ -2066,6 +2066,240 @@
         ]
       },
       "preview": "previews/timeline_event.jpg"
+    },
+    {
+      "version": 1,
+      "parameters": {},
+      "events": [
+        "number"
+      ],
+      "fallback": [
+        "number_count",
+        "number_pop"
+      ],
+      "controlsCamera": false,
+      "defaultDuration": 2.6,
+      "family": "count_scale",
+      "implementation": "remotion",
+      "id": "count_scale",
+      "name": "Count with scale",
+      "category": "numbers",
+      "description": "The figure counts up while it grows from about 60 % to full size: escalating weight for an impressive number. After HyperFrames counting-dynamic-scale.",
+      "intensity": "medium",
+      "duration": {
+        "min": 1.2,
+        "max": 4
+      },
+      "compatibleShotTypes": [
+        "number"
+      ],
+      "preview": "previews/count_scale.jpg"
+    },
+    {
+      "version": 1,
+      "parameters": {},
+      "events": [
+        "keyword"
+      ],
+      "fallback": [
+        "keyword_pop",
+        "highlight_word"
+      ],
+      "controlsCamera": false,
+      "defaultDuration": 3.5,
+      "family": "keyword_glow",
+      "implementation": "remotion",
+      "id": "keyword_glow",
+      "name": "Keyword glow",
+      "category": "text",
+      "description": "The key words glow and swell exactly when the voice says them, then keep a soft resting glow. After HyperFrames asr-keyword-glow.",
+      "intensity": "medium",
+      "duration": {
+        "min": 1,
+        "max": 6
+      },
+      "compatibleShotTypes": [
+        "text",
+        "revelation",
+        "chapter"
+      ],
+      "preview": "previews/keyword_glow.jpg"
+    },
+    {
+      "version": 1,
+      "parameters": {},
+      "events": [
+        "text"
+      ],
+      "fallback": [
+        "full_screen_statement",
+        "scale_text"
+      ],
+      "controlsCamera": false,
+      "defaultDuration": 2.6,
+      "family": "depth_layers",
+      "implementation": "remotion",
+      "id": "depth_layers",
+      "name": "Depth layers",
+      "category": "text",
+      "description": "Large typography extruded in depth: copies of the line stack diagonally behind it in the accent colour, building from the back. After HyperFrames 3d-text-depth-layers.",
+      "intensity": "strong",
+      "duration": {
+        "min": 1.2,
+        "max": 4
+      },
+      "compatibleShotTypes": [
+        "text",
+        "revelation",
+        "chapter"
+      ],
+      "preview": "previews/depth_layers.jpg"
+    },
+    {
+      "version": 1,
+      "parameters": {},
+      "events": [
+        "reveal"
+      ],
+      "fallback": [
+        "blur_transition",
+        "slow_push"
+      ],
+      "controlsCamera": true,
+      "defaultDuration": 3.8,
+      "family": "rack_focus",
+      "implementation": "remotion",
+      "id": "rack_focus",
+      "name": "Rack focus",
+      "category": "images",
+      "description": "Depth of field: with words on the image, the picture falls out of focus and dims so the words are the only sharp thing; a bare image racks from soft to sharp. After HyperFrames depth-of-field-blur.",
+      "intensity": "medium",
+      "duration": {
+        "min": 1.5,
+        "max": 6
+      },
+      "compatibleShotTypes": [
+        "image",
+        "video"
+      ],
+      "preview": "previews/rack_focus.jpg"
+    },
+    {
+      "version": 1,
+      "parameters": {},
+      "events": [
+        "reveal"
+      ],
+      "fallback": [
+        "blur_reveal",
+        "word_reveal"
+      ],
+      "controlsCamera": false,
+      "defaultDuration": 2.6,
+      "family": "scatter_assemble",
+      "implementation": "remotion",
+      "id": "scatter_assemble",
+      "name": "Scatter assemble",
+      "category": "reveals",
+      "description": "The words start scattered in depth (small, blurred, tilted, each at its own point) and collapse into the sentence: the idea comes together. After HyperFrames depth-scatter-assemble.",
+      "intensity": "medium",
+      "duration": {
+        "min": 1.2,
+        "max": 4
+      },
+      "compatibleShotTypes": [
+        "revelation",
+        "text",
+        "chapter"
+      ],
+      "preview": "previews/scatter_assemble.jpg"
+    },
+    {
+      "version": 1,
+      "parameters": {},
+      "events": [
+        "impact"
+      ],
+      "fallback": [
+        "kinetic_statement",
+        "scale_text"
+      ],
+      "controlsCamera": false,
+      "defaultDuration": 2.3,
+      "family": "beat_slam",
+      "implementation": "remotion",
+      "id": "beat_slam",
+      "name": "Beat slam",
+      "category": "text",
+      "description": "Percussive typography: each word lands on the beat with a different entrance (slam, side-snap, rise) and the line locks. For short, punchy statements. After HyperFrames kinetic-beat-slam.",
+      "intensity": "strong",
+      "duration": {
+        "min": 1,
+        "max": 3.5
+      },
+      "compatibleShotTypes": [
+        "text",
+        "revelation"
+      ],
+      "preview": "previews/beat_slam.jpg"
+    },
+    {
+      "version": 1,
+      "parameters": {},
+      "events": [],
+      "fallback": [
+        "number_pop",
+        "full_screen_statement"
+      ],
+      "controlsCamera": false,
+      "defaultDuration": 4.8,
+      "family": "glow_bloom",
+      "implementation": "remotion",
+      "id": "glow_bloom",
+      "name": "Glow bloom",
+      "category": "numbers",
+      "description": "A soft glow in the accent colour blooms behind the key figure or statement and breathes gently: presence without washing the frame. After HyperFrames ambient-glow-bloom.",
+      "intensity": "subtle",
+      "duration": {
+        "min": 1.5,
+        "max": 8
+      },
+      "compatibleShotTypes": [
+        "number",
+        "revelation",
+        "text",
+        "chapter"
+      ],
+      "preview": "previews/glow_bloom.jpg"
+    },
+    {
+      "version": 1,
+      "parameters": {},
+      "events": [],
+      "fallback": [
+        "slow_push",
+        "slow_zoom"
+      ],
+      "controlsCamera": true,
+      "defaultDuration": 6.5,
+      "family": "phase_camera",
+      "implementation": "remotion",
+      "id": "phase_camera",
+      "name": "Phase camera",
+      "category": "images",
+      "description": "A three-phase camera on the picture: settles from a slight close-up, holds, then pushes in slowly for the climax, with a constant micro-drift so it never feels frozen. After HyperFrames multi-phase-camera.",
+      "intensity": "medium",
+      "duration": {
+        "min": 3,
+        "max": 10
+      },
+      "compatibleShotTypes": [
+        "image",
+        "video",
+        "document",
+        "map"
+      ],
+      "preview": "previews/phase_camera.jpg"
     }
   ],
   "transitions": [

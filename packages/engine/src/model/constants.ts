@@ -35,7 +35,7 @@ export const ANIMATABLE_PROPERTIES = exhaustive<AnimatableProperty>()([
 ]);
 export const ANIMATION_PHASES = exhaustive<AnimationPhase>()(['in', 'out', 'during']);
 export const CAMERA_MOVES = exhaustive<CameraMove>()(['pushIn', 'pullOut', 'panLeft', 'panRight', 'tiltUp', 'tiltDown', 'kenBurns', 'dolly', 'orbit']);
-export const KINETIC_STYLES = exhaustive<KineticStyle>()(['pop', 'slam', 'wave', 'rise', 'flip', 'highlight']);
+export const KINETIC_STYLES = exhaustive<KineticStyle>()(['pop', 'slam', 'wave', 'rise', 'flip', 'highlight', 'scatter', 'beat']);
 export const TEXT_SPLITS = exhaustive<TextSplit>()(['characters', 'words', 'lines']);
 export const MASK_SHAPES = exhaustive<MaskShape>()(['rect', 'circle', 'diagonal']);
 export const EFFECT_TYPES = exhaustive<EffectType>()([

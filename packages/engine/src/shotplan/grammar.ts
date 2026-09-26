@@ -30,7 +30,7 @@ export interface GrammarEntry {
 export const EDITORIAL_GRAMMAR: Record<EditorialIntent, GrammarEntry> = {
   hook: {
     shotTypes: ['text', 'revelation', 'image'],
-    skills: ['keyword_pop', 'scale_text', 'mask_reveal', 'highlight_word', 'word_reveal', 'kinetic_statement'],
+    skills: ['keyword_pop', 'keyword_glow', 'scale_text', 'mask_reveal', 'highlight_word', 'word_reveal', 'kinetic_statement', 'beat_slam'],
     camera: ['punch_in', 'push_in'],
     sfx: ['impact'],
     why: 'One strong statement with its key word isolated: the promise of the video.',
@@ -39,7 +39,7 @@ export const EDITORIAL_GRAMMAR: Record<EditorialIntent, GrammarEntry> = {
   fact: { shotTypes: ['image', 'video', 'text'], skills: ['slow_zoom', 'slow_push', 'pan_left', 'pan_right', 'word_reveal'], camera: ['push_in', 'pan_left', 'pan_right', 'static'], sfx: [], why: 'A simple fact stays sober: image and restrained movement.' },
   important_fact: {
     shotTypes: ['text', 'image'],
-    skills: ['highlight_word', 'word_reveal', 'scale_text', 'mask_reveal', 'underline_word', 'keyword_pop', 'blur_reveal', 'kinetic_statement'],
+    skills: ['highlight_word', 'keyword_glow', 'word_reveal', 'scale_text', 'mask_reveal', 'underline_word', 'keyword_pop', 'blur_reveal', 'kinetic_statement', 'depth_layers'],
     camera: ['push_in', 'static'],
     sfx: ['pop', 'click'],
     why: 'An important fact becomes kinetic typography with its key word emphasised.',
@@ -47,7 +47,7 @@ export const EDITORIAL_GRAMMAR: Record<EditorialIntent, GrammarEntry> = {
   keyword: { shotTypes: ['text'], skills: ['keyword_pop', 'word_reveal', 'scale_text', 'mask_reveal', 'highlight_word', 'underline_word'], camera: ['static', 'punch_in'], sfx: ['click', 'pop'], why: 'The key word is isolated when it is spoken.' },
   number: {
     shotTypes: ['number'],
-    skills: ['number_pop', 'number_count', 'percentage_reveal', 'currency_reveal', 'stat_card', 'counter_roll', 'odometer'],
+    skills: ['number_pop', 'count_scale', 'number_count', 'percentage_reveal', 'currency_reveal', 'stat_card', 'counter_roll', 'odometer'],
     camera: ['static', 'punch_in'],
     sfx: ['impact'],
     why: 'The figure builds up on screen as it is spoken.',
@@ -78,14 +78,14 @@ export const EDITORIAL_GRAMMAR: Record<EditorialIntent, GrammarEntry> = {
   process: { shotTypes: ['text', 'image'], skills: ['word_reveal', 'slide_text', 'typewriter', 'timeline_event'], camera: ['static'], sfx: ['click'], why: 'Steps appear one after the other.' },
   contradiction: {
     shotTypes: ['text', 'image'],
-    skills: ['full_screen_statement', 'scale_text', 'word_reveal'],
+    skills: ['full_screen_statement', 'scale_text', 'word_reveal', 'depth_layers', 'beat_slam'],
     camera: ['static', 'push_in'],
     sfx: ['drop'],
     why: 'A break: hard cut and a plain statement, the music steps back.',
   },
   revelation: {
     shotTypes: ['revelation', 'text'],
-    skills: ['blackout_reveal', 'impact_reveal', 'zoom_reveal', 'flash_reveal', 'glitch_reveal', 'text_reveal', 'light_reveal'],
+    skills: ['blackout_reveal', 'impact_reveal', 'scatter_assemble', 'zoom_reveal', 'flash_reveal', 'glitch_reveal', 'text_reveal', 'light_reveal'],
     camera: ['punch_in', 'static'],
     sfx: ['impact', 'riser', 'reveal'],
     why: 'Change of rhythm, silence, impact, then the reveal.',

@@ -11,7 +11,7 @@ import type { Visual } from './visual.js';
 const WINDOW = 10;
 const MAX_IN_WINDOW = 3;
 const TYPOGRAPHIC: readonly ShotType[] = ['text', 'revelation'];
-const NEEDS_EMPHASIS = new Set(['keyword_pop', 'highlight_word', 'underline_word']);
+const NEEDS_EMPHASIS = new Set(['keyword_pop', 'highlight_word', 'underline_word', 'keyword_glow']);
 const CHART_SKILLS: Record<string, string[]> = { barChart: ['bar_animation', 'chart_growth', 'chart_reveal', 'comparison_graph'], lineChart: ['line_animation', 'chart_growth', 'chart_reveal'], pieChart: ['pie_reveal', 'chart_reveal'] };
 const SUPPORT_TEXT = ['word_reveal', 'slide_text', 'blur_reveal', 'mask_reveal', 'scale_text'];
 
@@ -69,6 +69,8 @@ export class MotionDirector {
     if (id === 'business_expansion' && (v.map?.markers?.length ?? 0) < 3) return false;
     if (id === 'map_route' && (v.map?.route?.length ?? 0) < 2) return false;
     if (id === 'country_highlight' && !v.map?.highlightCountries?.length) return false;
+    if (id === 'beat_slam' && (v.text ?? '').split(/\s+/).length > 7) return false;
+    if (id === 'scatter_assemble' && (v.text ?? '').split(/\s+/).length < 2) return false;
     if (id === 'blackout_reveal' && !afterSilence) return false;
     if (id === 'glitch_reveal' && (u.importance < 5 || this.glitches >= 3)) return false;
     return true;

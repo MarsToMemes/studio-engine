@@ -84,7 +84,7 @@ studio-engine/
     ├── engine/        @studio-engine/scene-engine   moteur pur, zéro dépendance
     │   ├── src/model/          modèle de données : scènes, calques, animations, audio, sous-titres, assets (+ droits)
     │   ├── src/shotplan/       ShotPlan v1/v2, Timeline JSON, validation éditoriale, grammaire, compilation, CLI
-    │   ├── src/skills/         Motion Skill Registry (65 skills), caméra de plan, replis
+    │   ├── src/skills/         Motion Skill Registry (73 skills), caméra de plan, replis
     │   ├── src/qc/             contrôle qualité (QC_REPORT.json) · src/mix/ loudness · src/render/ découpage et clés de cache
     │   ├── src/bible/          règles de la bible sous forme de données (générées depuis le .md)
     │   ├── src/transitions/    transitions éditoriales (coupe franche par défaut) → Remotion
@@ -144,13 +144,24 @@ studio-engine/
   - Push ou pull de 5 à 10 %, pans, tilts, punch, parallaxe, tremblement.
   - Cadrage de large à très gros plan, autour d'un point d'intérêt.
   - Un skill qui bouge déjà la caméra l'emporte, et le moteur le signale (CAM-02).
-- **Motion Skill Registry v2** : 65 skills en texte, chiffres, images, documents, données, cartes, révélations et éditorial. Il n'expose que ce qui peut réellement être rendu.
+- **Motion Skill Registry v2** : 73 skills en texte, chiffres, images, documents, données, cartes, révélations et éditorial. Il n'expose que ce qui peut réellement être rendu.
   - API : `getMotionSkill(id)`, `getCompatibleSkills(typeDePlan)`, `getFallbackSkill(id, typeDePlan)`.
   - Métadonnées par skill : `family`, `implementation` (`remotion` / `svg` / `maplibre`), `defaultDuration`, `controlsCamera`.
   - **Repli sûr par type de plan** : un id inventé par l'IA sur un plan chiffre donne `number_count`, jamais un plan sans mouvement ni un plantage.
   - **Familles** : `pan_left` et `pan_right` comptent comme un seul traitement « pan » pour la règle de répétition.
   - `city_zoom` : zoom jusqu'au niveau rue avec MapLibre ; il faut un style de tuiles, voir §5.2.
   - Catalogue et aperçus dans `motion-library/` (`catalog.json` + une image par skill).
+  - **Pack HyperFrames** (HeyGen, Apache-2.0) : 8 recettes de motion design adaptées en skills natifs, sans GSAP :
+    - `keyword_glow` : le mot clé s'illumine quand il est prononcé ;
+    - `count_scale` : le chiffre grandit en comptant ;
+    - `depth_layers` : typographie en relief ;
+    - `rack_focus` : mise au point sur l'image ;
+    - `scatter_assemble` : les mots s'assemblent ;
+    - `beat_slam` : un mot par temps ;
+    - `glow_bloom` : halo derrière un chiffre ;
+    - `phase_camera` : caméra en trois temps.
+
+    Les skills d'agent HyperFrames sont installés comme référence dans `.claude/skills/` ; les conditions d'emploi sont dans `CLAUDE.md`, et `THIRD_PARTY_NOTICES.md` donne la licence et l'attribution.
 - **Transitions** : la coupe franche par défaut ; les transitions spectaculaires sont limitées (≤ 25 % des coupes, au plus 3 glitch).
 - **Timeline JSON v2** : une vue à plat, **sans perte** dans les deux sens (`toTimeline` / `fromTimeline`).
 
@@ -188,7 +199,7 @@ studio-engine/
 - **Compositions** :
   - `EngineDemo` : **rend n'importe quel projet passé en `--props`** ; c'est celle qu'utilise le moteur local ;
   - `ShotPlanDemo` et `BrainDemo` : les exemples ;
-  - `MotionLibrary` : les 65 skills à la suite, 3 s chacun.
+  - `MotionLibrary` : les 73 skills à la suite, 3 s chacun.
 
 ### 4.5 Contrôle qualité avant publication (`QC_REPORT.json`)
 
@@ -449,7 +460,7 @@ def quality_control(workdir):
 | Bible du montage (149 règles, 54 vérifiées par le code, 43 confiées à la critique éditoriale) | ✅ |
 | ShotPlan v2, Timeline JSON v2, narration segmentée, droits des assets | ✅ |
 | Moteur Remotion (composition, graphiques, cartes, documents, sous-titres, rendu MP4) | ✅ |
-| Motion Skill Registry v2 (65 skills, API, familles, repli sûr, MapLibre, aperçus, manifeste d'assets) | ✅ (tuiles réelles non testées) |
+| Motion Skill Registry v2 (73 skills dont 8 du pack HyperFrames, API, familles, repli sûr, MapLibre, aperçus, manifeste d'assets) | ✅ (tuiles réelles non testées) |
 | Sound design au rendu (états musicaux, silences, ambiance, loudness −14 LUFS) | ✅ vérifié sur rendu |
 | Contrôle qualité (`QC_REPORT.json`), polices embarquées, critique éditoriale IA | ✅ vérifié sur rendu (critique IA non testée avec une vraie clé) |
 | Rendu : `studio-render` (Remotion par morceaux en cache, mixeur audio, master, brouillon FFmpeg, repli) | ✅ vérifié (identique au rendu d'une traite) |

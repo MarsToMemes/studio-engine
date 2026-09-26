@@ -173,7 +173,13 @@ export interface TypewriterAnimation extends AnimationBase {
 
 export type TextSplit = 'characters' | 'words' | 'lines';
 
-export type KineticStyle = 'pop' | 'slam' | 'wave' | 'rise' | 'flip' | 'highlight';
+/**
+ * `scatter`: each unit flies in from its own index-derived point of a depth
+ * cloud and locks into the line (HyperFrames depth-scatter-assemble).
+ * `beat`: units hit one per beat with alternating entrances, slam / side-snap /
+ * rise-rotate (HyperFrames kinetic-beat-slam).
+ */
+export type KineticStyle = 'pop' | 'slam' | 'wave' | 'rise' | 'flip' | 'highlight' | 'scatter' | 'beat';
 
 /** Word/character level typography animation driven by a named style. */
 export interface KineticTypographyAnimation extends AnimationBase {

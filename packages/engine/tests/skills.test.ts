@@ -17,13 +17,13 @@ import {
 import { buildEpisodePlan, transcript } from './fixtures/shotplan-episode.js';
 
 const SPEC_SKILLS = {
-  text: ['keyword_pop', 'word_reveal', 'character_reveal', 'typewriter', 'slide_text', 'scale_text', 'blur_reveal', 'mask_reveal', 'highlight_word', 'underline_word', 'kinetic_statement'],
-  numbers: ['number_pop', 'number_count', 'percentage_reveal', 'currency_reveal', 'stat_card', 'counter_roll', 'odometer'],
-  images: ['slow_zoom', 'slow_push', 'punch_in', 'punch_out', 'pan_left', 'pan_right', 'parallax', 'blur_transition', 'camera_shake', 'depth_zoom', 'cinematic_push'],
+  text: ['keyword_pop', 'word_reveal', 'character_reveal', 'typewriter', 'slide_text', 'scale_text', 'blur_reveal', 'mask_reveal', 'highlight_word', 'underline_word', 'kinetic_statement', 'keyword_glow', 'depth_layers', 'beat_slam'],
+  numbers: ['number_pop', 'number_count', 'percentage_reveal', 'currency_reveal', 'stat_card', 'counter_roll', 'odometer', 'count_scale', 'glow_bloom'],
+  images: ['slow_zoom', 'slow_push', 'punch_in', 'punch_out', 'pan_left', 'pan_right', 'parallax', 'blur_transition', 'camera_shake', 'depth_zoom', 'cinematic_push', 'rack_focus', 'phase_camera'],
   documents: ['document_highlight', 'document_zoom', 'document_pan', 'source_reveal', 'document_focus', 'redaction_reveal'],
   data: ['chart_growth', 'chart_reveal', 'bar_animation', 'line_animation', 'pie_reveal', 'comparison_graph', 'ranking_animation', 'percentage_bar'],
   maps: ['map_zoom', 'map_route', 'location_pin', 'country_highlight', 'business_expansion', 'flight_route', 'city_zoom'],
-  reveals: ['glitch_reveal', 'flash_reveal', 'blackout_reveal', 'zoom_reveal', 'text_reveal', 'light_reveal', 'impact_reveal'],
+  reveals: ['glitch_reveal', 'flash_reveal', 'blackout_reveal', 'zoom_reveal', 'text_reveal', 'light_reveal', 'impact_reveal', 'scatter_assemble'],
   editorial: ['chapter_card', 'source_card', 'quote_card', 'lower_third', 'full_screen_statement', 'warning_card', 'timeline_event', 'key_fact'],
 };
 
@@ -59,7 +59,7 @@ describe('Motion Skill Registry: catalog', () => {
     for (const [category, ids] of Object.entries(SPEC_SKILLS)) {
       expect(getAvailableMotionSkills({ category: category as never }).map((s) => s.id).sort(), category).toEqual([...ids].sort());
     }
-    expect(BUILT_IN_SKILLS).toHaveLength(65);
+    expect(BUILT_IN_SKILLS).toHaveLength(73);
     for (const [category, ids] of Object.entries(BRIEF_CATALOGUE)) for (const id of ids.split(' ')) expect(defaultMotionSkillRegistry.isAvailable(id), `${category}: ${id}`).toBe(true);
     for (const s of getAvailableMotionSkills()) {
       expect(s.id).toMatch(/^[a-z][a-z0-9_]*$/);

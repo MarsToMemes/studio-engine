@@ -126,10 +126,41 @@ function camera(a: CameraAnimation, e: number, ctx: LeafContext): Partial<Animat
   }
 }
 
-function kinetic(a: KineticTypographyAnimation, p: number, phase: AnimationPhase): Partial<AnimationState> {
+/** Golden angle: index-derived points spread evenly, without clumping (deterministic, no randomness). */
+const GOLDEN = Math.PI * (3 - Math.sqrt(5));
+const frac = (x: number) => x - Math.floor(x);
+
+function kinetic(a: KineticTypographyAnimation, p: number, phase: AnimationPhase, ctx: LeafContext): Partial<AnimationState> {
   const k = a.intensity ?? 1;
   const q = phase === 'out' ? 1 - p : p;
+  const i = ctx.unit?.index ?? 0;
+  const n = Math.max(1, ctx.unit?.count ?? 1);
   switch (a.style) {
+    case 'scatter': {
+      // Parked on its cloud point (far = smaller, blurred), then collapses into the line.
+      const e = ease(a.easing, q, 'easeOutQuart');
+      const angle = i * GOLDEN;
+      const depth = n > 1 ? i / (n - 1) : 0;
+      const radius = (0.25 + 0.2 * frac(i * 0.618)) * Math.max(ctx.box.width, ctx.box.height) * k;
+      const r = 1 - e;
+      const s = lerp(0.35 + 0.35 * (1 - depth), 1, e);
+      return { x: Math.cos(angle) * radius * r, y: Math.sin(angle) * radius * 0.55 * r, rotation: (i % 2 ? 1 : -1) * (18 + 14 * depth) * r, scaleX: s, scaleY: s, blur: 10 * (0.4 + depth) * r, opacity: Math.min(1, q * 2.2) };
+    }
+    case 'beat': {
+      // Three distinct entrances on the same beat grid, so the rhythm reads without repeating itself.
+      const variant = i % 3;
+      if (variant === 0) {
+        const e = ease(a.easing, q, 'easeOutQuart');
+        const s = lerp(1 + 0.5 * k, 1, e);
+        return { scaleX: s, scaleY: s, blur: 16 * (1 - e), opacity: Math.min(1, q * 3) };
+      }
+      if (variant === 1) {
+        const e = ease(a.easing, q, 'easeOutExpo');
+        return { x: (i % 2 ? -1 : 1) * 0.3 * ctx.box.width * k * (1 - e), skewX: 12 * (1 - e), opacity: Math.min(1, q * 3) };
+      }
+      const e = ease(a.easing, q, 'easeOutBack');
+      return { y: 60 * k * (1 - e), rotation: -8 * (1 - e), opacity: Math.min(1, q * 3) };
+    }
     case 'pop': {
       const e = ease(a.easing, q, 'easeOutBack');
       const s = lerp(0.4, 1, e);
@@ -233,7 +264,7 @@ function leaf(a: LeafAnimation, p: number, ctx: LeafContext): Partial<AnimationS
     }
     case 'kineticTypography':
       // Unit-level only; the text renderer calls the provider once per unit.
-      return ctx.unit ? kinetic(a, p, phase) : {};
+      return ctx.unit ? kinetic(a, p, phase, ctx) : {};
     case 'parallax': {
       const e = ease(a.easing, p);
       const dir = DIRECTION_VECTORS[a.direction];

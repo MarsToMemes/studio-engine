@@ -60,6 +60,22 @@
       "sourceType": "github",
       "skillPath": "skills/remotion-studio/SKILL.md",
       "computedHash": "b34cc8ea529fb5f64069f4e36ddaccd85cce6a27862033a7e02766cc6ac5eccc"
+    },
+    "hyperframes-animation": {
+      "source": "heygen-com/hyperframes",
+      "sourceType": "github",
+      "ref": "8798e40",
+      "license": "Apache-2.0",
+      "skillPath": "skills/hyperframes-animation/SKILL.md",
+      "computedHash": "e784a9bb115911d5b87e4f172ec180c3012ac14352dcb867ccdeef396f753352"
+    },
+    "hyperframes-keyframes": {
+      "source": "heygen-com/hyperframes",
+      "sourceType": "github",
+      "ref": "8798e40",
+      "license": "Apache-2.0",
+      "skillPath": "skills/hyperframes-keyframes/SKILL.md",
+      "computedHash": "bf1c44010e4f1bd2e5df75c57abcd765eaa635d4ee8b39b41ef6707f130d73de"
     }
   }
 }

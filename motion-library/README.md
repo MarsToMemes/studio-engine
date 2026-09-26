@@ -1,6 +1,6 @@
 # Motion Library
 
-Catalogue des **65 motion skills** du moteur, avec un aperçu par skill, et le manifeste des packs d'assets sous licence.
+Catalogue des **73 motion skills** (dont 8 adaptés des règles de motion de HyperFrames, Apache-2.0) du moteur, avec un aperçu par skill, et le manifeste des packs d'assets sous licence.
 Tout ici est **généré ou déclaré**. Aucun asset n'est téléchargé automatiquement.
 
 ```
@@ -18,7 +18,7 @@ motion-library/
 npm run build                                  # engine + editor-brain
 cd packages/remotion
 npm run assets                                 # médias de démo (landscape.png, clip.webm, report.png) + worker MapLibre
-npm run previews -- --browser=/chemin/vers/chrome   # 65 images + catalog.json (~1 min)
+npm run previews -- --browser=/chemin/vers/chrome   # 73 images + catalog.json (~1 min)
 npm run previews -- --only=light_reveal,city_zoom   # seulement certains skills
 ```
 
