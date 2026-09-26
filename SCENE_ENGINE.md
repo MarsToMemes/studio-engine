@@ -1180,3 +1180,30 @@ Items that embed media (25, e.g. `nyc-paris-flight`, `organic-light-leak-overlay
 - Block audio (e.g. embedded SFX) is not mixed.
 - GSAP's "Standard no-charge" licence is not OSI-approved and excludes tools competing with Webflow; GSAP is fetched at sync time, not committed.
 
+### 28.1 Studio blocks (our own HyperFrames compositions)
+
+The catalog alone does not give a documentary look (§28). `packages/remotion/hyperframes-studio/` holds seven blocks written for this engine in the HyperFrames format (HTML + paused GSAP timeline, same runtime, same protocol). The sync copies them to `public/hyperframes/blocks/` and lists them in the catalog with `source: 'studio'`.
+
+**Design system** (`_studio/studio.css`, `_studio/studio.js`), Apple-keynote clean:
+- **Stage and type**: black stage, Inter with the optical-size axis (`@fontsource-variable/inter`), tight display tracking, weights 600/700.
+- **Accents**: one warm gradient (gold) for keywords, red for conflict.
+- **Motion**: words sharpen from a blur while rising (`expo.out`), ambient light, slow push-ins.
+- **Text markup** in variables: `*gold*`, `~red~`, `_muted_`; lines are separated by `|`.
+- **Word cues** (`cues`: one time per word, in seconds from the block start) sync every word to the narration.
+
+| Block | Use |
+|---|---|
+| `studio-title` | statement, word by word, strike-through, kicker |
+| `studio-image` | photo opening from a rounded window to full frame, dim/blur steps under a title, fade to black |
+| `studio-stat` | a figure counting inside a ring that fills to the value |
+| `studio-bars` | bar comparison, values riding on the growing bars, delta pill |
+| `studio-document` | a document rebuilt as a crisp card (not a screenshot): tilts in, camera push, highlights on cues, table rows |
+| `studio-map` | dotted world map (dots precomputed by `studio-map/make-dots.mjs` from world-atlas), pins, arcs, title |
+| `studio-units` | a grid of 100 units lighting up to show a share, counter |
+
+Studio blocks are **elastic**: the engine passes the part of the timeline a layer plays as the `duration` variable (`startAt + layer length × speed`).
+
+Two consecutive shots can therefore show **one continuous block**: the second uses `startAt` = the first one's length. The cut is invisible and the shots stay separate in the plan (their narration segments, reasons and sound do not change). The McDonald's edit does this for the bar chart (`u5-a` / `u5-b`) and for the map across the chapter card (`chapter-2` / `u6-a`).
+
+A studio image takes a path from the public root (`mcd/counter.png`). Keep the image in `Shot.media` too, so the QC still lists its licence and synthetic-media disclosure.
+

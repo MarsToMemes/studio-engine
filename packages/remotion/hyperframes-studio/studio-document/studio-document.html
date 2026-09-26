@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en" data-composition-variables='[
+  { "id": "duration", "type": "number", "role": "timing", "label": "Duration (s)", "default": 4.6 },
+  { "id": "header", "type": "string", "role": "content", "label": "Document header", "default": "McDONALD&apos;S CORPORATION · FORM 10-K · 2023" },
+  { "id": "heading", "type": "string", "role": "content", "label": "Heading", "default": "Revenues" },
+  { "id": "sentence", "type": "string", "role": "content", "label": "Key sentence (*marked* words get highlighted)", "default": "Revenues from franchised restaurants include *rent* and *royalties* based on a percent of sales." },
+  { "id": "highlightCues", "type": "string", "role": "timing", "label": "Highlight times, one per marked word (s)", "default": "2.2,2.8" },
+  { "id": "rows", "type": "string", "role": "content", "label": "Table rows (Label: value | ...)", "default": "Rents: 9,840.0|Royalties: 5,530.9" },
+  { "id": "rowsAt", "type": "string", "role": "timing", "label": "Row times (s)", "default": "3.0,3.3" },
+  { "id": "column", "type": "string", "role": "content", "label": "Table column header", "default": "2023 · $ millions" },
+  { "id": "pushAt", "type": "number", "role": "timing", "label": "Camera push starts (s)", "default": 1.0 },
+  { "id": "footnote", "type": "string", "role": "content", "label": "Card footnote", "default": "Reconstruction for illustration. Not a facsimile." },
+  { "id": "source", "type": "string", "role": "content", "label": "Source line", "default": "" }
+]'>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Studio Document</title>
+    <link rel="stylesheet" href="../_studio/studio.css" />
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <script src="../_studio/studio.js"></script>
+    <style>
+      .scene { position: absolute; inset: 0; perspective: 2200px; }
+      .cam { position: absolute; inset: 0; transform-origin: 50% 46%; }
+      .card { position: absolute; left: 440px; top: 150px; width: 1040px; height: 820px; border-radius: 34px; background: #fbfbfd; color: #1d1d1f;
+        box-shadow: 0 60px 160px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.06); padding: 60px 80px; transform-origin: 50% 30%; }
+      .hdr { font-family: var(--display); font-size: 21px; font-weight: 600; letter-spacing: 0.08em; color: #86868b; padding-bottom: 22px; border-bottom: 1px solid #e5e5ea; }
+      .h1 { font-family: var(--serif); font-weight: 600; font-size: 58px; letter-spacing: -0.01em; margin-top: 34px; }
+      .sent { font-family: var(--serif); font-size: 36px; line-height: 1.45; margin-top: 22px; color: #1d1d1f; }
+      .mark { position: relative; white-space: nowrap; }
+      .mark .hl { position: absolute; left: -0.12em; right: -0.12em; top: 0.12em; bottom: 0.02em; background: linear-gradient(100deg, #ffe39a, #ffc72c); border-radius: 0.18em; transform-origin: left center; transform: scaleX(0); z-index: 0; }
+      .mark .tx { position: relative; z-index: 1; }
+      .tbl { margin-top: 44px; font-family: var(--serif); }
+      .th { display: flex; justify-content: space-between; font-family: var(--display); font-size: 20px; font-weight: 600; letter-spacing: 0.08em; color: #86868b; padding-bottom: 16px; border-bottom: 1px solid #e5e5ea; }
+      .tr { display: flex; justify-content: space-between; font-size: 38px; padding: 16px 0; border-bottom: 1px solid #ececf0; }
+      .tr .v { font-variant-numeric: tabular-nums; }
+      .st-source { top: 44px; bottom: auto; }
+      .foot { position: absolute; left: 80px; right: 80px; bottom: 44px; font-family: var(--display); font-size: 18px; color: #86868b; }
+    </style>
+  </head>
+  <body>
+    <div id="root" class="stage" data-composition-id="studio-document" data-start="0" data-width="1920" data-height="1080" data-duration="4.6"></div>
+    <script>
+      (function () {
+        var v = Studio.vars({ duration: 4.6, header: "McDONALD'S CORPORATION · FORM 10-K · 2023", heading: 'Revenues', sentence: 'Revenues from franchised restaurants include *rent* and *royalties* based on a percent of sales.', highlightCues: '2.2,2.8', rows: 'Rents: 9,840.0|Royalties: 5,530.9', rowsAt: '3.0,3.3', column: '2023 · $ millions', pushAt: 1.0, footnote: 'Reconstruction for illustration. Not a facsimile.' });
+        var d = Studio.num(v.duration, 4.6);
+        var s = Studio.setup('studio-document', d), tl = s.tl;
+        Studio.glow(s.root, tl, d, 0);
+        var scene = Studio.el('div', 'scene', s.root);
+        var cam = Studio.el('div', 'cam', scene);
+        var card = Studio.el('div', 'card', cam);
+        Studio.el('div', 'hdr', card).textContent = v.header;
+        Studio.el('div', 'h1', card).textContent = v.heading;
+        var sent = Studio.el('div', 'sent', card);
+        var marks = [];
+        String(v.sentence).split(/(\*[^*]+\*)/).forEach(function (part) {
+          if (!part) return;
+          if (part[0] === '*') {
+            var m = Studio.el('span', 'mark', sent);
+            var hl = Studio.el('span', 'hl', m);
+            Studio.el('span', 'tx', m).textContent = part.slice(1, -1);
+            marks.push(hl);
+          } else sent.appendChild(document.createTextNode(part));
+        });
+        var tbl = Studio.el('div', 'tbl', card);
+        var th = Studio.el('div', 'th', tbl);
+        Studio.el('span', '', th).textContent = 'FRANCHISED RESTAURANTS';
+        Studio.el('span', '', th).textContent = String(v.column).toUpperCase();
+        var rowsAt = Studio.nums(v.rowsAt);
+        Studio.strs(v.rows, '|').forEach(function (r, i) {
+          var p = r.split(':');
+          var tr = Studio.el('div', 'tr', tbl);
+          Studio.el('span', '', tr).textContent = p[0];
+          Studio.el('span', 'v', tr).textContent = (p[1] || '').trim();
+          Studio.reveal(tl, tr, rowsAt[i] !== undefined ? rowsAt[i] : 3 + i * 0.3, { blur: 8, y: 16, duration: 0.7 });
+        });
+        if (v.footnote) Studio.el('div', 'foot', card).textContent = v.footnote;
+        // Card enters tilted, settles; then the camera pushes towards the key sentence.
+        tl.fromTo(card, { rotateX: 24, y: 260, opacity: 0, filter: 'blur(14px)' }, { rotateX: 0, y: 0, opacity: 1, filter: 'blur(0px)', duration: 1.3, ease: 'expo.out' }, 0);
+        tl.fromTo(cam, { scale: 1, y: 0 }, { scale: 1.1, y: 30, duration: Math.max(1, d - Studio.num(v.pushAt, 1)), ease: 'power2.inOut' }, Studio.num(v.pushAt, 1));
+        var hc = Studio.nums(v.highlightCues);
+        marks.forEach(function (hl, i) {
+          tl.to(hl, { scaleX: 1, duration: 0.45, ease: 'power3.out' }, hc[i] !== undefined ? hc[i] : 2 + i * 0.5);
+        });
+        Studio.source(s.root, tl, v.source, 0.8);
+      })();
+    </script>
+  </body>
+</html>

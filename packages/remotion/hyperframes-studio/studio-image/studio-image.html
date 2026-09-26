@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en" data-composition-variables='[
+  { "id": "duration", "type": "number", "role": "timing", "label": "Duration (s)", "default": 4 },
+  { "id": "src", "type": "image", "role": "content", "label": "Image (path from the public root)", "default": "landscape.png" },
+  { "id": "revealAt", "type": "number", "role": "timing", "label": "Window opens to full frame at (s)", "default": 0.35 },
+  { "id": "window", "type": "number", "role": "style", "label": "Start window width (%), 100 = no window", "default": 58 },
+  { "id": "zoom", "type": "number", "role": "style", "label": "Slow zoom gain", "default": 0.1 },
+  { "id": "dimAt", "type": "number", "role": "timing", "label": "Dim at (s)", "default": "" },
+  { "id": "dim", "type": "number", "role": "style", "label": "Dim opacity (0-1)", "default": 0.85 },
+  { "id": "blur", "type": "number", "role": "style", "label": "Blur when dimmed (px)", "default": 10 },
+  { "id": "dims", "type": "string", "role": "timing", "label": "Dim steps time:opacity:blur;... (wins over dimAt)", "default": "" },
+  { "id": "text", "type": "string", "role": "content", "label": "Title lines (see studio-title)", "default": "" },
+  { "id": "sizes", "type": "string", "role": "style", "label": "Line sizes", "default": "120" },
+  { "id": "soft", "type": "string", "role": "style", "label": "Soft lines", "default": "" },
+  { "id": "cues", "type": "string", "role": "timing", "label": "Word cues (s)", "default": "" },
+  { "id": "position", "type": "enum", "role": "style", "label": "Title position", "default": "center", "options": [{ "value": "center" }, { "value": "left" }, { "value": "bottom" }, { "value": "top-left" }] },
+  { "id": "fadeOutAt", "type": "number", "role": "timing", "label": "Fade to black at (s)", "default": "" }
+]'>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Studio Image</title>
+    <link rel="stylesheet" href="../_studio/studio.css" />
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <script src="../_studio/studio.js"></script>
+    <style>
+      .frame { position: absolute; inset: 0; overflow: hidden; will-change: clip-path; }
+      .frame img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; will-change: transform, filter; }
+      .shade { position: absolute; inset: 0; background: radial-gradient(ellipse at center, rgba(0,0,0,0.55), rgba(0,0,0,0.9)); opacity: 0; }
+      .black { position: absolute; inset: 0; background: #000; opacity: 0; }
+      .st-title .st-line { text-shadow: 0 2px 40px rgba(0,0,0,0.35); }
+    </style>
+  </head>
+  <body>
+    <div id="root" class="stage" data-composition-id="studio-image" data-start="0" data-width="1920" data-height="1080" data-duration="4"></div>
+    <script>
+      (function () {
+        var v = Studio.vars({ duration: 4, src: 'landscape.png', revealAt: 0.35, window: 58, zoom: 0.1, dim: 0.85, blur: 10, sizes: '120', position: 'center' });
+        var d = Studio.num(v.duration, 4);
+        var s = Studio.setup('studio-image', d), tl = s.tl;
+        var frame = Studio.el('div', 'frame', s.root);
+        var img = Studio.el('img', '', frame);
+        img.src = Studio.asset(String(v.src));
+        var shade = Studio.el('div', 'shade', s.root);
+        var w = Studio.num(v.window, 58);
+        if (w < 100) {
+          var ix = (100 - w) / 2, iy = (100 - w) / 2;
+          var from = 'inset(' + iy + '% ' + ix + '% ' + iy + '% ' + ix + '% round 44px)';
+          tl.set(frame, { clipPath: from }, 0);
+          tl.fromTo(frame, { opacity: 0, scale: 0.94 }, { opacity: 1, scale: 1, duration: 0.7, ease: 'expo.out' }, 0);
+          tl.to(frame, { clipPath: 'inset(0% 0% 0% 0% round 0px)', duration: 1.25, ease: 'expo.inOut' }, Studio.num(v.revealAt, 0.35));
+        } else {
+          tl.fromTo(frame, { opacity: 0 }, { opacity: 1, duration: 0.5, ease: 'power1.out' }, 0);
+        }
+        tl.fromTo(img, { scale: 1.02 }, { scale: 1.02 + Studio.num(v.zoom, 0.1), duration: d, ease: 'none' }, 0);
+        // Dim steps: "time:opacity:blur;..." (or one step from dimAt / dim / blur).
+        var steps = v.dims ? String(v.dims).split(';').filter(Boolean).map(function (x) { var p = x.split(':'); return [Number(p[0]), Number(p[1]), Number(p[2] || 0)]; })
+          : v.dimAt !== undefined && v.dimAt !== '' ? [[Studio.num(v.dimAt, 1), Studio.num(v.dim, 0.85), Studio.num(v.blur, 10)]] : [];
+        steps.forEach(function (st) {
+          tl.to(shade, { opacity: st[1], duration: 0.9, ease: 'power2.out' }, Math.max(0, st[0]));
+          tl.to(img, { filter: 'blur(' + st[2] + 'px)', duration: 0.9, ease: 'power2.out' }, Math.max(0, st[0]));
+        });
+        if (v.text) Studio.title(s.root, tl, v);
+        if (v.fadeOutAt !== undefined && v.fadeOutAt !== '') {
+          var black = Studio.el('div', 'black', s.root);
+          tl.to(black, { opacity: 1, duration: Math.max(0.2, d - Studio.num(v.fadeOutAt, d)), ease: 'power1.in' }, Studio.num(v.fadeOutAt, d));
+        }
+      })();
+    </script>
+  </body>
+</html>

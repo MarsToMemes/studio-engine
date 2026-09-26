@@ -50,6 +50,8 @@ export interface HyperFramesItem {
   missingFiles?: string[];
   /** Why the item does not render in headless Chromium (probe), e.g. WebGPU only. */
   unsupported?: string;
+  /** `studio`: our own blocks (packages/remotion/hyperframes-studio); absent: the HyperFrames registry. */
+  source?: 'studio';
   dependencies: string[];
   preview?: string;
 }
@@ -168,7 +170,14 @@ export function hyperframesLayerData(use: HyperFramesUse, catalog?: HyperFramesC
   // Snippet path, unless it is the component default (components/<name>/<name>.html).
   if (item?.mount === 'host' && (type === 'block' || item.compositionId)) data.src = item.path.replace(/^hyperframes\//, '');
   if (item?.compositionId) data.compositionId = item.compositionId;
-  if (use.variables && Object.keys(use.variables).length) data.variables = use.variables;
+  const variables: JsonObject = { ...use.variables };
+  // Elastic page blocks (studio blocks) read their length from a `duration` variable: the part of
+  // their timeline this layer plays, from `startAt`.
+  if (item?.elasticDuration && item.mount === 'page' && layerSeconds && variables.duration === undefined) {
+    variables.duration = Math.round(((use.startAt ?? 0) + layerSeconds * (use.speed ?? 1)) * 1000) / 1000;
+    data.duration = variables.duration;
+  }
+  if (Object.keys(variables).length) data.variables = variables;
   if (use.startAt) data.startAt = use.startAt;
   if (use.speed !== undefined && use.speed !== 1) data.speed = use.speed;
   // Box, tokens and background apply to snippets mounted by host.html only.

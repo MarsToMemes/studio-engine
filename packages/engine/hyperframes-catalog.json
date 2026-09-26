@@ -27179,6 +27179,891 @@
     "gsap@3.14.2"
    ],
    "preview": "https://static.heygen.ai/hyperframes-oss/docs/images/catalog/components/zoom-through-transition.png"
+  },
+  {
+   "name": "studio-bars",
+   "type": "block",
+   "title": "Studio Bars",
+   "description": "Clean vertical bar comparison: synced title, bars grow on cues with counting values, the last bar in gold, a delta pill, source line.",
+   "tags": [
+    "studio",
+    "chart",
+    "bars",
+    "data",
+    "apple"
+   ],
+   "dimensions": {
+    "width": 1920,
+    "height": 1080
+   },
+   "duration": 4,
+   "elasticDuration": true,
+   "path": "hyperframes/blocks/studio-bars/studio-bars.html",
+   "mount": "page",
+   "variables": [
+    {
+     "id": "duration",
+     "type": "number",
+     "role": "timing",
+     "label": "Duration (s)",
+     "default": 4
+    },
+    {
+     "id": "kicker",
+     "type": "string",
+     "role": "content",
+     "label": "Kicker",
+     "default": ""
+    },
+    {
+     "id": "text",
+     "type": "string",
+     "role": "content",
+     "label": "Title (markup, | for lines)",
+     "default": "Rent keeps *growing.*"
+    },
+    {
+     "id": "sizes",
+     "type": "string",
+     "role": "style",
+     "label": "Title sizes",
+     "default": "96"
+    },
+    {
+     "id": "cues",
+     "type": "string",
+     "role": "timing",
+     "label": "Title word cues (s)",
+     "default": ""
+    },
+    {
+     "id": "labels",
+     "type": "string",
+     "role": "content",
+     "label": "Bar labels",
+     "default": "2019,2023"
+    },
+    {
+     "id": "values",
+     "type": "string",
+     "role": "content",
+     "label": "Bar values",
+     "default": "7.5,9.8"
+    },
+    {
+     "id": "prefix",
+     "type": "string",
+     "role": "content",
+     "label": "Value prefix",
+     "default": "$"
+    },
+    {
+     "id": "suffix",
+     "type": "string",
+     "role": "content",
+     "label": "Value suffix",
+     "default": "B"
+    },
+    {
+     "id": "decimals",
+     "type": "number",
+     "role": "content",
+     "label": "Decimals",
+     "default": 1
+    },
+    {
+     "id": "barCues",
+     "type": "string",
+     "role": "timing",
+     "label": "Bar grow times (s)",
+     "default": "0.8,1.6"
+    },
+    {
+     "id": "delta",
+     "type": "string",
+     "role": "content",
+     "label": "Delta pill",
+     "default": "+31%"
+    },
+    {
+     "id": "deltaAt",
+     "type": "number",
+     "role": "timing",
+     "label": "Delta at (s)",
+     "default": 2.6
+    },
+    {
+     "id": "source",
+     "type": "string",
+     "role": "content",
+     "label": "Source line",
+     "default": ""
+    }
+   ],
+   "params": [],
+   "embeddedMedia": [],
+   "dependencies": [
+    "gsap@3.14.2"
+   ],
+   "source": "studio"
+  },
+  {
+   "name": "studio-document",
+   "type": "block",
+   "title": "Studio Document",
+   "description": "A document rebuilt as a crisp card: tilts into place, the camera pushes to the key sentence, words are highlighted on cues, table rows appear, reconstruction footnote and source.",
+   "tags": [
+    "studio",
+    "document",
+    "proof",
+    "apple"
+   ],
+   "dimensions": {
+    "width": 1920,
+    "height": 1080
+   },
+   "duration": 4,
+   "elasticDuration": true,
+   "path": "hyperframes/blocks/studio-document/studio-document.html",
+   "mount": "page",
+   "variables": [
+    {
+     "id": "duration",
+     "type": "number",
+     "role": "timing",
+     "label": "Duration (s)",
+     "default": 4.6
+    },
+    {
+     "id": "header",
+     "type": "string",
+     "role": "content",
+     "label": "Document header",
+     "default": "McDONALD&apos;S CORPORATION · FORM 10-K · 2023"
+    },
+    {
+     "id": "heading",
+     "type": "string",
+     "role": "content",
+     "label": "Heading",
+     "default": "Revenues"
+    },
+    {
+     "id": "sentence",
+     "type": "string",
+     "role": "content",
+     "label": "Key sentence (*marked* words get highlighted)",
+     "default": "Revenues from franchised restaurants include *rent* and *royalties* based on a percent of sales."
+    },
+    {
+     "id": "highlightCues",
+     "type": "string",
+     "role": "timing",
+     "label": "Highlight times, one per marked word (s)",
+     "default": "2.2,2.8"
+    },
+    {
+     "id": "rows",
+     "type": "string",
+     "role": "content",
+     "label": "Table rows (Label: value | ...)",
+     "default": "Rents: 9,840.0|Royalties: 5,530.9"
+    },
+    {
+     "id": "rowsAt",
+     "type": "string",
+     "role": "timing",
+     "label": "Row times (s)",
+     "default": "3.0,3.3"
+    },
+    {
+     "id": "column",
+     "type": "string",
+     "role": "content",
+     "label": "Table column header",
+     "default": "2023 · $ millions"
+    },
+    {
+     "id": "pushAt",
+     "type": "number",
+     "role": "timing",
+     "label": "Camera push starts (s)",
+     "default": 1
+    },
+    {
+     "id": "footnote",
+     "type": "string",
+     "role": "content",
+     "label": "Card footnote",
+     "default": "Reconstruction for illustration. Not a facsimile."
+    },
+    {
+     "id": "source",
+     "type": "string",
+     "role": "content",
+     "label": "Source line",
+     "default": ""
+    }
+   ],
+   "params": [],
+   "embeddedMedia": [],
+   "dependencies": [
+    "gsap@3.14.2"
+   ],
+   "source": "studio"
+  },
+  {
+   "name": "studio-image",
+   "type": "block",
+   "title": "Studio Image",
+   "description": "A photo opens from a rounded window to full frame (Apple product reveal), slow zoom, optional dim + blur under a synced title, optional fade to black.",
+   "tags": [
+    "studio",
+    "image",
+    "reveal",
+    "documentary",
+    "apple"
+   ],
+   "dimensions": {
+    "width": 1920,
+    "height": 1080
+   },
+   "duration": 4,
+   "elasticDuration": true,
+   "path": "hyperframes/blocks/studio-image/studio-image.html",
+   "mount": "page",
+   "variables": [
+    {
+     "id": "duration",
+     "type": "number",
+     "role": "timing",
+     "label": "Duration (s)",
+     "default": 4
+    },
+    {
+     "id": "src",
+     "type": "image",
+     "role": "content",
+     "label": "Image (path from the public root)",
+     "default": "landscape.png"
+    },
+    {
+     "id": "revealAt",
+     "type": "number",
+     "role": "timing",
+     "label": "Window opens to full frame at (s)",
+     "default": 0.35
+    },
+    {
+     "id": "window",
+     "type": "number",
+     "role": "style",
+     "label": "Start window width (%), 100 = no window",
+     "default": 58
+    },
+    {
+     "id": "zoom",
+     "type": "number",
+     "role": "style",
+     "label": "Slow zoom gain",
+     "default": 0.1
+    },
+    {
+     "id": "dimAt",
+     "type": "number",
+     "role": "timing",
+     "label": "Dim at (s)",
+     "default": ""
+    },
+    {
+     "id": "dim",
+     "type": "number",
+     "role": "style",
+     "label": "Dim opacity (0-1)",
+     "default": 0.85
+    },
+    {
+     "id": "blur",
+     "type": "number",
+     "role": "style",
+     "label": "Blur when dimmed (px)",
+     "default": 10
+    },
+    {
+     "id": "dims",
+     "type": "string",
+     "role": "timing",
+     "label": "Dim steps time:opacity:blur;... (wins over dimAt)",
+     "default": ""
+    },
+    {
+     "id": "text",
+     "type": "string",
+     "role": "content",
+     "label": "Title lines (see studio-title)",
+     "default": ""
+    },
+    {
+     "id": "sizes",
+     "type": "string",
+     "role": "style",
+     "label": "Line sizes",
+     "default": "120"
+    },
+    {
+     "id": "soft",
+     "type": "string",
+     "role": "style",
+     "label": "Soft lines",
+     "default": ""
+    },
+    {
+     "id": "cues",
+     "type": "string",
+     "role": "timing",
+     "label": "Word cues (s)",
+     "default": ""
+    },
+    {
+     "id": "position",
+     "type": "enum",
+     "role": "style",
+     "label": "Title position",
+     "default": "center",
+     "options": [
+      "center",
+      "left",
+      "bottom",
+      "top-left"
+     ]
+    },
+    {
+     "id": "fadeOutAt",
+     "type": "number",
+     "role": "timing",
+     "label": "Fade to black at (s)",
+     "default": ""
+    }
+   ],
+   "params": [],
+   "embeddedMedia": [],
+   "dependencies": [
+    "gsap@3.14.2"
+   ],
+   "source": "studio"
+  },
+  {
+   "name": "studio-map",
+   "type": "block",
+   "title": "Studio Map",
+   "description": "Dotted world map: the land sharpens in a wave, gold pins pop on cues with labels, arcs link them, kicker and title, slow camera push.",
+   "tags": [
+    "studio",
+    "map",
+    "world",
+    "locations",
+    "apple"
+   ],
+   "dimensions": {
+    "width": 1920,
+    "height": 1080
+   },
+   "duration": 4,
+   "elasticDuration": true,
+   "path": "hyperframes/blocks/studio-map/studio-map.html",
+   "mount": "page",
+   "variables": [
+    {
+     "id": "duration",
+     "type": "number",
+     "role": "timing",
+     "label": "Duration (s)",
+     "default": 5
+    },
+    {
+     "id": "kicker",
+     "type": "string",
+     "role": "content",
+     "label": "Kicker",
+     "default": ""
+    },
+    {
+     "id": "text",
+     "type": "string",
+     "role": "content",
+     "label": "Title (markup, | for lines)",
+     "default": ""
+    },
+    {
+     "id": "sizes",
+     "type": "string",
+     "role": "style",
+     "label": "Title sizes",
+     "default": "72"
+    },
+    {
+     "id": "titleAt",
+     "type": "number",
+     "role": "timing",
+     "label": "Title at (s)",
+     "default": 0.2
+    },
+    {
+     "id": "titleOutAt",
+     "type": "number",
+     "role": "timing",
+     "label": "Title exit at (s)",
+     "default": ""
+    },
+    {
+     "id": "markers",
+     "type": "string",
+     "role": "content",
+     "label": "Markers: label:lon:lat:time; ...",
+     "default": "Chicago:-87.63:41.88:0.8;Tokyo:139.69:35.69:1.4;London:-0.13:51.51:2.0;Sydney:151.21:-33.87:2.6"
+    },
+    {
+     "id": "arcs",
+     "type": "boolean",
+     "role": "style",
+     "label": "Arcs between markers",
+     "default": true
+    },
+    {
+     "id": "dotsAt",
+     "type": "number",
+     "role": "timing",
+     "label": "Land appears at (s)",
+     "default": 0
+    },
+    {
+     "id": "zoom",
+     "type": "number",
+     "role": "style",
+     "label": "Camera push (scale gain)",
+     "default": 0.08
+    },
+    {
+     "id": "source",
+     "type": "string",
+     "role": "content",
+     "label": "Source line",
+     "default": ""
+    }
+   ],
+   "params": [],
+   "embeddedMedia": [],
+   "dependencies": [
+    "gsap@3.14.2"
+   ],
+   "source": "studio"
+  },
+  {
+   "name": "studio-stat",
+   "type": "block",
+   "title": "Studio Stat",
+   "description": "A single figure counts up in a gold gradient inside a thin ring that fills to the value, kicker above, synced label below, optional source.",
+   "tags": [
+    "studio",
+    "stat",
+    "number",
+    "data",
+    "apple"
+   ],
+   "dimensions": {
+    "width": 1920,
+    "height": 1080
+   },
+   "duration": 4,
+   "elasticDuration": true,
+   "path": "hyperframes/blocks/studio-stat/studio-stat.html",
+   "mount": "page",
+   "variables": [
+    {
+     "id": "duration",
+     "type": "number",
+     "role": "timing",
+     "label": "Duration (s)",
+     "default": 4
+    },
+    {
+     "id": "kicker",
+     "type": "string",
+     "role": "content",
+     "label": "Kicker above the number",
+     "default": "Over"
+    },
+    {
+     "id": "kickerAt",
+     "type": "number",
+     "role": "timing",
+     "label": "Kicker at (s)",
+     "default": 0.1
+    },
+    {
+     "id": "from",
+     "type": "number",
+     "role": "content",
+     "label": "Count from",
+     "default": 0
+    },
+    {
+     "id": "to",
+     "type": "number",
+     "role": "content",
+     "label": "Count to",
+     "default": 60
+    },
+    {
+     "id": "decimals",
+     "type": "number",
+     "role": "content",
+     "label": "Decimals",
+     "default": 0
+    },
+    {
+     "id": "prefix",
+     "type": "string",
+     "role": "content",
+     "label": "Prefix",
+     "default": ""
+    },
+    {
+     "id": "suffix",
+     "type": "string",
+     "role": "content",
+     "label": "Suffix",
+     "default": "%"
+    },
+    {
+     "id": "countAt",
+     "type": "number",
+     "role": "timing",
+     "label": "Count starts at (s)",
+     "default": 0.3
+    },
+    {
+     "id": "countDuration",
+     "type": "number",
+     "role": "timing",
+     "label": "Count duration (s)",
+     "default": 1.3
+    },
+    {
+     "id": "ring",
+     "type": "number",
+     "role": "content",
+     "label": "Ring fill (0-100), empty = no ring",
+     "default": 60
+    },
+    {
+     "id": "label",
+     "type": "string",
+     "role": "content",
+     "label": "Label (markup, | for lines)",
+     "default": "of its *revenue*"
+    },
+    {
+     "id": "labelCues",
+     "type": "string",
+     "role": "timing",
+     "label": "Label word cues (s)",
+     "default": ""
+    },
+    {
+     "id": "labelAt",
+     "type": "number",
+     "role": "timing",
+     "label": "Label at (s) without cues",
+     "default": 1.2
+    },
+    {
+     "id": "source",
+     "type": "string",
+     "role": "content",
+     "label": "Source line",
+     "default": ""
+    }
+   ],
+   "params": [],
+   "embeddedMedia": [],
+   "dependencies": [
+    "gsap@3.14.2"
+   ],
+   "source": "studio"
+  },
+  {
+   "name": "studio-title",
+   "type": "block",
+   "title": "Studio Title",
+   "description": "Apple-keynote title: words sharpen from a blur in sync with the voice, gold or red accent words, optional kicker, strike-through and exit, ambient light, slow push-in.",
+   "tags": [
+    "studio",
+    "title",
+    "typography",
+    "documentary",
+    "apple"
+   ],
+   "dimensions": {
+    "width": 1920,
+    "height": 1080
+   },
+   "duration": 4,
+   "elasticDuration": true,
+   "path": "hyperframes/blocks/studio-title/studio-title.html",
+   "mount": "page",
+   "variables": [
+    {
+     "id": "duration",
+     "type": "number",
+     "role": "timing",
+     "label": "Duration (s)",
+     "default": 4
+    },
+    {
+     "id": "text",
+     "type": "string",
+     "role": "content",
+     "label": "Lines",
+     "description": "Lines separated by |. Markup: *gold*, ~red~, _muted_.",
+     "default": "Think *different.*"
+    },
+    {
+     "id": "sizes",
+     "type": "string",
+     "role": "style",
+     "label": "Line sizes (px)",
+     "default": "150"
+    },
+    {
+     "id": "soft",
+     "type": "string",
+     "role": "style",
+     "label": "Lines in weight 600 (indexes)",
+     "default": ""
+    },
+    {
+     "id": "cues",
+     "type": "string",
+     "role": "timing",
+     "label": "Word cues (s)",
+     "description": "One time per word, in reading order (sync to the voice).",
+     "default": ""
+    },
+    {
+     "id": "start",
+     "type": "number",
+     "role": "timing",
+     "label": "First word (s) without cues",
+     "default": 0.15
+    },
+    {
+     "id": "stagger",
+     "type": "number",
+     "role": "timing",
+     "label": "Stagger without cues (s)",
+     "default": 0.07
+    },
+    {
+     "id": "position",
+     "type": "enum",
+     "role": "style",
+     "label": "Position",
+     "default": "center",
+     "options": [
+      "center",
+      "left",
+      "bottom",
+      "top-left"
+     ]
+    },
+    {
+     "id": "kicker",
+     "type": "string",
+     "role": "content",
+     "label": "Kicker",
+     "default": ""
+    },
+    {
+     "id": "kickerAt",
+     "type": "number",
+     "role": "timing",
+     "label": "Kicker at (s)",
+     "default": 0.1
+    },
+    {
+     "id": "strike",
+     "type": "number",
+     "role": "content",
+     "label": "Word index to strike",
+     "default": ""
+    },
+    {
+     "id": "strikeAt",
+     "type": "number",
+     "role": "timing",
+     "label": "Strike at (s)",
+     "default": 1
+    },
+    {
+     "id": "exitAt",
+     "type": "number",
+     "role": "timing",
+     "label": "Exit at (s)",
+     "default": ""
+    },
+    {
+     "id": "glow",
+     "type": "boolean",
+     "role": "style",
+     "label": "Ambient light",
+     "default": true
+    },
+    {
+     "id": "push",
+     "type": "number",
+     "role": "style",
+     "label": "Slow push-in (scale gain)",
+     "default": 0.04
+    },
+    {
+     "id": "background",
+     "type": "enum",
+     "role": "style",
+     "label": "Background",
+     "default": "black",
+     "options": [
+      "black",
+      "transparent"
+     ]
+    }
+   ],
+   "params": [],
+   "embeddedMedia": [],
+   "dependencies": [
+    "gsap@3.14.2"
+   ],
+   "source": "studio"
+  },
+  {
+   "name": "studio-units",
+   "type": "block",
+   "title": "Studio Units",
+   "description": "A grid of units lights up in gold to show a share, a synced statement beside it, counter and source.",
+   "tags": [
+    "studio",
+    "share",
+    "proportion",
+    "data",
+    "apple"
+   ],
+   "dimensions": {
+    "width": 1920,
+    "height": 1080
+   },
+   "duration": 4,
+   "elasticDuration": true,
+   "path": "hyperframes/blocks/studio-units/studio-units.html",
+   "mount": "page",
+   "variables": [
+    {
+     "id": "duration",
+     "type": "number",
+     "role": "timing",
+     "label": "Duration (s)",
+     "default": 4
+    },
+    {
+     "id": "text",
+     "type": "string",
+     "role": "content",
+     "label": "Statement (markup, | for lines)",
+     "default": "They own the land|under *more than half*|of them."
+    },
+    {
+     "id": "sizes",
+     "type": "string",
+     "role": "style",
+     "label": "Line sizes",
+     "default": "92"
+    },
+    {
+     "id": "cues",
+     "type": "string",
+     "role": "timing",
+     "label": "Word cues (s)",
+     "default": ""
+    },
+    {
+     "id": "total",
+     "type": "number",
+     "role": "content",
+     "label": "Units",
+     "default": 100
+    },
+    {
+     "id": "lit",
+     "type": "number",
+     "role": "content",
+     "label": "Units lit",
+     "default": 57
+    },
+    {
+     "id": "columns",
+     "type": "number",
+     "role": "style",
+     "label": "Columns",
+     "default": 10
+    },
+    {
+     "id": "gridAt",
+     "type": "number",
+     "role": "timing",
+     "label": "Grid appears at (s)",
+     "default": 0.1
+    },
+    {
+     "id": "litAt",
+     "type": "number",
+     "role": "timing",
+     "label": "Units light up at (s)",
+     "default": 1
+    },
+    {
+     "id": "litDuration",
+     "type": "number",
+     "role": "timing",
+     "label": "Light-up duration (s)",
+     "default": 1
+    },
+    {
+     "id": "counter",
+     "type": "string",
+     "role": "content",
+     "label": "Counter suffix (empty = no counter)",
+     "default": "%"
+    },
+    {
+     "id": "counterLabel",
+     "type": "string",
+     "role": "content",
+     "label": "Counter label",
+     "default": ""
+    },
+    {
+     "id": "source",
+     "type": "string",
+     "role": "content",
+     "label": "Source line",
+     "default": ""
+    }
+   ],
+   "params": [],
+   "embeddedMedia": [],
+   "dependencies": [
+    "gsap@3.14.2"
+   ],
+   "source": "studio"
   }
  ]
 }

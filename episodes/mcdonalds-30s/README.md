@@ -29,6 +29,26 @@ Render: `npm run hyperframes:sync -w @studio-engine/remotion` once, then `studio
 
 The LANDLORD overlay repeats the caption "it's a landlord" under it.
 
+## Apple-style version (studio blocks)
+
+`node apple.mjs` writes `plan-apple.json`: every shot is a studio block (SCENE_ENGINE.md §28.1), timed to the words of the narration. The cues are computed from `words.json` through the narration segments, so they follow the voice even where the segments are shifted.
+- Same voice, music, sound effects and cut points.
+- Hard cuts: the two transitions become cuts, and the shots they overlapped lose the overlap, so every shot keeps its start frame.
+- No burned-in captions: the type carries the words.
+
+| Shots | Block |
+|---|---|
+| u1 | `studio-title`, "burger" struck through |
+| u2, u9 | `studio-image`: the counter opens from a window, dims under the line |
+| u3 | `studio-stat`: 60 % in a filling ring |
+| u4 | `studio-document`: the 10-K sentence, "rent" and "royalties" highlighted as they are said, the two rows |
+| u5-a + u5-b | one `studio-bars`: $7.5B → $9.8B, +31 % |
+| chapter-2 + u6-a | one `studio-map`: chapter title in the pause, the four cities as they are named |
+| u6-b, u8 | `studio-title` |
+| u7 | `studio-units`: 57 of 100 units, "more than half" |
+
+Render: `studio-render render plan-apple.json out/mcdonalds-30s-apple.mp4`. Result: 950 frames, 164 s cold, −14.0 LUFS. QC PASS, with one warning (SRC-04, synthetic image).
+
 To render again, copy `media/voice.mp3`, `media/counter.jpg` (as `counter.png`) and `media/report.png`, plus the music from `music.mjs`, into `packages/remotion/public/mcd/`, with the voice converted to WAV (`voice.wav`).
 
 Figures, checked against McDonald's Form 10-K reports:

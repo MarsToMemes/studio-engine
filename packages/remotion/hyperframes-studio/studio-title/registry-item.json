@@ -1,0 +1,11 @@
+{
+  "name": "studio-title",
+  "type": "hyperframes:block",
+  "title": "Studio Title",
+  "description": "Apple-keynote title: words sharpen from a blur in sync with the voice, gold or red accent words, optional kicker, strike-through and exit, ambient light, slow push-in.",
+  "tags": ["studio", "title", "typography", "documentary", "apple"],
+  "elastic": true,
+  "dimensions": { "width": 1920, "height": 1080 },
+  "duration": 4,
+  "files": [{ "path": "studio-title.html", "target": "compositions/studio-title.html", "type": "hyperframes:composition" }]
+}

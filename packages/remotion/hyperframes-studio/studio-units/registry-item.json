@@ -1,0 +1,26 @@
+{
+  "name": "studio-units",
+  "type": "hyperframes:block",
+  "title": "Studio Units",
+  "description": "A grid of units lights up in gold to show a share, a synced statement beside it, counter and source.",
+  "tags": [
+    "studio",
+    "share",
+    "proportion",
+    "data",
+    "apple"
+  ],
+  "elastic": true,
+  "dimensions": {
+    "width": 1920,
+    "height": 1080
+  },
+  "duration": 4,
+  "files": [
+    {
+      "path": "studio-units.html",
+      "target": "compositions/studio-units.html",
+      "type": "hyperframes:composition"
+    }
+  ]
+}

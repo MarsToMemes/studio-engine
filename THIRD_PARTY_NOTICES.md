@@ -10,6 +10,8 @@
 - 25 items embed media (images, 3D models, HDR, audio), listed in `embeddedMedia`. The catalog is Apache-2.0, but whether these media come with rights clear for publication is not documented: verify before publishing (QC warning SRC-01).
 - The carousels reference album covers of real artists that the registry does not ship (`missingFiles`). They are copyrighted and are **not** fetched.
 
+- **Studio blocks** (`packages/remotion/hyperframes-studio/`) are original code of this project in the HyperFrames format. They load GSAP (fetched, as above). They use Inter (`@fontsource-variable/inter`) and Source Serif 4 (`@fontsource/source-serif-4`), both under SIL OFL 1.1. `studio-map/dots.js` is derived from world-atlas `land-110m` (ISC; Natural Earth, public domain).
+
 ## Libraries fetched by the HyperFrames sync (not committed, loaded inside the item pages)
 
 | Package | Licence |

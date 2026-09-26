@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en" data-composition-variables='[
+  { "id": "duration", "type": "number", "role": "timing", "label": "Duration (s)", "default": 4 },
+  { "id": "text", "type": "string", "role": "content", "label": "Lines", "description": "Lines separated by |. Markup: *gold*, ~red~, _muted_.", "default": "Think *different.*" },
+  { "id": "sizes", "type": "string", "role": "style", "label": "Line sizes (px)", "default": "150" },
+  { "id": "soft", "type": "string", "role": "style", "label": "Lines in weight 600 (indexes)", "default": "" },
+  { "id": "cues", "type": "string", "role": "timing", "label": "Word cues (s)", "description": "One time per word, in reading order (sync to the voice).", "default": "" },
+  { "id": "start", "type": "number", "role": "timing", "label": "First word (s) without cues", "default": 0.15 },
+  { "id": "stagger", "type": "number", "role": "timing", "label": "Stagger without cues (s)", "default": 0.07 },
+  { "id": "position", "type": "enum", "role": "style", "label": "Position", "default": "center", "options": [{ "value": "center" }, { "value": "left" }, { "value": "bottom" }, { "value": "top-left" }] },
+  { "id": "kicker", "type": "string", "role": "content", "label": "Kicker", "default": "" },
+  { "id": "kickerAt", "type": "number", "role": "timing", "label": "Kicker at (s)", "default": 0.1 },
+  { "id": "strike", "type": "number", "role": "content", "label": "Word index to strike", "default": "" },
+  { "id": "strikeAt", "type": "number", "role": "timing", "label": "Strike at (s)", "default": 1 },
+  { "id": "exitAt", "type": "number", "role": "timing", "label": "Exit at (s)", "default": "" },
+  { "id": "glow", "type": "boolean", "role": "style", "label": "Ambient light", "default": true },
+  { "id": "push", "type": "number", "role": "style", "label": "Slow push-in (scale gain)", "default": 0.04 },
+  { "id": "background", "type": "enum", "role": "style", "label": "Background", "default": "black", "options": [{ "value": "black" }, { "value": "transparent" }] }
+]'>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Studio Title</title>
+    <link rel="stylesheet" href="../_studio/studio.css" />
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <script src="../_studio/studio.js"></script>
+  </head>
+  <body>
+    <div id="root" class="stage" data-composition-id="studio-title" data-start="0" data-width="1920" data-height="1080" data-duration="4"></div>
+    <script>
+      (function () {
+        var v = Studio.vars({ duration: 4, text: 'Think *different.*', sizes: '150', glow: true, push: 0.04, background: 'black' });
+        var d = Studio.num(v.duration, 4);
+        var s = Studio.setup('studio-title', d);
+        if (v.background === 'transparent') s.root.classList.add('transparent');
+        if (v.glow !== false && v.glow !== 'false') Studio.glow(s.root, s.tl, d, 0);
+        var cam = Studio.el('div', 'layer', s.root);
+        Studio.title(cam, s.tl, v);
+        s.tl.fromTo(cam, { scale: 1 }, { scale: 1 + Studio.num(v.push, 0.04), duration: d, ease: 'none' }, 0);
+      })();
+    </script>
+  </body>
+</html>

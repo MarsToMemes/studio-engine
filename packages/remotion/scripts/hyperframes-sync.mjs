@@ -33,6 +33,7 @@ const repoRoot = resolve(pkgRoot, '..', '..');
 const cache = join(repoRoot, '.studio-cache', 'hyperframes');
 const out = join(pkgRoot, 'public', 'hyperframes');
 const engineCatalog = join(repoRoot, 'packages', 'engine', 'hyperframes-catalog.json');
+const studioRoot = join(pkgRoot, 'hyperframes-studio');
 
 const TEXT_EXT = new Set(['.html', '.js', '.mjs', '.cjs', '.css', '.json', '.svg']);
 const MEDIA_EXT = new Set(['.png', '.jpg', '.jpeg', '.webp', '.gif', '.glb', '.gltf', '.hdr', '.wav', '.mp3', '.mp4', '.webm', '.mov']);
@@ -232,6 +233,76 @@ function walk(dir) {
   return readdirSync(dir, { withFileTypes: true }).flatMap((e) => (e.isDirectory() ? walk(join(dir, e.name)) : [join(dir, e.name)]));
 }
 
+/** Copies one item (registry or studio) into out/<type>/<name>, rewrites it, returns its catalog entry. */
+function importItem(dir, type, name, source) {
+  const meta = JSON.parse(readFileSync(join(dir, 'registry-item.json'), 'utf8'));
+  const dest = join(out, type, name);
+  cpSync(dir, dest, { recursive: true, filter: (p) => !/\/(source|node_modules)(\/|$)/.test(p.slice(dir.length)) });
+  const deps = new Set();
+  const media = [];
+  for (const f of walk(dest)) {
+    const ext = extname(f).toLowerCase();
+    if (MEDIA_EXT.has(ext)) media.push(relative(dest, f));
+    if (!TEXT_EXT.has(ext) || f.endsWith('registry-item.json')) continue;
+    let text = readFileSync(f, 'utf8');
+    const r = rewrite(f, text);
+    text = r.text;
+    r.deps.forEach((d) => deps.add(d));
+    if (ext === '.html' && /__timelines|data-composition-id/.test(text)) text = injectHead(f, text);
+    writeFileSync(f, text);
+  }
+  const entry = `${name}.html`;
+  let html = readFileSync(join(dest, entry), 'utf8');
+  // Files listed by the registry but not in the repository (fetched from HeyGen's CDN by
+  // their installer, e.g. album covers of the carousels): the item renders with holes.
+  const missingFiles = (meta.files ?? []).map((f) => f.path).filter((f) => !existsSync(join(dest, f)));
+  const snippetRoot = type === 'components' || /<body[^>]*>\s*<template/i.test(html);
+  if (snippetRoot) {
+    // Snippets are mounted from host.html: installed-path references ("assets/x" per the
+    // registry's `target`) are resolved from the hyperframes root, so point them at the file.
+    let changed = false;
+    for (const f of meta.files ?? []) {
+      if (!f.target || f.target === f.path || !existsSync(join(dest, f.path)) || f.path.endsWith('.html')) continue;
+      if (html.includes(f.target)) { html = html.split(f.target).join(`${type}/${name}/${f.path}`); changed = true; }
+    }
+    if (changed) writeFileSync(join(dest, entry), html);
+  }
+  const variables = meta.variables ?? parseHtmlVariables(html);
+  // Elastic components take the host's duration; their demo page gives a sensible default.
+  const own = meta.duration ?? Number(html.match(/data-duration="([\d.]+)"/)?.[1] ?? 0);
+  const demoHtml = existsSync(join(dest, 'demo.html')) ? readFileSync(join(dest, 'demo.html'), 'utf8') : '';
+  const duration = own || Number(demoHtml.match(/data-duration="([\d.]+)"/)?.[1] ?? 0) || 5;
+  // Snippets (<template> roots, all components and a few blocks) are mounted by host.html.
+  const snippet = snippetRoot;
+  const compositionId = html.match(/data-composition-id="([^"]+)"/)?.[1] ?? name;
+  return {
+    name,
+    type: type === 'blocks' ? 'block' : 'component',
+    title: meta.title ?? name,
+    description: meta.description ?? '',
+    tags: meta.tags ?? [],
+    family: meta.family,
+    jobs: meta.jobs,
+    dimensions: meta.dimensions ?? { width: 1920, height: 1080 },
+    duration,
+    ...(own && !meta.elastic ? {} : { elasticDuration: true }),
+    path: `hyperframes/${type}/${name}/${entry}`,
+    mount: snippet ? 'host' : 'page',
+    ...(compositionId !== name ? { compositionId } : {}),
+    demo: type === 'components' && existsSync(join(dest, 'demo.html')) ? `hyperframes/${type}/${name}/demo.html` : undefined,
+    variables: variables.map((v) => ({
+      id: v.id, type: v.type, role: v.role, label: v.label, description: v.description,
+      default: v.default, options: v.options?.map((o) => o.value ?? o),
+    })),
+    params: meta.params ?? [],
+    embeddedMedia: media.sort(),
+    ...(missingFiles.length ? { missingFiles } : {}),
+    dependencies: [...deps].sort(),
+    preview: meta.preview?.poster,
+    ...(source === 'studio' ? { source } : {}),
+  };
+}
+
 function main() {
   const src = sourceDir();
   const reg = join(src, 'registry');
@@ -251,72 +322,20 @@ function main() {
     for (const name of readdirSync(join(reg, type)).sort()) {
       const dir = join(reg, type, name);
       if (!statSync(dir).isDirectory() || !existsSync(join(dir, 'registry-item.json'))) continue;
-      const meta = JSON.parse(readFileSync(join(dir, 'registry-item.json'), 'utf8'));
-      const dest = join(out, type, name);
-      cpSync(dir, dest, { recursive: true, filter: (p) => !/\/(source|node_modules)(\/|$)/.test(p.slice(dir.length)) });
-      const deps = new Set();
-      const media = [];
-      for (const f of walk(dest)) {
-        const ext = extname(f).toLowerCase();
-        if (MEDIA_EXT.has(ext)) media.push(relative(dest, f));
-        if (!TEXT_EXT.has(ext) || f.endsWith('registry-item.json')) continue;
-        let text = readFileSync(f, 'utf8');
-        const r = rewrite(f, text);
-        text = r.text;
-        r.deps.forEach((d) => deps.add(d));
-        if (ext === '.html' && /__timelines|data-composition-id/.test(text)) text = injectHead(f, text);
-        writeFileSync(f, text);
-      }
-      const entry = `${name}.html`;
-      let html = readFileSync(join(dest, entry), 'utf8');
-      // Files listed by the registry but not in the repository (fetched from HeyGen's CDN by
-      // their installer, e.g. album covers of the carousels): the item renders with holes.
-      const missingFiles = (meta.files ?? []).map((f) => f.path).filter((f) => !existsSync(join(dest, f)));
-      const snippetRoot = type === 'components' || /<body[^>]*>\s*<template/i.test(html);
-      if (snippetRoot) {
-        // Snippets are mounted from host.html: installed-path references ("assets/x" per the
-        // registry's `target`) are resolved from the hyperframes root, so point them at the file.
-        let changed = false;
-        for (const f of meta.files ?? []) {
-          if (!f.target || f.target === f.path || !existsSync(join(dest, f.path)) || f.path.endsWith('.html')) continue;
-          if (html.includes(f.target)) { html = html.split(f.target).join(`${type}/${name}/${f.path}`); changed = true; }
-        }
-        if (changed) writeFileSync(join(dest, entry), html);
-      }
-      const variables = meta.variables ?? parseHtmlVariables(html);
-      // Elastic components take the host's duration; their demo page gives a sensible default.
-      const own = meta.duration ?? Number(html.match(/data-duration="([\d.]+)"/)?.[1] ?? 0);
-      const demoHtml = existsSync(join(dest, 'demo.html')) ? readFileSync(join(dest, 'demo.html'), 'utf8') : '';
-      const duration = own || Number(demoHtml.match(/data-duration="([\d.]+)"/)?.[1] ?? 0) || 5;
-      // Snippets (<template> roots, all components and a few blocks) are mounted by host.html.
-      const snippet = snippetRoot;
-      const compositionId = html.match(/data-composition-id="([^"]+)"/)?.[1] ?? name;
-      items.push({
-        name,
-        type: type === 'blocks' ? 'block' : 'component',
-        title: meta.title ?? name,
-        description: meta.description ?? '',
-        tags: meta.tags ?? [],
-        family: meta.family,
-        jobs: meta.jobs,
-        dimensions: meta.dimensions ?? { width: 1920, height: 1080 },
-        duration,
-        ...(own ? {} : { elasticDuration: true }),
-        path: `hyperframes/${type}/${name}/${entry}`,
-        mount: snippet ? 'host' : 'page',
-        ...(compositionId !== name ? { compositionId } : {}),
-        demo: type === 'components' && existsSync(join(dest, 'demo.html')) ? `hyperframes/${type}/${name}/demo.html` : undefined,
-        variables: variables.map((v) => ({
-          id: v.id, type: v.type, role: v.role, label: v.label, description: v.description,
-          default: v.default, options: v.options?.map((o) => o.value ?? o),
-        })),
-        params: meta.params ?? [],
-        embeddedMedia: media.sort(),
-        ...(missingFiles.length ? { missingFiles } : {}),
-        dependencies: [...deps].sort(),
-        preview: meta.preview?.poster,
-      });
+      items.push(importItem(dir, type, name, 'hyperframes'));
     }
+  }
+  // Studio blocks (packages/remotion/hyperframes-studio): our own HyperFrames compositions,
+  // sharing _studio/ (design system, helpers, fonts).
+  cpSync(join(studioRoot, '_studio'), join(out, 'blocks', '_studio'), { recursive: true });
+  const interVar = npmPackage('@fontsource-variable/inter@5.3.0');
+  cpSync(join(interVar, 'files', 'inter-latin-opsz-normal.woff2'), join(out, 'blocks', '_studio', 'inter-opsz.woff2'));
+  const serif = npmPackage('@fontsource/source-serif-4@5.3.0');
+  for (const w of [400, 600]) cpSync(join(serif, 'files', `source-serif-4-latin-${w}-normal.woff2`), join(out, 'blocks', '_studio', `source-serif-${w}.woff2`));
+  for (const name of readdirSync(studioRoot).sort()) {
+    const dir = join(studioRoot, name);
+    if (name.startsWith('_') || !statSync(dir).isDirectory() || !existsSync(join(dir, 'registry-item.json'))) continue;
+    items.push(importItem(dir, 'blocks', name, 'studio'));
   }
   // Results of scripts/hyperframes-probe.mjs (headless Chromium) for this commit, when available.
   const probeFile = join(repoRoot, 'motion-library', 'hyperframes', 'PROBE.json');

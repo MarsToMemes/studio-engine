@@ -326,7 +326,8 @@ function validateCraft(plan: ShotPlan, issues: IssueCollector, starts: readonly 
     if (TYPOGRAPHIC.includes(shot.type) && shot.text && countWords(shot.text) > L.maxTextWords) issues.warn(`${p}.text`, 'typography.words', `${countWords(shot.text)} words on screen (max ${L.maxTextWords}, ideally 3–7): split the statement`);
     if (Array.isArray(shot.highlightedWords) && shot.highlightedWords.length > L.maxEmphasis) issues.warn(`${p}.highlightedWords`, 'typography.emphasis', `${shot.highlightedWords.length} emphasised words (max ${L.maxEmphasis})`);
     if (shot.type === 'document') {
-      if (!shot.motionSkill && (!shot.camera || shot.camera === 'static')) issues.warn(p, 'document.static', 'a document is never a static screenshot: add a camera move or a highlight');
+      // A HyperFrames block animates the document itself (studio-document: push-in and highlights).
+      if (!shot.block && !shot.motionSkill && (!shot.camera || shot.camera === 'static')) issues.warn(p, 'document.static', 'a document is never a static screenshot: add a camera move or a highlight');
       const attribution = shot.media ? plan.assets[shot.media]?.source?.attribution : undefined;
       if (!shot.document?.source && !attribution) issues.warn(`${p}.document.source`, 'document.source', 'a document used as proof shows its source (name, date)');
     }

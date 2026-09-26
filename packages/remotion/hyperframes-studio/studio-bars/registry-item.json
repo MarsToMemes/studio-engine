@@ -1,0 +1,26 @@
+{
+  "name": "studio-bars",
+  "type": "hyperframes:block",
+  "title": "Studio Bars",
+  "description": "Clean vertical bar comparison: synced title, bars grow on cues with counting values, the last bar in gold, a delta pill, source line.",
+  "tags": [
+    "studio",
+    "chart",
+    "bars",
+    "data",
+    "apple"
+  ],
+  "elastic": true,
+  "dimensions": {
+    "width": 1920,
+    "height": 1080
+  },
+  "duration": 4,
+  "files": [
+    {
+      "path": "studio-bars.html",
+      "target": "compositions/studio-bars.html",
+      "type": "hyperframes:composition"
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "name": "studio-image",
+  "type": "hyperframes:block",
+  "title": "Studio Image",
+  "description": "A photo opens from a rounded window to full frame (Apple product reveal), slow zoom, optional dim + blur under a synced title, optional fade to black.",
+  "tags": ["studio", "image", "reveal", "documentary", "apple"],
+  "elastic": true,
+  "dimensions": { "width": 1920, "height": 1080 },
+  "duration": 4,
+  "files": [{ "path": "studio-image.html", "target": "compositions/studio-image.html", "type": "hyperframes:composition" }]
+}

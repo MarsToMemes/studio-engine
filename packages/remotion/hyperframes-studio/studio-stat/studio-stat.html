@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en" data-composition-variables='[
+  { "id": "duration", "type": "number", "role": "timing", "label": "Duration (s)", "default": 4 },
+  { "id": "kicker", "type": "string", "role": "content", "label": "Kicker above the number", "default": "Over" },
+  { "id": "kickerAt", "type": "number", "role": "timing", "label": "Kicker at (s)", "default": 0.1 },
+  { "id": "from", "type": "number", "role": "content", "label": "Count from", "default": 0 },
+  { "id": "to", "type": "number", "role": "content", "label": "Count to", "default": 60 },
+  { "id": "decimals", "type": "number", "role": "content", "label": "Decimals", "default": 0 },
+  { "id": "prefix", "type": "string", "role": "content", "label": "Prefix", "default": "" },
+  { "id": "suffix", "type": "string", "role": "content", "label": "Suffix", "default": "%" },
+  { "id": "countAt", "type": "number", "role": "timing", "label": "Count starts at (s)", "default": 0.3 },
+  { "id": "countDuration", "type": "number", "role": "timing", "label": "Count duration (s)", "default": 1.3 },
+  { "id": "ring", "type": "number", "role": "content", "label": "Ring fill (0-100), empty = no ring", "default": 60 },
+  { "id": "label", "type": "string", "role": "content", "label": "Label (markup, | for lines)", "default": "of its *revenue*" },
+  { "id": "labelCues", "type": "string", "role": "timing", "label": "Label word cues (s)", "default": "" },
+  { "id": "labelAt", "type": "number", "role": "timing", "label": "Label at (s) without cues", "default": 1.2 },
+  { "id": "source", "type": "string", "role": "content", "label": "Source line", "default": "" }
+]'>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Studio Stat</title>
+    <link rel="stylesheet" href="../_studio/studio.css" />
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <script src="../_studio/studio.js"></script>
+    <style>
+      .ring { position: absolute; left: 50%; top: 50%; width: 860px; height: 860px; margin: -430px 0 0 -430px; }
+      .ring circle { fill: none; stroke-width: 7; }
+      .num-wrap { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+      .num { font-size: 300px; font-weight: 700; letter-spacing: -0.055em; line-height: 0.9; }
+      .num .unit { font-size: 0.5em; letter-spacing: -0.02em; margin-left: 0.04em; }
+      .kick { font-size: 52px; font-weight: 600; color: var(--muted); letter-spacing: -0.02em; margin-bottom: 8px; }
+      .lab { position: relative; margin-top: 34px; }
+      .lab .st-title { position: relative; inset: auto; }
+    </style>
+  </head>
+  <body>
+    <div id="root" class="stage" data-composition-id="studio-stat" data-start="0" data-width="1920" data-height="1080" data-duration="4"></div>
+    <script>
+      (function () {
+        var v = Studio.vars({ duration: 4, kicker: 'Over', kickerAt: 0.1, from: 0, to: 60, decimals: 0, prefix: '', suffix: '%', countAt: 0.3, countDuration: 1.3, ring: 60, label: 'of its *revenue*', labelAt: 1.2 });
+        var d = Studio.num(v.duration, 4);
+        var s = Studio.setup('studio-stat', d), tl = s.tl;
+        Studio.glow(s.root, tl, d, 0.1);
+        var countAt = Studio.num(v.countAt, 0.3), countDur = Studio.num(v.countDuration, 1.3);
+        if (v.ring !== '' && v.ring !== undefined) {
+          var NS = 'http://www.w3.org/2000/svg';
+          var svg = document.createElementNS(NS, 'svg');
+          svg.setAttribute('class', 'ring');
+          svg.setAttribute('viewBox', '0 0 860 860');
+          svg.innerHTML = '<defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffe39a"/><stop offset="0.45" stop-color="#ffc72c"/><stop offset="1" stop-color="#ff9f0a"/></linearGradient></defs>' +
+            '<circle cx="430" cy="430" r="420" stroke="#1c1c1e"/><circle class="arc" cx="430" cy="430" r="420" stroke="url(#g)" stroke-linecap="round" transform="rotate(-90 430 430)"/>';
+          s.root.appendChild(svg);
+          var arc = svg.querySelector('.arc');
+          var C = 2 * Math.PI * 420;
+          arc.setAttribute('stroke-dasharray', C);
+          tl.fromTo(svg, { opacity: 0, scale: 0.92 }, { opacity: 1, scale: 1, duration: 0.9, ease: 'expo.out' }, Math.max(0, countAt - 0.3));
+          tl.fromTo(arc, { attr: { 'stroke-dashoffset': C } }, { attr: { 'stroke-dashoffset': C * (1 - Studio.num(v.ring, 60) / 100) }, duration: countDur + 0.2, ease: 'expo.out' }, countAt);
+        }
+        var wrap = Studio.el('div', 'num-wrap', s.root);
+        if (v.kicker) {
+          var k = Studio.el('div', 'kick', wrap);
+          k.textContent = v.kicker;
+          Studio.reveal(tl, k, Studio.num(v.kickerAt, 0.1), { blur: 10 });
+        }
+        var num = Studio.el('div', 'num tabular', wrap);
+        var digits = Studio.el('span', 'gold', num);
+        var unit = Studio.el('span', 'gold unit', num);
+        unit.textContent = v.suffix || '';
+        Studio.count(tl, digits, { from: Studio.num(v.from, 0), to: Studio.num(v.to, 60), decimals: Studio.num(v.decimals, 0), prefix: v.prefix || '', at: countAt, duration: countDur });
+        Studio.reveal(tl, num, Math.max(0, countAt - 0.15), { blur: 24, y: '0.12em', scale: 0.94, duration: 1.0 });
+        if (v.label) {
+          var lab = Studio.el('div', 'lab', wrap);
+          Studio.title(lab, tl, { text: v.label, sizes: '60', soft: '0,1,2', cues: v.labelCues, start: Studio.num(v.labelAt, 1.2), stagger: 0.06, position: 'center' });
+        }
+        Studio.source(s.root, tl, v.source, 0.5);
+      })();
+    </script>
+  </body>
+</html>

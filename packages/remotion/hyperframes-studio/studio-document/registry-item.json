@@ -1,0 +1,25 @@
+{
+  "name": "studio-document",
+  "type": "hyperframes:block",
+  "title": "Studio Document",
+  "description": "A document rebuilt as a crisp card: tilts into place, the camera pushes to the key sentence, words are highlighted on cues, table rows appear, reconstruction footnote and source.",
+  "tags": [
+    "studio",
+    "document",
+    "proof",
+    "apple"
+  ],
+  "elastic": true,
+  "dimensions": {
+    "width": 1920,
+    "height": 1080
+  },
+  "duration": 4,
+  "files": [
+    {
+      "path": "studio-document.html",
+      "target": "compositions/studio-document.html",
+      "type": "hyperframes:composition"
+    }
+  ]
+}

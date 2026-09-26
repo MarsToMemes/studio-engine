@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en" data-composition-variables='[
+  { "id": "duration", "type": "number", "role": "timing", "label": "Duration (s)", "default": 4 },
+  { "id": "text", "type": "string", "role": "content", "label": "Statement (markup, | for lines)", "default": "They own the land|under *more than half*|of them." },
+  { "id": "sizes", "type": "string", "role": "style", "label": "Line sizes", "default": "92" },
+  { "id": "cues", "type": "string", "role": "timing", "label": "Word cues (s)", "default": "" },
+  { "id": "total", "type": "number", "role": "content", "label": "Units", "default": 100 },
+  { "id": "lit", "type": "number", "role": "content", "label": "Units lit", "default": 57 },
+  { "id": "columns", "type": "number", "role": "style", "label": "Columns", "default": 10 },
+  { "id": "gridAt", "type": "number", "role": "timing", "label": "Grid appears at (s)", "default": 0.1 },
+  { "id": "litAt", "type": "number", "role": "timing", "label": "Units light up at (s)", "default": 1.0 },
+  { "id": "litDuration", "type": "number", "role": "timing", "label": "Light-up duration (s)", "default": 1.0 },
+  { "id": "counter", "type": "string", "role": "content", "label": "Counter suffix (empty = no counter)", "default": "%" },
+  { "id": "counterLabel", "type": "string", "role": "content", "label": "Counter label", "default": "" },
+  { "id": "source", "type": "string", "role": "content", "label": "Source line", "default": "" }
+]'>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Studio Units</title>
+    <link rel="stylesheet" href="../_studio/studio.css" />
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <script src="../_studio/studio.js"></script>
+    <style>
+      .st-title.left { right: 900px; }
+      .grid { position: absolute; right: 190px; top: 50%; display: grid; gap: 14px; transform: translateY(-54%); }
+      .u { width: 44px; height: 44px; border-radius: 12px; background: #1c1c1e; position: relative; }
+      .u .on { position: absolute; inset: 0; border-radius: 12px; background: linear-gradient(135deg, #ffe39a, #ffc72c 45%, #ff9f0a); box-shadow: 0 0 18px rgba(255, 176, 32, 0.45); opacity: 0; }
+      .count { position: absolute; right: 190px; bottom: 120px; text-align: right; }
+      .count .n { font-size: 96px; font-weight: 700; letter-spacing: -0.045em; line-height: 1; }
+      .count .l { font-size: 28px; font-weight: 500; color: var(--muted); margin-top: 6px; }
+    </style>
+  </head>
+  <body>
+    <div id="root" class="stage" data-composition-id="studio-units" data-start="0" data-width="1920" data-height="1080" data-duration="4"></div>
+    <script>
+      (function () {
+        var v = Studio.vars({ duration: 4, text: 'They own the land|under *more than half*|of them.', sizes: '92', total: 100, lit: 57, columns: 10, gridAt: 0.1, litAt: 1.0, litDuration: 1.0, counter: '%' });
+        var d = Studio.num(v.duration, 4);
+        var s = Studio.setup('studio-units', d), tl = s.tl;
+        Studio.title(s.root, tl, { text: v.text, sizes: v.sizes, cues: v.cues, position: 'left', start: 0.15, stagger: 0.06 });
+        var total = Studio.num(v.total, 100), lit = Studio.num(v.lit, 57), cols = Studio.num(v.columns, 10);
+        var grid = Studio.el('div', 'grid', s.root);
+        grid.style.gridTemplateColumns = 'repeat(' + cols + ', 44px)';
+        var units = [];
+        for (var i = 0; i < total; i++) {
+          var u = Studio.el('div', 'u', grid);
+          units.push({ box: u, on: Studio.el('div', 'on', u) });
+        }
+        var gridAt = Studio.num(v.gridAt, 0.1);
+        // The grid assembles row by row, from the top left.
+        units.forEach(function (u, i) {
+          var r = Math.floor(i / cols), c = i % cols;
+          tl.fromTo(u.box, { opacity: 0, scale: 0.4 }, { opacity: 1, scale: 1, duration: 0.5, ease: 'expo.out' }, gridAt + (r + c) * 0.025);
+        });
+        var litAt = Studio.num(v.litAt, 1), litDur = Studio.num(v.litDuration, 1);
+        for (var k = 0; k < lit && k < total; k++) {
+          tl.fromTo(units[k].on, { opacity: 0, scale: 0.6 }, { opacity: 1, scale: 1, duration: 0.35, ease: 'back.out(2)' }, litAt + (k / Math.max(1, lit)) * litDur);
+        }
+        if (v.counter !== '' && v.counter !== undefined) {
+          var box = Studio.el('div', 'count', s.root);
+          var n = Studio.el('div', 'n tabular', box);
+          var span = Studio.el('span', 'gold', n);
+          Studio.count(tl, span, { from: 0, to: Math.round((lit / total) * 100), suffix: v.counter, at: litAt, duration: litDur + 0.2, ease: 'power1.out' });
+          if (v.counterLabel) Studio.el('div', 'l', box).textContent = v.counterLabel;
+          Studio.reveal(tl, box, litAt - 0.1, { blur: 10 });
+        }
+        Studio.source(s.root, tl, v.source, 0.6);
+      })();
+    </script>
+  </body>
+</html>

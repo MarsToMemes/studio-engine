@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en" data-composition-variables='[
+  { "id": "duration", "type": "number", "role": "timing", "label": "Duration (s)", "default": 5 },
+  { "id": "kicker", "type": "string", "role": "content", "label": "Kicker", "default": "" },
+  { "id": "text", "type": "string", "role": "content", "label": "Title (markup, | for lines)", "default": "" },
+  { "id": "sizes", "type": "string", "role": "style", "label": "Title sizes", "default": "72" },
+  { "id": "titleAt", "type": "number", "role": "timing", "label": "Title at (s)", "default": 0.2 },
+  { "id": "titleOutAt", "type": "number", "role": "timing", "label": "Title exit at (s)", "default": "" },
+  { "id": "markers", "type": "string", "role": "content", "label": "Markers: label:lon:lat:time; ...", "default": "Chicago:-87.63:41.88:0.8;Tokyo:139.69:35.69:1.4;London:-0.13:51.51:2.0;Sydney:151.21:-33.87:2.6" },
+  { "id": "arcs", "type": "boolean", "role": "style", "label": "Arcs between markers", "default": true },
+  { "id": "dotsAt", "type": "number", "role": "timing", "label": "Land appears at (s)", "default": 0 },
+  { "id": "zoom", "type": "number", "role": "style", "label": "Camera push (scale gain)", "default": 0.08 },
+  { "id": "source", "type": "string", "role": "content", "label": "Source line", "default": "" }
+]'>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Studio Map</title>
+    <link rel="stylesheet" href="../_studio/studio.css" />
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <script src="../_studio/studio.js"></script>
+    <script src="./dots.js"></script>
+    <style>
+      .cam { position: absolute; inset: 0; transform-origin: 50% 50%; }
+      canvas { position: absolute; inset: 0; }
+      svg.arcs { position: absolute; inset: 0; overflow: visible; }
+      .pin { position: absolute; width: 0; height: 0; }
+      .pin .dot { position: absolute; left: -11px; top: -11px; width: 22px; height: 22px; border-radius: 50%; background: radial-gradient(circle, #fff 0 26%, #ffc72c 30% 100%); box-shadow: 0 0 24px rgba(255, 190, 40, 0.9), 0 0 70px rgba(255, 160, 20, 0.5); }
+      .pin .ring { position: absolute; left: -11px; top: -11px; width: 22px; height: 22px; border-radius: 50%; border: 2px solid rgba(255, 199, 44, 0.9); }
+      .pin .tag { position: absolute; left: 22px; top: -30px; padding: 10px 20px; border-radius: 999px; background: rgba(28, 28, 30, 0.82); border: 1px solid rgba(255,255,255,0.08); color: #f5f5f7; font-size: 30px; font-weight: 600; letter-spacing: -0.01em; white-space: nowrap; backdrop-filter: blur(12px); }
+      .pin.left .tag { left: auto; right: 22px; }
+      .st-title.top-left { top: 96px; }
+    </style>
+  </head>
+  <body>
+    <div id="root" class="stage" data-composition-id="studio-map" data-start="0" data-width="1920" data-height="1080" data-duration="5"></div>
+    <script>
+      (function () {
+        var v = Studio.vars({ duration: 5, sizes: '72', titleAt: 0.2, markers: 'Chicago:-87.63:41.88:0.8;Tokyo:139.69:35.69:1.4;London:-0.13:51.51:2.0;Sydney:151.21:-33.87:2.6', arcs: true, dotsAt: 0, zoom: 0.08 });
+        var d = Studio.num(v.duration, 5);
+        var s = Studio.setup('studio-map', d), tl = s.tl;
+        var K = 1920 / 360, TOP = (1080 - 142 * K) / 2;
+        var proj = function (lon, lat) { return [((lon + 180) / 360) * 1920, TOP + (84 - lat) * K]; };
+        var cam = Studio.el('div', 'cam', s.root);
+        var canvas = Studio.el('canvas', '', cam);
+        canvas.width = 1920; canvas.height = 1080;
+        var ctx = canvas.getContext('2d');
+        var dots = window.STUDIO_DOTS || [];
+        var markers = String(v.markers || '').split(';').filter(Boolean).map(function (m) {
+          var p = m.split(':');
+          var xy = proj(Number(p[1]), Number(p[2]));
+          return { label: p[0], x: xy[0], y: xy[1], at: Number(p[3]) };
+        });
+        var dotsAt = Studio.num(v.dotsAt, 0);
+        var hash = function (i) { var x = Math.sin(i * 12.9898) * 43758.5453; return x - Math.floor(x); };
+        var state = { t: 0 };
+        function draw() {
+          var t = state.t;
+          ctx.clearRect(0, 0, 1920, 1080);
+          for (var i = 0; i < dots.length; i += 2) {
+            var x = dots[i], y = dots[i + 1];
+            var a = Math.min(1, Math.max(0, (t - dotsAt - (x / 1920) * 0.7 - hash(i) * 0.25) / 0.45));
+            if (a <= 0) continue;
+            var warm = 0;
+            for (var m = 0; m < markers.length; m++) {
+              var k = t - markers[m].at;
+              if (k <= 0) continue;
+              var r = Math.min(1, k / 0.8) * 120;
+              var dx = x - markers[m].x, dy = y - markers[m].y;
+              var dist = Math.sqrt(dx * dx + dy * dy);
+              if (dist < r) warm = Math.max(warm, 1 - dist / 120);
+            }
+            if (warm > 0) ctx.fillStyle = 'rgba(255,' + Math.round(150 + 50 * warm) + ',40,' + (a * (0.35 + 0.6 * warm)).toFixed(3) + ')';
+            else ctx.fillStyle = 'rgba(99,99,104,' + (a * 0.62).toFixed(3) + ')';
+            ctx.beginPath();
+            ctx.arc(x, y, 2.3 + warm * 0.9, 0, Math.PI * 2);
+            ctx.fill();
+          }
+        }
+        tl.fromTo(state, { t: 0 }, { t: d, duration: d, ease: 'none', onUpdate: draw }, 0);
+        draw();
+        // Arcs between consecutive markers, drawn as the next one is named.
+        if (v.arcs !== false && v.arcs !== 'false' && markers.length > 1) {
+          var NS = 'http://www.w3.org/2000/svg';
+          var svg = document.createElementNS(NS, 'svg');
+          svg.setAttribute('class', 'arcs');
+          svg.setAttribute('viewBox', '0 0 1920 1080');
+          svg.innerHTML = '<defs><linearGradient id="ag" x1="0" x2="1"><stop offset="0" stop-color="#ffe39a" stop-opacity="0.9"/><stop offset="1" stop-color="#ff9f0a" stop-opacity="0.9"/></linearGradient></defs>';
+          cam.appendChild(svg);
+          for (var i = 1; i < markers.length; i++) {
+            var a = markers[i - 1], b = markers[i];
+            var mx = (a.x + b.x) / 2, my = (a.y + b.y) / 2 - Math.abs(b.x - a.x) * 0.22 - 40;
+            var path = document.createElementNS(NS, 'path');
+            path.setAttribute('d', 'M' + a.x + ',' + a.y + ' Q' + mx + ',' + my + ' ' + b.x + ',' + b.y);
+            path.setAttribute('fill', 'none');
+            path.setAttribute('stroke', 'url(#ag)');
+            path.setAttribute('stroke-width', '3');
+            path.setAttribute('stroke-linecap', 'round');
+            svg.appendChild(path);
+            var len = path.getTotalLength();
+            path.setAttribute('stroke-dasharray', len);
+            tl.fromTo(path, { attr: { 'stroke-dashoffset': len } }, { attr: { 'stroke-dashoffset': 0 }, duration: 0.7, ease: 'power2.inOut' }, Math.max(0, b.at - 0.45));
+          }
+        }
+        markers.forEach(function (m) {
+          var pin = Studio.el('div', 'pin' + (m.x > 1500 ? ' left' : ''), cam);
+          pin.style.left = m.x + 'px';
+          pin.style.top = m.y + 'px';
+          // The pulsing ring stays hidden until the pin lands (fromTo renders its start state early).
+          var pi = Studio.el('div', '', pin);
+          var ring = Studio.el('div', 'ring', pi);
+          var dot = Studio.el('div', 'dot', pin);
+          tl.fromTo(pi, { opacity: 0 }, { opacity: 1, duration: 0.05 }, m.at);
+          var tag = Studio.el('div', 'tag', pin);
+          tag.textContent = m.label;
+          tl.fromTo(dot, { scale: 0, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.6, ease: 'back.out(3)' }, m.at);
+          tl.fromTo(ring, { scale: 1, opacity: 0.9 }, { scale: 5, opacity: 0, duration: 1.6, ease: 'power2.out', repeat: Math.max(0, Math.floor((d - m.at) / 1.6)) }, m.at);
+          Studio.reveal(tl, tag, m.at + 0.08, { blur: 10, y: 12, duration: 0.7 });
+        });
+        tl.fromTo(cam, { scale: 1 }, { scale: 1 + Studio.num(v.zoom, 0.08), duration: d, ease: 'none' }, 0);
+        if (v.text) Studio.title(s.root, tl, { text: v.text, sizes: v.sizes, kicker: v.kicker, kickerAt: Studio.num(v.titleAt, 0.2), start: Studio.num(v.titleAt, 0.2) + 0.1, stagger: 0.06, position: 'top-left', exitAt: v.titleOutAt });
+        Studio.source(s.root, tl, v.source, 0.6);
+      })();
+    </script>
+  </body>
+</html>

@@ -1,0 +1,26 @@
+{
+  "name": "studio-map",
+  "type": "hyperframes:block",
+  "title": "Studio Map",
+  "description": "Dotted world map: the land sharpens in a wave, gold pins pop on cues with labels, arcs link them, kicker and title, slow camera push.",
+  "tags": [
+    "studio",
+    "map",
+    "world",
+    "locations",
+    "apple"
+  ],
+  "elastic": true,
+  "dimensions": {
+    "width": 1920,
+    "height": 1080
+  },
+  "duration": 4,
+  "files": [
+    {
+      "path": "studio-map.html",
+      "target": "compositions/studio-map.html",
+      "type": "hyperframes:composition"
+    }
+  ]
+}

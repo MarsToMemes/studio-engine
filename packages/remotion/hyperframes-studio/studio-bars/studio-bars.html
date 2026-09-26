@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en" data-composition-variables='[
+  { "id": "duration", "type": "number", "role": "timing", "label": "Duration (s)", "default": 4 },
+  { "id": "kicker", "type": "string", "role": "content", "label": "Kicker", "default": "" },
+  { "id": "text", "type": "string", "role": "content", "label": "Title (markup, | for lines)", "default": "Rent keeps *growing.*" },
+  { "id": "sizes", "type": "string", "role": "style", "label": "Title sizes", "default": "96" },
+  { "id": "cues", "type": "string", "role": "timing", "label": "Title word cues (s)", "default": "" },
+  { "id": "labels", "type": "string", "role": "content", "label": "Bar labels", "default": "2019,2023" },
+  { "id": "values", "type": "string", "role": "content", "label": "Bar values", "default": "7.5,9.8" },
+  { "id": "prefix", "type": "string", "role": "content", "label": "Value prefix", "default": "$" },
+  { "id": "suffix", "type": "string", "role": "content", "label": "Value suffix", "default": "B" },
+  { "id": "decimals", "type": "number", "role": "content", "label": "Decimals", "default": 1 },
+  { "id": "barCues", "type": "string", "role": "timing", "label": "Bar grow times (s)", "default": "0.8,1.6" },
+  { "id": "delta", "type": "string", "role": "content", "label": "Delta pill", "default": "+31%" },
+  { "id": "deltaAt", "type": "number", "role": "timing", "label": "Delta at (s)", "default": 2.6 },
+  { "id": "source", "type": "string", "role": "content", "label": "Source line", "default": "" }
+]'>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Studio Bars</title>
+    <link rel="stylesheet" href="../_studio/studio.css" />
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <script src="../_studio/studio.js"></script>
+    <style>
+      .chart { position: absolute; left: 0; right: 0; top: 330px; bottom: 150px; display: flex; justify-content: center; align-items: flex-end; gap: 140px; }
+      .col { position: relative; width: 300px; height: 100%; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; }
+      .bar { width: 100%; border-radius: 28px 28px 10px 10px; background: linear-gradient(180deg, #3a3a3c, #232325); transform-origin: bottom center; }
+      .bar.hi { background: linear-gradient(180deg, #ffd65e 0%, #ffb224 55%, #ff9500 100%); box-shadow: 0 0 80px rgba(255, 170, 30, 0.28); }
+      .val { font-size: 76px; font-weight: 700; letter-spacing: -0.04em; margin-bottom: 22px; }
+      .val.dim { color: #a1a1a6; }
+      .lab { position: absolute; bottom: -64px; font-size: 36px; font-weight: 600; color: var(--muted); letter-spacing: -0.01em; }
+      .base { position: absolute; left: 420px; right: 420px; bottom: 150px; height: 2px; background: #2c2c2e; transform-origin: center; }
+      .pill { position: absolute; padding: 14px 30px; border-radius: 999px; background: var(--gold); color: #000; font-size: 44px; font-weight: 700; letter-spacing: -0.02em; box-shadow: 0 10px 60px rgba(255, 170, 30, 0.35); }
+    </style>
+  </head>
+  <body>
+    <div id="root" class="stage" data-composition-id="studio-bars" data-start="0" data-width="1920" data-height="1080" data-duration="4"></div>
+    <script>
+      (function () {
+        var v = Studio.vars({ duration: 4, text: 'Rent keeps *growing.*', sizes: '96', labels: '2019,2023', values: '7.5,9.8', prefix: '$', suffix: 'B', decimals: 1, barCues: '0.8,1.6', delta: '+31%', deltaAt: 2.6 });
+        var d = Studio.num(v.duration, 4);
+        var s = Studio.setup('studio-bars', d), tl = s.tl;
+        Studio.title(s.root, tl, { text: v.text, sizes: v.sizes, cues: v.cues, kicker: v.kicker, position: 'top-left', start: 0.1 });
+        var labels = Studio.strs(v.labels), values = Studio.nums(v.values), cues = Studio.nums(v.barCues);
+        var max = Math.max.apply(null, values) * 1.0;
+        var base = Studio.el('div', 'base', s.root);
+        tl.fromTo(base, { scaleX: 0, opacity: 0 }, { scaleX: 1, opacity: 1, duration: 0.9, ease: 'expo.out' }, Math.max(0, (cues[0] || 0.8) - 0.4));
+        var chart = Studio.el('div', 'chart', s.root);
+        var hiCol;
+        values.forEach(function (val, i) {
+          var hi = i === values.length - 1;
+          var col = Studio.el('div', 'col', chart);
+          var num = Studio.el('div', 'val tabular' + (hi ? '' : ' dim'), col);
+          var numText = Studio.el('span', hi ? 'gold' : '', num);
+          var bar = Studio.el('div', 'bar' + (hi ? ' hi' : ''), col);
+          var h = Math.round((val / max) * 470);
+          var lab = Studio.el('div', 'lab', col);
+          lab.textContent = labels[i] || '';
+          var at = cues[i] !== undefined ? cues[i] : 0.8 + i * 0.8;
+          // Height (not scale), so the value rides on top of the growing bar.
+          tl.fromTo(bar, { height: 0 }, { height: h, duration: 1.1, ease: 'expo.out' }, at);
+          Studio.count(tl, numText, { from: 0, to: val, decimals: Studio.num(v.decimals, 1), prefix: v.prefix, suffix: v.suffix, at: at, duration: 1.1 });
+          Studio.reveal(tl, num, at, { blur: 12, y: '0.3em' });
+          Studio.reveal(tl, lab, at + 0.1, { blur: 8 });
+          if (hi) hiCol = col;
+        });
+        if (v.delta && hiCol) {
+          var pill = Studio.el('div', 'pill', s.root);
+          pill.textContent = v.delta;
+          // Beside the top of the highlighted bar.
+          var colIndex = values.length - 1;
+          var total = values.length * 300 + (values.length - 1) * 140;
+          var left = (1920 - total) / 2 + colIndex * 440 + 300 + 36;
+          var top = 930 - Math.round((values[colIndex] / max) * 470) - 40;
+          pill.style.left = left + 'px';
+          pill.style.top = top + 'px';
+          tl.fromTo(pill, { opacity: 0, scale: 0.6, filter: 'blur(10px)' }, { opacity: 1, scale: 1, filter: 'blur(0px)', duration: 0.7, ease: 'back.out(2)' }, Studio.num(v.deltaAt, 2.6));
+        }
+        Studio.source(s.root, tl, v.source, 0.6);
+      })();
+    </script>
+  </body>
+</html>
