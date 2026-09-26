@@ -17,6 +17,7 @@
     "test": "npm test -w @studio-engine/scene-engine && npm test -w @studio-engine/editor-brain && npm test -w @studio-engine/render && npm test -w @studio-engine/studio",
     "typecheck": "npm run typecheck -w @studio-engine/scene-engine && npm run build && npm run typecheck -w @studio-engine/editor-brain && npm run typecheck -w @studio-engine/render && npm run typecheck -w @studio-engine/remotion && npm run typecheck -w @studio-engine/studio",
     "check": "npm run typecheck && npm test",
-    "studio": "npm run dev -w @studio-engine/studio"
+    "studio": "npm run dev -w @studio-engine/studio",
+    "stills": "node packages/remotion/scripts/stills.mjs"
   }
 }

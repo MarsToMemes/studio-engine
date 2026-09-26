@@ -13,7 +13,8 @@
     "qc": "node ../render/bin/studio-render.mjs qc",
     "render:episode": "node ../render/bin/studio-render.mjs render",
     "hyperframes:sync": "node scripts/hyperframes-sync.mjs",
-    "hyperframes:probe": "node scripts/hyperframes-probe.mjs"
+    "hyperframes:probe": "node scripts/hyperframes-probe.mjs",
+    "stills": "node scripts/stills.mjs"
   },
   "dependencies": {
     "@fontsource/inter": "5.3.0",
