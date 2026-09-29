@@ -27,7 +27,7 @@ const MIME = {
   '.html': 'text/html; charset=utf-8', '.js': 'text/javascript', '.mjs': 'text/javascript', '.cjs': 'text/javascript',
   '.css': 'text/css', '.json': 'application/json', '.svg': 'image/svg+xml', '.png': 'image/png', '.jpg': 'image/jpeg',
   '.jpeg': 'image/jpeg', '.webp': 'image/webp', '.woff2': 'font/woff2', '.ttf': 'font/ttf', '.wasm': 'application/wasm',
-  '.glb': 'model/gltf-binary', '.hdr': 'application/octet-stream', '.wav': 'audio/wav', '.mp4': 'video/mp4', '.txt': 'text/plain',
+  '.glb': 'model/gltf-binary', '.hdr': 'application/octet-stream', '.wav': 'audio/wav', '.mp4': 'video/mp4', '.webm': 'video/webm', '.txt': 'text/plain',
 };
 
 export function serveStatic(root) {
@@ -35,8 +35,19 @@ export function serveStatic(root) {
     const path = normalize(decodeURIComponent(new URL(req.url, 'http://x').pathname)).replace(/^(\.\.[/\\])+/, '');
     const file = join(root, path);
     if (!file.startsWith(root) || !existsSync(file) || statSync(file).isDirectory()) { res.writeHead(404); res.end(); return; }
-    res.writeHead(200, { 'content-type': MIME[extname(file).toLowerCase()] ?? 'application/octet-stream' });
-    res.end(readFileSync(file));
+    const type = MIME[extname(file).toLowerCase()] ?? 'application/octet-stream';
+    const data = readFileSync(file);
+    // Byte ranges: the browser only seeks a video (studio-video) when the server serves ranges.
+    const range = /^bytes=(\d*)-(\d*)$/.exec(req.headers.range ?? '');
+    if (range) {
+      const start = range[1] ? Number(range[1]) : Math.max(0, data.length - Number(range[2]));
+      const end = range[1] && range[2] ? Math.min(Number(range[2]), data.length - 1) : data.length - 1;
+      res.writeHead(206, { 'content-type': type, 'accept-ranges': 'bytes', 'content-range': `bytes ${start}-${end}/${data.length}`, 'content-length': end - start + 1 });
+      res.end(data.subarray(start, end + 1));
+      return;
+    }
+    res.writeHead(200, { 'content-type': type, 'accept-ranges': 'bytes', 'content-length': data.length });
+    res.end(data);
   });
   return new Promise((ok) => server.listen(0, '127.0.0.1', () => ok({ server, url: `http://127.0.0.1:${server.address().port}` })));
 }
@@ -64,6 +75,7 @@ async function probe(page, base, catalog, item) {
       await document.fonts.ready;
       window.__hf.seek(time);
       await window.__hfWaitForSeekCompletion?.();
+      await window.__studioSettle?.();
       await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
     }, t);
     await page.screenshot({ path: join(thumbs, `${item.type}-${item.name}.jpg`), type: 'jpeg', quality: 72 });

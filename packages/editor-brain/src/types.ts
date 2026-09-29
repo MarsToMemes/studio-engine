@@ -16,6 +16,8 @@ import type {
   EditorialIntent,
   EditorialLevel,
   MapPayload,
+  MediaNature,
+  MediaNeed,
   MotionSkillRegistry,
   NumberPayload,
   SfxCategory,
@@ -34,6 +36,8 @@ export type ScriptBlock = { kind: 'chapter'; title: string; question?: string } 
  */
 export interface UnitHints {
   intent?: EditorialIntent;
+  /** What the picture must do for this sentence (bible §27): overrides the analysis. */
+  mediaNeed?: MediaNeed;
   importance?: EditorialLevel;
   highlightedWords?: string[];
   /** Asset to use for this sentence. */
@@ -58,6 +62,8 @@ export interface CatalogEntry {
   assetId: string;
   description?: string;
   tags?: string[];
+  /** What the file is (real video, photo, archive, screenshot, document, generated). Default: derived (media.ts). */
+  nature?: MediaNature;
   /** For documents: regions of text, in percent of the page, to highlight when they are spoken. */
   regions?: Array<{ text: string; x: number; y: number; width: number; height: number }>;
 }
@@ -132,6 +138,10 @@ export interface EditorialUnit {
   entities: { numbers: NumberEntity[]; emphasis: string[]; places: Place[]; quote?: string };
   /** Why the analyzer chose this intent: the cue it found. */
   why: string;
+  /** What the picture must do (bible §27); `none` when unset. */
+  mediaNeed?: MediaNeed;
+  /** The evidence for the need. */
+  mediaWhy?: string;
   hints?: UnitHints;
 }
 

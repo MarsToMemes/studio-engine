@@ -14,7 +14,7 @@ import { resolveNarration, resolveSilences } from './editorial.js';
 import { getShotPlanDuration, getShotStartFrames } from './timeline.js';
 import type { ShotPlan } from './types.js';
 import { EDITORIAL_GRAMMAR } from './grammar.js';
-import { BEATS, SHOT_CAMERA_MOVES, DECIDED_BY, EDITORIAL_INTENTS, FRAMINGS, FRAMING_SCALE, isEditorialLevel, MUSIC_STATES, RESOLVING_BEATS, SILENCE_KINDS, type EditorialIntent } from './vocabulary.js';
+import { BEATS, SHOT_CAMERA_MOVES, DECIDED_BY, EDITORIAL_INTENTS, FRAMINGS, FRAMING_SCALE, isEditorialLevel, MEDIA_NEEDS, MEDIA_TIERS, MUSIC_STATES, REAL_SUBJECT_NEEDS, RESOLVING_BEATS, SILENCE_KINDS, type EditorialIntent } from './vocabulary.js';
 
 export type ValidationStage = 'draft' | 'final';
 
@@ -59,6 +59,15 @@ export function validateEditorialLayer(plan: ShotPlan, issues: IssueCollector, s
         const v = shot.analysis[k];
         if (v !== undefined && !isEditorialLevel(v)) issues.error(`${p}.analysis.${k}`, 'editorial.level', `${k} is a level from 1 to 5 (heuristic, not a measurement)`);
       }
+    }
+    if (shot.mediaNeed !== undefined && !isOneOf(shot.mediaNeed, MEDIA_NEEDS)) issues.error(`${p}.mediaNeed`, 'media.need.invalid', `mediaNeed must be one of ${MEDIA_NEEDS.join(', ')}`);
+    if (shot.mediaTier !== undefined && !isOneOf(shot.mediaTier, MEDIA_TIERS)) issues.error(`${p}.mediaTier`, 'media.tier.invalid', `mediaTier must be one of ${MEDIA_TIERS.join(', ')}`);
+    // A generated visual never stands for reality: a real person, history, a platform, a document, a proof (MED-07).
+    const asset = shot.media ? plan.assets?.[shot.media] : undefined;
+    if (shot.mediaTier === 'generated' || asset?.nature === 'generated' || asset?.source?.syntheticMedia === true) {
+      const need = shot.mediaNeed && REAL_SUBJECT_NEEDS.includes(shot.mediaNeed) ? shot.mediaNeed : undefined;
+      const subject = need ? need.replace(/_/g, ' ') : shot.type === 'document' ? 'a document' : shot.editorialIntent === 'proof' ? 'a proof' : undefined;
+      if (subject) issues.warn(`${p}.media`, 'media.generated.real', `a generated visual stands for ${subject}: use a real, licensed media (photo, archive, screenshot, document) or motion design`);
     }
     if (shot.focus !== undefined && !(isObject(shot.focus) && [shot.focus.x, shot.focus.y].every((v) => isFiniteNumber(v) && v >= 0 && v <= 100))) issues.error(`${p}.focus`, 'shot.focus', 'focus needs x and y in percent (0..100)');
     if (shot.hold !== undefined && !isNonEmptyString(shot.hold)) issues.error(`${p}.hold`, 'shot.hold', 'hold is the reason of an intentional long shot');

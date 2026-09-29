@@ -7,7 +7,7 @@
  * never provides timing, figures or data: those stay deterministic.
  * Author hints always win over the LLM.
  */
-import { BEATS, normalizeWord, RESOLVING_BEATS, type Beat, type EditorialIntent, type EditorialLevel } from '@studio-engine/scene-engine';
+import { BEATS, MEDIA_NEEDS, normalizeWord, RESOLVING_BEATS, type Beat, type EditorialIntent, type EditorialLevel, type MediaNeed } from '@studio-engine/scene-engine';
 import type { Story } from '../direct.js';
 import { architectStory } from '../architect.js';
 import { lookupPlace } from '../gazetteer.js';
@@ -32,6 +32,7 @@ export const STORY_TOOL = {
           properties: {
             id: { type: 'string' },
             intent: { type: 'string', enum: [...SENTENCE_INTENTS] },
+            mediaNeed: { type: 'string', enum: [...MEDIA_NEEDS] },
             importance: level,
             surprise: level,
             tension: level,
@@ -66,6 +67,7 @@ export const STORY_TOOL = {
 export interface LlmSentence {
   id: string;
   intent: EditorialIntent;
+  mediaNeed?: MediaNeed;
   importance: EditorialLevel;
   surprise?: EditorialLevel;
   tension?: EditorialLevel;
@@ -117,6 +119,7 @@ export function checkStory(raw: unknown, story: Story, catalogIds: ReadonlySet<s
     if (!u) continue;
     const errs: string[] = [];
     if (!SENTENCE_INTENTS.includes(s.intent as EditorialIntent)) errs.push(`intent "${String(s.intent)}" is not one of ${SENTENCE_INTENTS.join(', ')}`);
+    if (s.mediaNeed !== undefined && !MEDIA_NEEDS.includes(s.mediaNeed as MediaNeed)) errs.push(`mediaNeed "${String(s.mediaNeed)}" is not one of ${MEDIA_NEEDS.join(', ')}`);
     for (const k of ['importance', 'surprise', 'tension', 'informationDensity', 'visualPotential'] as const) {
       if ((k === 'importance' || s[k] !== undefined) && !isLevel(s[k])) errs.push(`${k} must be an integer level from 1 to 5 (got ${JSON.stringify(s[k])})`);
     }
@@ -178,6 +181,7 @@ export function mergeStory(heuristic: Story, checked: CheckedStory, model: strin
     return {
       ...u,
       intent: hints.intent ?? s.intent,
+      ...(hints.mediaNeed ? {} : s.mediaNeed ? { mediaNeed: s.mediaNeed, mediaWhy: `decided by ${model}` } : {}),
       importance: hints.importance ?? s.importance,
       analysis: {
         ...u.analysis,

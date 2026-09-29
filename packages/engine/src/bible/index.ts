@@ -17,6 +17,7 @@ export function getBibleRule(id: string): BibleRule | undefined {
 
 /** Editorial checks already implemented, by issue code. */
 export const ISSUE_CODE_RULES: Readonly<Record<string, string>> = {
+  'media.generated.real': 'MED-07',
   'pacing.hook': 'RHY-01',
   'pacing.static': 'RHY-03',
   'skill.unknown': 'DIR-03',

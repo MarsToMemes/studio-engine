@@ -157,5 +157,42 @@
     tl.fromTo(s, { opacity: 0 }, { opacity: 1, duration: 0.6, ease: 'power1.out' }, at || 0.4);
   };
 
+  /**
+   * Footage that follows the timeline. HyperFrames leaves media to its own renderer in
+   * render-capture mode, so a studio block seeks its videos itself: after every seek the
+   * host awaits window.__studioSettle(), which puts each video on the timeline time
+   * (+ mediaStart) and resolves once that frame is decoded.
+   */
+  var videos = [];
+  function once(el, event, ms) {
+    return new Promise(function (resolve) {
+      var done = function () { el.removeEventListener(event, done); clearTimeout(t); resolve(); };
+      var t = setTimeout(done, ms);
+      el.addEventListener(event, done);
+    });
+  }
+  S.video = function (video, tl, mediaStart) {
+    video.muted = true;
+    video.playsInline = true;
+    video.preload = 'auto';
+    video.setAttribute('muted', '');
+    video.setAttribute('playsinline', '');
+    videos.push({ el: video, tl: tl, start: mediaStart || 0 });
+    return video;
+  };
+  window.__studioSettle = function () {
+    return Promise.all(videos.map(function (v) {
+      var el = v.el;
+      var ready = el.readyState >= 1 ? Promise.resolve() : once(el, 'loadedmetadata', 10000);
+      return ready.then(function () {
+        var end = isFinite(el.duration) && el.duration > 0 ? el.duration - 0.04 : Infinity;
+        var target = Math.max(0, Math.min(end, v.start + v.tl.time()));
+        if (!el.paused) el.pause();
+        var seeked = Math.abs(el.currentTime - target) > 0.0005 ? (function () { var p = once(el, 'seeked', 10000); el.currentTime = target; return p; })() : Promise.resolve();
+        return seeked.then(function () { return el.readyState >= 2 ? undefined : once(el, 'loadeddata', 10000); });
+      });
+    })).then(function () {});
+  };
+
   window.Studio = S;
 })();

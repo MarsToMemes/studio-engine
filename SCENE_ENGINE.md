@@ -797,7 +797,7 @@ SFX     │◆impact        ◆impact               SFX events, draggable
 
 ## 19. Editorial bible (`VIDEO_EDITING_BIBLE.md`)
 
-- **Single source of truth.** The editorial rules live in `VIDEO_EDITING_BIBLE.md` at the repository root: 149 rules in 26 domains, from narration and rhythm to sound, rights and technical quality.
+- **Single source of truth.** The editorial rules live in `VIDEO_EDITING_BIBLE.md` at the repository root: 158 rules in 27 domains, from narration and rhythm to sound, rights and technical quality.
 - **Rule format.** Each rule has a stable id (`RHY-03`), a severity (`bloquant` / `avertissement` / `conseil`) and an enforcement mode:
   - `AUTO`: deterministic check;
   - `HEUR`: approximate check, never blocking;
@@ -882,6 +882,18 @@ heuristicStory ─► prompt (bible rules + grammar + script + facts + catalogue
   - The editorial critic pass over the rendered plan (REVUE rules) is a later phase.
 
 ---
+
+### 20.1 Media selection (bible §27)
+
+For every sentence the brain decides the **need** first (`mediaNeed`: explain a figure, a relation, a mechanism; introduce a person, a company or a product; history, an archive; human behaviour, a product in use, an atmosphere; a platform, a financial document, a source), then takes the **most authentic media that answers it** (`mediaTier`: real video → real photo or archive → screenshot or document → data visualisation → generated visual → motion design). Both are recorded on the shot, with the reason in `reasons.media`.
+
+- **Nature of a media** (`CatalogEntry.nature` or `Asset.nature`: `real_video`, `real_photo`, `archive`, `screenshot`, `document`, `generated`); default from `source.syntheticMedia`, the tags and the kind (`media.ts`).
+- **The need**: Claude decides it with a key (`mediaNeed` in the story tool); otherwise English and French cues (`detectMediaNeed`); the author's `hints.mediaNeed` always wins.
+- **Explaining needs** (figure, relation, concepts, mechanism): data or motion design carries the key shot, an authentic media comes as the support shot (MED-03).
+- **Rhetorical and structural intents** (hook, keyword, number, statistic, comparison, quote, proof, location, contradiction, revelation, chapter) keep their grammar: the Apple style is unchanged.
+- **A document proves, it does not illustrate**: it is only tried when the need asks for one.
+- **A generated visual never stands for reality** (a real person, history, an archive, a platform, an interface, a document, a proof): MED-07, checked by the validation (`media.generated.real`).
+- **Asset requests** say which authentic media to find, in order of preference, and where under a licence (Wikimedia Commons, press kit, official site, Pexels, Pixabay), in the language of the script (MED-08).
 
 ## 21. Craft rules checked on every plan
 
@@ -1182,7 +1194,7 @@ Items that embed media (25, e.g. `nyc-paris-flight`, `organic-light-leak-overlay
 
 ### 28.1 Studio blocks (our own HyperFrames compositions)
 
-The catalog alone does not give a documentary look (§28). `packages/remotion/hyperframes-studio/` holds seven blocks written for this engine in the HyperFrames format (HTML + paused GSAP timeline, same runtime, same protocol). The sync copies them to `public/hyperframes/blocks/` and lists them in the catalog with `source: 'studio'`.
+The catalog alone does not give a documentary look (§28). `packages/remotion/hyperframes-studio/` holds eight blocks written for this engine in the HyperFrames format (HTML + paused GSAP timeline, same runtime, same protocol). The sync copies them to `public/hyperframes/blocks/` and lists them in the catalog with `source: 'studio'`.
 
 **Design system** (`_studio/studio.css`, `_studio/studio.js`), Apple-keynote clean:
 - **Stage and type**: black stage, Inter with the optical-size axis (`@fontsource-variable/inter`), tight display tracking, weights 600/700.
@@ -1195,6 +1207,7 @@ The catalog alone does not give a documentary look (§28). `packages/remotion/hy
 |---|---|
 | `studio-title` | statement, word by word, strike-through, kicker |
 | `studio-image` | photo opening from a rounded window to full frame, dim/blur steps under a title, fade to black |
+| `studio-video` | real footage, same reveal, title and dims as `studio-image`, gentler zoom; muted (the narration carries the sound) |
 | `studio-stat` | a figure counting inside a ring that fills to the value |
 | `studio-bars` | bar comparison, values riding on the growing bars, delta pill |
 | `studio-document` | a document rebuilt as a crisp card (not a screenshot): tilts in, camera push, highlights on cues, table rows |
@@ -1206,6 +1219,8 @@ Studio blocks are **elastic**: the engine passes the part of the timeline a laye
 Two consecutive shots can therefore show **one continuous block**: the second uses `startAt` = the first one's length. The cut is invisible and the shots stay separate in the plan (their narration segments, reasons and sound do not change). The McDonald's edit does this for the bar chart (`u5-a` / `u5-b`) and for the map across the chapter card (`chapter-2` / `u6-a`).
 
 A studio image takes a path from the public root (`mcd/counter.png`). Keep the image in `Shot.media` too, so the QC still lists its licence and synthetic-media disclosure.
+
+**Footage in a block.** In render-capture mode the HyperFrames runtime leaves `<video>` to its own renderer, which this engine does not use. A studio block therefore registers its videos with `Studio.video(el, tl, mediaStart)` (`_studio/studio.js`): after every seek, the host (the Remotion `HyperFrames` component, `stills.mjs`, the probe) awaits `window.__studioSettle()`, which puts each video on the timeline time + `mediaStart` and resolves once that frame is decoded. The server of the page must answer HTTP byte ranges, or the browser cannot seek (Remotion's server and the probe's do).
 
 **Automatic: `editor-brain direct input.json --plan --style apple`** (`packages/editor-brain/src/styles/apple.ts`).
 
@@ -1220,7 +1235,7 @@ Block per shot type:
 | map | `studio-map` |
 | image | `studio-image` |
 | chapter | merged into the map that follows, else `studio-title` with a kicker |
-| video | engine composition |
+| video | `studio-video` |
 
 **One block across shots**: a lead-in sentence and its chart (same sentence), a chapter card and its map, and the same data block continued in a scene.
 

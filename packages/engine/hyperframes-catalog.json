@@ -28064,6 +28064,154 @@
     "gsap@3.14.2"
    ],
    "source": "studio"
+  },
+  {
+   "name": "studio-video",
+   "type": "block",
+   "title": "Studio Video",
+   "description": "Real footage opens from a rounded window to full frame (Apple product reveal), slow zoom, optional dim + blur under a synced title, optional fade to black. The clip is muted: the narration carries the sound.",
+   "tags": [
+    "studio",
+    "video",
+    "footage",
+    "reveal",
+    "documentary",
+    "apple"
+   ],
+   "dimensions": {
+    "width": 1920,
+    "height": 1080
+   },
+   "duration": 4,
+   "elasticDuration": true,
+   "path": "hyperframes/blocks/studio-video/studio-video.html",
+   "mount": "page",
+   "variables": [
+    {
+     "id": "duration",
+     "type": "number",
+     "role": "timing",
+     "label": "Duration (s)",
+     "default": 4
+    },
+    {
+     "id": "src",
+     "type": "video",
+     "role": "content",
+     "label": "Video (path from the public root, or URL)",
+     "default": "clip.webm"
+    },
+    {
+     "id": "mediaStart",
+     "type": "number",
+     "role": "timing",
+     "label": "Start in the clip (s)",
+     "default": 0
+    },
+    {
+     "id": "revealAt",
+     "type": "number",
+     "role": "timing",
+     "label": "Window opens to full frame at (s)",
+     "default": 0.35
+    },
+    {
+     "id": "window",
+     "type": "number",
+     "role": "style",
+     "label": "Start window width (%), 100 = no window",
+     "default": 58
+    },
+    {
+     "id": "zoom",
+     "type": "number",
+     "role": "style",
+     "label": "Slow zoom gain",
+     "default": 0.06
+    },
+    {
+     "id": "dimAt",
+     "type": "number",
+     "role": "timing",
+     "label": "Dim at (s)",
+     "default": ""
+    },
+    {
+     "id": "dim",
+     "type": "number",
+     "role": "style",
+     "label": "Dim opacity (0-1)",
+     "default": 0.85
+    },
+    {
+     "id": "blur",
+     "type": "number",
+     "role": "style",
+     "label": "Blur when dimmed (px)",
+     "default": 10
+    },
+    {
+     "id": "dims",
+     "type": "string",
+     "role": "timing",
+     "label": "Dim steps time:opacity:blur;... (wins over dimAt)",
+     "default": ""
+    },
+    {
+     "id": "text",
+     "type": "string",
+     "role": "content",
+     "label": "Title lines (see studio-title)",
+     "default": ""
+    },
+    {
+     "id": "sizes",
+     "type": "string",
+     "role": "style",
+     "label": "Line sizes",
+     "default": "120"
+    },
+    {
+     "id": "soft",
+     "type": "string",
+     "role": "style",
+     "label": "Soft lines",
+     "default": ""
+    },
+    {
+     "id": "cues",
+     "type": "string",
+     "role": "timing",
+     "label": "Word cues (s)",
+     "default": ""
+    },
+    {
+     "id": "position",
+     "type": "enum",
+     "role": "style",
+     "label": "Title position",
+     "default": "center",
+     "options": [
+      "center",
+      "left",
+      "bottom",
+      "top-left"
+     ]
+    },
+    {
+     "id": "fadeOutAt",
+     "type": "number",
+     "role": "timing",
+     "label": "Fade to black at (s)",
+     "default": ""
+    }
+   ],
+   "params": [],
+   "embeddedMedia": [],
+   "dependencies": [
+    "gsap@3.14.2"
+   ],
+   "source": "studio"
   }
  ]
 }

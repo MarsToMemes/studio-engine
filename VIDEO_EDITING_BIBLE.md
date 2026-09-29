@@ -60,8 +60,8 @@ Pour chaque moment du script, dans cet ordre :
 
 1. Quelle information est importante ?
 2. Quelle est l'intention éditoriale ?
-3. Quelle image raconte le mieux cette information ?
-4. Faut-il montrer, expliquer, comparer, prouver ou révéler ?
+3. Faut-il montrer, expliquer, comparer, prouver ou révéler ?
+4. Quel média raconte le mieux cette information : le plus authentique qui répond à ce besoin (§27) ?
 5. Quel cadrage, quel mouvement de caméra ?
 6. Quel niveau de mouvement ?
 7. Quel rythme ?
@@ -486,7 +486,53 @@ Recette : **mise en place → (silence contrôlé) → impact → révélation v
 
 ---
 
-## 27. Exemples de bonnes décisions
+## 27. Sélection du média (MED)
+
+Pour chaque plan, le média se choisit en deux temps :
+
+1. **Le besoin de la phrase.** Le plan doit-il montrer le réel, expliquer ou prouver ?
+2. **L'échelle d'authenticité**, parmi les médias qui répondent à ce besoin :
+
+| Niveau | Média (`mediaTier`) | Exemples |
+|---|---|---|
+| 1 | vidéo réelle (`real_video`) | rushes, séquences sous licence |
+| 2 | photo réelle ou archive (`real_photo`) | photo de presse, archive, portrait |
+| 3 | capture d'écran ou document (`document`) | rapport annuel, page web, interface |
+| 4 | visualisation de données (`data_viz`) | chiffre animé, graphique, carte |
+| 5 | visuel généré (`generated`) | image ou vidéo produite par IA |
+| 6 | motion design pur (`motion`) | typographie cinétique, blocs studio |
+
+Besoins d'une phrase (`mediaNeed`) et médias préférés :
+
+| Besoin | Quand | Médias préférés |
+|---|---|---|
+| `explain_number` | un chiffre est expliqué | visualisation, motion |
+| `show_relation` | une relation doit être visualisée | visualisation, motion |
+| `connect_concepts` | plusieurs concepts sont reliés | motion, visualisation |
+| `abstract_mechanism` | un mécanisme business abstrait est expliqué | motion, visualisation |
+| `historical_context` | un contexte historique est présenté | photo d'archive, vidéo, document |
+| `introduce_entity` | une personne, une entreprise ou un produit est introduit | photo, vidéo |
+| `archival_evidence` | une archive ou une preuve historique compte | photo d'archive, document |
+| `human_behavior` | un comportement humain est montré | vidéo, photo |
+| `product_in_use` | un produit est utilisé | vidéo, photo |
+| `atmosphere` | l'atmosphère ou l'environnement compte | vidéo, photo |
+| `platform_reference` | la narration cite une plateforme | capture d'écran, photo |
+| `financial_document` | un document financier est évoqué | document, visualisation |
+| `source_interface` | une interface ou une source précise compte | capture d'écran, document |
+| `none` | aucun des cas ci-dessus | l'échelle dans l'ordre |
+
+- **MED-01** · avertissement · REVUE — Le média se choisit dans l'ordre d'authenticité : vidéo réelle → photo réelle ou archive → capture d'écran ou document → visualisation de données → visuel généré → motion design pur. On ne descend d'un niveau que si le média plus authentique n'existe pas ou ne montre pas ce que dit la phrase.
+- **MED-02** · avertissement · REVUE — Le besoin de la phrase passe avant l'échelle : on décide d'abord si le plan montre le réel, explique ou prouve, puis l'échelle départage les médias qui répondent à ce besoin. Aucune animation n'est choisie simplement parce qu'elle est disponible (GRAM-02).
+- **MED-03** · avertissement · HEUR — Motion design ou visualisation de données quand un chiffre est expliqué, qu'une relation doit être visualisée, que plusieurs concepts doivent être reliés ou qu'un mécanisme business abstrait est expliqué ; un média authentique pertinent vient alors en plan secondaire.
+- **MED-04** · avertissement · HEUR — Photo quand un contexte historique est présenté, qu'une personne, une entreprise ou un produit est introduit, ou qu'une archive ou une preuve historique est pertinente.
+- **MED-05** · avertissement · HEUR — Vidéo quand un comportement humain est montré, qu'un produit est utilisé, ou que l'atmosphère ou l'environnement compte.
+- **MED-06** · avertissement · HEUR — Capture d'écran ou document quand la narration cite une plateforme, évoque un document financier, ou qu'une interface ou une source précise compte.
+- **MED-07** · avertissement · AUTO — Un visuel généré ne représente jamais une personne réelle, un contexte historique, une archive, une plateforme, une interface ni un document : ces plans utilisent un média réel sous licence ou restent en motion design.
+- **MED-08** · conseil · REVUE — Une demande d'asset dit quel média authentique chercher, dans l'ordre de préférence, et où le trouver sous licence : Wikimedia Commons, kit presse ou site officiel pour une personne ou une entreprise ; banques sous licence (Pexels, Pixabay) pour une ambiance ; jamais une image trouvée sur un moteur de recherche sans licence vérifiée (SRC-01, SRC-02).
+
+---
+
+## 28. Exemples de bonnes décisions
 
 **Hook — « McDonald's n'est pas une entreprise de burgers. »**
 
@@ -529,7 +575,7 @@ plan suivant : carte des restaurants, épingles une par une avec la voix (MAP-02
 
 **Conclusion.** La photo du restaurant de l'intro revient, recadrée sur le terrain, avec « PROPRIÉTAIRE » en surimpression. C'est un rappel dans un contexte changé (CALL-02), avec un pull-out lent et une musique qui se résout.
 
-## 28. Exemples de mauvaises décisions
+## 29. Exemples de mauvaises décisions
 
 | Décision | Pourquoi c'est mauvais | Règles |
 |---|---|---|

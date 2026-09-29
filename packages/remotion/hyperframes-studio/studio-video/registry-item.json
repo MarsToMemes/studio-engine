@@ -1,0 +1,11 @@
+{
+  "name": "studio-video",
+  "type": "hyperframes:block",
+  "title": "Studio Video",
+  "description": "Real footage opens from a rounded window to full frame (Apple product reveal), slow zoom, optional dim + blur under a synced title, optional fade to black. The clip is muted: the narration carries the sound.",
+  "tags": ["studio", "video", "footage", "reveal", "documentary", "apple"],
+  "elastic": true,
+  "dimensions": { "width": 1920, "height": 1080 },
+  "duration": 4,
+  "files": [{ "path": "studio-video.html", "target": "compositions/studio-video.html", "type": "hyperframes:composition" }]
+}
