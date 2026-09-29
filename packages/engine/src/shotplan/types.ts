@@ -13,7 +13,7 @@
  * The exact flat `Timeline` format (with `startFrame`) is produced by
  * `toTimeline()` and accepted back by `fromTimeline()`.
  */
-import type { Beat, ShotCameraMove, DecidedBy, EditorialIntent, EditorialLevel, Framing, MusicState, SilenceKind } from './vocabulary.js';
+import type { Beat, ShotCameraMove, DecidedBy, EditorialIntent, EditorialLevel, Framing, MediaNeed, MediaTier, MusicState, SilenceKind } from './vocabulary.js';
 import type { AssetRegistry } from '../model/assets.js';
 import type { JsonObject, JsonValue } from '../model/primitives.js';
 import type { HyperFramesUse } from '../hyperframes/index.js';
@@ -141,12 +141,18 @@ export interface Shot {
   hold?: string;
   /** Id of an intentional sequence of same-type shots (archive montage…), exempt from VAR-01. */
   sequence?: string;
+  /** What the sentence needs the picture to do (bible §27): decided before the authenticity scale. */
+  mediaNeed?: MediaNeed;
+  /** Level of the authenticity scale this shot uses (bible §27, MED-01). */
+  mediaTier?: MediaTier;
   decidedBy?: DecidedBy;
 }
 
 export interface ShotReasons {
   /** Why this shot: what the viewer must understand, feel or discover. */
   shot: string;
+  /** Why this media (bible MED-01): the need of the sentence and the level of the scale used. */
+  media?: string;
   motion?: string;
   camera?: string;
   transition?: string;

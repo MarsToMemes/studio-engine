@@ -27,7 +27,7 @@ import { intensityOf, MotionDirector } from './motion.js';
 import { planRhythm } from './rhythm.js';
 import { designSfx, musicStates, pickSilences, SILENCE_SECONDS } from './sound.js';
 import type { BrainInput, BrainResult, EditorialUnit, StoryStructure } from './types.js';
-import { VisualDirector, type Visual } from './visual.js';
+import { tierOfType, VisualDirector, type Visual } from './visual.js';
 
 export const BRAIN_VERSION = 1;
 
@@ -124,6 +124,8 @@ export function directFromStory(input: BrainInput, story: Story): BrainResult {
           sceneId: scenes[0]!.id,
           beat: 'transition',
           editorialIntent: 'chapter',
+          mediaNeed: 'none',
+          mediaTier: 'motion',
           importance: 3,
           visualHierarchy: visual.hierarchy(v, card),
           transition: 'fade',
@@ -175,11 +177,14 @@ export function directFromStory(input: BrainInput, story: Story): BrainResult {
             sceneId: scene.id,
             beat: structure.beats[u.id]!,
             editorialIntent: u.intent,
+            mediaNeed: u.mediaNeed ?? 'none',
+            mediaTier: v.tier ?? tierOfType(v.type),
             importance: chunk.role === 'key' ? u.importance : level(u.importance - 1),
             ...(chunk.role === 'key' ? { analysis: u.analysis } : {}),
             visualHierarchy: visual.hierarchy(v, u),
             reasons: {
               shot: v.reason,
+              ...(v.mediaReason ? { media: v.mediaReason } : {}),
               ...(m.why ? { motion: m.why } : {}),
               ...(cam.why ? { camera: cam.why } : {}),
               ...(callback ? { transition: 'A dissolve links the end to the beginning: same place, new meaning.' } : {}),

@@ -190,7 +190,7 @@ function extendGold(words: readonly string[], marks: boolean[]): boolean[] {
 // ---------------------------------------------------------------------------
 // Blocks
 
-type Kind = 'title' | 'image' | 'stat' | 'bars' | 'document' | 'map' | 'units' | 'chapter';
+type Kind = 'title' | 'image' | 'video' | 'stat' | 'bars' | 'document' | 'map' | 'units' | 'chapter';
 
 interface Draft {
   shot: Shot;
@@ -214,6 +214,8 @@ function kindOf(shot: Shot, unit: EditorialUnit | undefined): Kind | undefined {
       return unit?.hints?.share ? 'units' : 'title';
     case 'image':
       return 'image';
+    case 'video':
+      return 'video';
     case 'number':
       return 'stat';
     case 'chart':
@@ -225,7 +227,7 @@ function kindOf(shot: Shot, unit: EditorialUnit | undefined): Kind | undefined {
     case 'chapter':
       return 'chapter';
     default:
-      return undefined; // video: the engine's own composition
+      return undefined;
   }
 }
 
@@ -305,10 +307,13 @@ function buildBlock(ctx: Ctx, run: Draft[]): HyperFramesUse | undefined {
       const kicker = shot.subtext ? shot.subtext.charAt(0).toUpperCase() + shot.subtext.slice(1).toLowerCase() : undefined;
       return { item: 'studio-title', variables: { text: t.text, sizes: t.sizes, ...(kicker ? { kicker } : {}), start: 0.25 } };
     }
-    case 'image': {
+    case 'image':
+    case 'video': {
+      // Real footage and stills share the reveal, the synced title and the dims; footage already moves, so it zooms less.
       const asset = shot.media ? ctx.plan.assets[shot.media] : undefined;
-      if (!asset || asset.kind !== 'image') return undefined;
-      const v: JsonObject = { src: asset.src, window: 56, revealAt: shot.camera === 'pull_out' ? 0.1 : 0.15, zoom: shot.camera === 'pull_out' ? -0.08 : 0.12 };
+      if (!asset || asset.kind !== main.kind) return undefined;
+      const still = main.kind === 'image';
+      const v: JsonObject = { src: asset.src, window: 56, revealAt: shot.camera === 'pull_out' ? 0.1 : 0.15, zoom: shot.camera === 'pull_out' ? -0.08 : still ? 0.12 : 0.05 };
       const text = spokenText(ctx, main);
       if (text) {
         const t = titleSpec(text, goldOf(shot, unit));
@@ -322,7 +327,7 @@ function buildBlock(ctx: Ctx, run: Draft[]): HyperFramesUse | undefined {
         }
       }
       if (isLast) v.fadeOutAt = round3(runSeconds - 0.55);
-      return { item: 'studio-image', variables: v };
+      return { item: still ? 'studio-image' : 'studio-video', variables: v };
     }
     case 'stat': {
       const n = shot.number;

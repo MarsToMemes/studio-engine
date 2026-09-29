@@ -25,7 +25,7 @@ describe('HyperFrames catalog', () => {
   it('holds the whole registry at the pinned commit', () => {
     expect(catalog.commit).toBe('8798e40');
     expect(catalog.items.filter((i) => i.type === 'block' && !i.source)).toHaveLength(165);
-    expect(catalog.items.filter((i) => i.source === 'studio').map((i) => i.name)).toEqual(['studio-bars', 'studio-document', 'studio-image', 'studio-map', 'studio-stat', 'studio-title', 'studio-units']);
+    expect(catalog.items.filter((i) => i.source === 'studio').map((i) => i.name)).toEqual(['studio-bars', 'studio-document', 'studio-image', 'studio-map', 'studio-stat', 'studio-title', 'studio-units', 'studio-video']);
     expect(catalog.items.filter((i) => i.type === 'component')).toHaveLength(223);
     expect(new Set(catalog.items.map((i) => `${i.type}:${i.name}`)).size).toBe(catalog.items.length);
   });

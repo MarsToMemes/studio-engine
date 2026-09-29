@@ -23,7 +23,7 @@ SCRIPT + VOIX (transcrite) + VISUELS + DOCUMENTS + MUSIQUE + SFX + DROITS
  editor-brain ─ ANALYSE ÉDITORIALE → STRUCTURE DU RÉCIT → PLAN DE PLANS → HIÉRARCHIE VISUELLE → CAMÉRA
  (le réalisateur)   → MOTION DESIGN → SOUND DESIGN → TRANSITIONS → SOUS-TITRES   (chaque décision justifiée)
         │
-        ▼  ShotPlan v2 (JSON)  ◄─── validé contre VIDEO_EDITING_BIBLE.md (149 règles numérotées)
+        ▼  ShotPlan v2 (JSON)  ◄─── validé contre VIDEO_EDITING_BIBLE.md (158 règles numérotées)
         │
  engine ─ compilation déterministe → VideoProject (scènes, calques, animations, audio)
  (l'exécutant)
@@ -76,7 +76,7 @@ cd packages/remotion && npm run assets   # médias de test synthétiques dans pu
 
 ```
 studio-engine/
-├── VIDEO_EDITING_BIBLE.md        la référence éditoriale : 149 règles (ID · sévérité · mode de contrôle)
+├── VIDEO_EDITING_BIBLE.md        la référence éditoriale : 158 règles (ID · sévérité · mode de contrôle)
 ├── SCENE_ENGINE.md               documentation technique complète (API, formats, choix)
 ├── LOCAL_ENGINE_INTEGRATION.md   contrat moteur local ↔ studio-engine (qui fait quoi)
 ├── STUDIO_ENGINE_HANDOFF.md      ce document
@@ -110,7 +110,7 @@ studio-engine/
 
 ### 4.1 La bible (`VIDEO_EDITING_BIBLE.md`)
 
-- **Contenu** : 149 règles en 26 domaines. Narration, scènes, grammaire, rythme, hiérarchie visuelle, caméra, typographie, motion, transitions, sound design, musique, silence, documents, graphiques, cartes, sous-titres, couleur, répétitions, contraste, rappels visuels, escalade, révélations, chapitres, droits, technique.
+- **Contenu** : 158 règles en 27 domaines. Narration, scènes, grammaire, rythme, hiérarchie visuelle, caméra, typographie, motion, transitions, sound design, musique, silence, documents, graphiques, cartes, sous-titres, couleur, répétitions, contraste, rappels visuels, escalade, révélations, chapitres, droits, technique, sélection du média.
 - **Format** d'une règle : `RHY-03 · avertissement · AUTO — …`.
   - Sévérité : `bloquant`, `avertissement` ou `conseil`.
   - Contrôle : `AUTO` (code), `HEUR` (automatique mais approximatif) ou `REVUE` (IA critique ou humain).

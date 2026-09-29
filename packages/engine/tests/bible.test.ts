@@ -27,7 +27,7 @@ describe('VIDEO_EDITING_BIBLE.md', () => {
 
   it('covers every domain the brief requires', () => {
     const domains = new Set(BIBLE_RULES.map((r) => r.domain));
-    for (const d of ['DIR', 'STORY', 'SCENE', 'GRAM', 'RHY', 'HIER', 'CAM', 'TYPO', 'MOT', 'TRANS', 'SND', 'MUS', 'SIL', 'DOC', 'CHART', 'MAP', 'CAP', 'COL', 'REP', 'VAR', 'CALL', 'ESC', 'REV', 'CHAP', 'SRC', 'TECH']) {
+    for (const d of ['DIR', 'STORY', 'SCENE', 'GRAM', 'RHY', 'HIER', 'CAM', 'TYPO', 'MOT', 'TRANS', 'SND', 'MUS', 'SIL', 'DOC', 'CHART', 'MAP', 'CAP', 'COL', 'REP', 'VAR', 'CALL', 'ESC', 'REV', 'CHAP', 'SRC', 'TECH', 'MED']) {
       expect(domains, d).toContain(d);
     }
   });

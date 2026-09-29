@@ -17,7 +17,7 @@ Read only what this skill names. Do not read the full repository.
 1. **One session per episode.** Do not continue an episode in a long session: every action re-reads the whole context.
 2. **Control sheet before any full render.** `npm run stills` costs about 1 minute and one image to look at. A full render costs about 3 minutes, and a failed one costs a second render.
 3. **Retouching one shot:** change the input, regenerate the plan, then run `npm run stills -- <plan> --shots <id>`, then render. Chunks whose shots did not change come from the cache.
-4. **Never read the catalogs.** `packages/engine/hyperframes-catalog.json` (660 KB) and `public/hyperframes/` are off limits. The Apple style only uses the 7 studio blocks (SCENE_ENGINE.md §28.1).
+4. **Never read the catalogs.** `packages/engine/hyperframes-catalog.json` (660 KB) and `public/hyperframes/` are off limits. The Apple style only uses the 8 studio blocks (SCENE_ENGINE.md §28.1).
 5. **Do not open big JSON files whole** (`plan.json`, `words.json`, `QC_REPORT.json`). Summarise them with a one-line `node -e` or `python3 -c`.
 6. **Fix the input, not the plan.** Edit `input.mjs` (text, hints) and regenerate. Never hand-edit `plan.json`: the next regeneration would lose the edit.
 7. **Group your actions.** Chain the commands of a step in one shell call. Do not run a command only to look at something you can derive.

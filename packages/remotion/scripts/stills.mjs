@@ -79,6 +79,7 @@ try {
         await document.fonts.ready;
         window.__hf.seek(time);
         await window.__hfWaitForSeekCompletion?.();
+        await window.__studioSettle?.();
         await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
       }, t);
       const file = join(tmp, `${files.length}.jpg`);

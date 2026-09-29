@@ -59,7 +59,7 @@ export function getShotPlanDuration(plan: Pick<ShotPlan, 'shots' | 'fps'>, regis
   return getTimelineDuration(timedShots(plan, registry));
 }
 
-const PAYLOAD_KEYS = ['subtext', 'motionParams', 'number', 'chart', 'map', 'document', 'transitionDurationInFrames', 'reasons', 'analysis', 'visualHierarchy', 'focus', 'sequence', 'decidedBy'] as const;
+const PAYLOAD_KEYS = ['subtext', 'motionParams', 'number', 'chart', 'map', 'document', 'transitionDurationInFrames', 'reasons', 'analysis', 'visualHierarchy', 'focus', 'sequence', 'mediaNeed', 'mediaTier', 'decidedBy'] as const;
 /** Editorial fields that are flat in the Timeline view. */
 const FLAT_EDITORIAL_KEYS = ['sceneId', 'beat', 'editorialIntent', 'importance', 'camera', 'framing', 'musicState', 'hold'] as const;
 

@@ -16,6 +16,8 @@ import type { GraphicProps } from './common';
 type HfWindow = Window & {
   __hf?: { duration?: number; seek?: (t: number) => void };
   __hfWaitForSeekCompletion?: () => Promise<void>;
+  /** Studio blocks with footage: resolves when every video shows the frame of the seek (hyperframes-studio/_studio). */
+  __studioSettle?: () => Promise<void>;
 };
 
 const W = 1920;
@@ -88,6 +90,7 @@ export const HyperFrames: React.FC<GraphicProps> = ({ layer, frame, fps, width, 
       try {
         win.__hf!.seek!(time);
         await win.__hfWaitForSeekCompletion?.();
+        await win.__studioSettle?.();
         await nextPaint(win);
       } catch (e) {
         console.error(e);

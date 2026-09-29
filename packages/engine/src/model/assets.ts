@@ -5,6 +5,7 @@
  * each asset exactly once.
  */
 import type { JsonObject, Seconds } from './primitives.js';
+import type { MediaNature } from '../shotplan/vocabulary.js';
 
 export type AssetId = string;
 
@@ -26,6 +27,11 @@ export interface Asset {
   checksum?: string;
   /** Provenance and rights (bible SRC-01): never use an asset whose rights are uncertain. */
   source?: AssetSource;
+  /**
+   * What the file is: real video, photo, archive, screenshot, document or
+   * generated (bible §27). Default: derived from `kind`, `source.syntheticMedia` and tags.
+   */
+  nature?: MediaNature;
   metadata?: JsonObject;
 }
 

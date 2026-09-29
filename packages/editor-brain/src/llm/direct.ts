@@ -10,6 +10,7 @@ import type { BrainInput, BrainResult } from '../types.js';
 import type { ChatTurn, EditorModel } from './model.js';
 import { buildSystemPrompt, buildUserMessage } from './prompt.js';
 import { checkStory, mergeStory, STORY_TOOL } from './story.js';
+import { mediaNatureOf } from '../media.js';
 
 export interface LlmBrainOptions {
   model: EditorModel;
@@ -38,7 +39,8 @@ export async function directEpisodeWithLlm(input: BrainInput, options: LlmBrainO
     const entry = input.catalog?.find((c) => c.assetId === id);
     const meta = input.assets[id]!.metadata as { description?: string; tags?: string[] } | undefined;
     const description = [entry?.description ?? meta?.description, ...(entry?.tags ?? meta?.tags ?? [])].filter(Boolean).join('; ') || 'no description';
-    return { id, kind: input.assets[id]!.kind, description };
+    // The nature tells the model how authentic the media is (bible §27).
+    return { id, kind: `${input.assets[id]!.kind}, ${mediaNatureOf(input.assets[id]!, entry?.nature, entry?.tags ?? meta?.tags ?? [])}`, description };
   });
   const system = buildSystemPrompt();
   const turns: ChatTurn[] = [{ role: 'user', text: buildUserMessage(heuristic, { ...(input.title ? { title: input.title } : {}), catalog }) }];

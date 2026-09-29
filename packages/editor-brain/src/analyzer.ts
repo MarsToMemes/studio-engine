@@ -11,6 +11,7 @@ import { alignSentences, type SentenceTiming } from './align.js';
 import { findPlaces } from './gazetteer.js';
 import { CUES, emphasisWords, findCue, findNumbers, findQuote, splitSentences, tokenize } from './text.js';
 import type { BrainInput, EditorialUnit, UnitHints } from './types.js';
+import { detectMediaNeed } from './media.js';
 
 const BASE_IMPORTANCE: Record<EditorialIntent, EditorialLevel> = {
   hook: 5,
@@ -102,11 +103,19 @@ export function analyzeScript(input: BrainInput): EditorialUnit[] {
       },
       entities: { numbers, emphasis: emphasis.slice(0, 2), places, ...(quote ? { quote } : {}) },
       why,
+      ...need(s, intent, numbers, places),
       ...(s.hints ? { hints: s.hints } : {}),
     });
   });
   applyTension(units);
   return units;
+}
+
+/** What the picture must do for the sentence (bible §27): the author's, else the heuristic one. */
+function need(s: Sentence, intent: EditorialIntent, numbers: EditorialUnit['entities']['numbers'], places: EditorialUnit['entities']['places']): Pick<EditorialUnit, 'mediaNeed' | 'mediaWhy'> {
+  if (s.hints?.mediaNeed) return { mediaNeed: s.hints.mediaNeed, mediaWhy: 'need given by the author' };
+  const d = detectMediaNeed({ text: s.text, words: s.words, intent, numbers: s.hints?.number ? [{ value: s.hints.number.value, text: String(s.hints.number.value), wordIndex: 0 }] : numbers, places });
+  return { mediaNeed: d.need, mediaWhy: d.why };
 }
 
 interface Context {
