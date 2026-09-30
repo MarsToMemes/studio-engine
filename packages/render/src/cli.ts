@@ -15,7 +15,7 @@
 import { readFileSync, writeFileSync } from 'node:fs';
 import { dirname, extname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { formatQcReport, judgeLoudness, LOUDNESS_TARGETS, loudnormSecondPass, type LoudnessTarget } from '@studio-engine/scene-engine';
+import { formatQcReport, judgeLoudness, LOSSY_TRUE_PEAK_HEADROOM_DB, LOUDNESS_TARGETS, loudnormSecondPass, type LoudnessTarget } from '@studio-engine/scene-engine';
 import { renderEpisode } from './engine.js';
 import { resolveFfmpeg, runFfmpeg } from './ffmpeg.js';
 import { listCache, pruneCache } from './cache.js';
@@ -110,8 +110,9 @@ export async function runRenderCli(argv: readonly string[], io: CliIo): Promise<
       let final = report as { pass: boolean };
       if (fix) {
         const audioOnly = ['.wav', '.flac', '.mp3', '.m4a', '.aac'].includes(extname(fix).toLowerCase());
-        const codec = extname(fix).toLowerCase() === '.wav' ? ['-c:a', 'pcm_s24le'] : ['-c:a', 'aac', '-b:a', '320k'];
-        runFfmpeg(tools, ['-y', '-i', input, ...(audioOnly ? ['-vn'] : ['-c:v', 'copy']), '-af', loudnormSecondPass(before, target), '-ar', '48000', ...codec, fix]);
+        const lossless = extname(fix).toLowerCase() === '.wav';
+        const codec = lossless ? ['-c:a', 'pcm_s24le'] : ['-c:a', 'aac', '-b:a', '320k'];
+        runFfmpeg(tools, ['-y', '-i', input, ...(audioOnly ? ['-vn'] : ['-c:v', 'copy']), '-af', loudnormSecondPass(before, target, lossless ? 0 : LOSSY_TRUE_PEAK_HEADROOM_DB), '-ar', '48000', ...codec, fix]);
         const after = measureLoudness(tools, fix, target);
         final = { file: fix, measure: after, ...judgeLoudness(after, target, kind) } as { pass: boolean };
         report.fixed = final;

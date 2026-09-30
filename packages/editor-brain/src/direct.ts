@@ -27,6 +27,7 @@ import { intensityOf, MotionDirector } from './motion.js';
 import { planRhythm } from './rhythm.js';
 import { designSfx, musicStates, pickSilences, SILENCE_SECONDS } from './sound.js';
 import type { BrainInput, BrainResult, EditorialUnit, StoryStructure } from './types.js';
+import { isFrench } from './media.js';
 import { tierOfType, VisualDirector, type Visual } from './visual.js';
 
 export const BRAIN_VERSION = 1;
@@ -106,6 +107,8 @@ export function directFromStory(input: BrainInput, story: Story): BrainResult {
   const segments: NarrationSegment[] = [];
   const firstShotOfUnit = new Map<string, number>();
 
+  // Texts the engine writes on screen or for the author follow the script's language.
+  const french = isFrench(units.map((u) => u.text).join(' '));
   structure.chapters.forEach((chapter, ci) => {
     const scenes = structure.scenes.filter((s) => s.chapterId === chapter.id);
     if (ci > 0) {
@@ -120,7 +123,7 @@ export function directFromStory(input: BrainInput, story: Story): BrainResult {
           type: 'chapter',
           durationInFrames: Math.round(CHAPTER_CARD_SECONDS * fps),
           text: title,
-          subtext: `CHAPTER ${ci + 1}`,
+          subtext: `${french ? 'CHAPITRE' : 'CHAPTER'} ${ci + 1}`,
           sceneId: scenes[0]!.id,
           beat: 'transition',
           editorialIntent: 'chapter',
@@ -163,6 +166,7 @@ export function directFromStory(input: BrainInput, story: Story): BrainResult {
             type: v.type,
             durationInFrames: chunk.endFrame - chunk.startFrame,
             ...(v.media ? { media: v.media } : {}),
+            ...(v.type === 'video' && u.hints?.mediaStart ? { mediaStart: u.hints.mediaStart } : {}),
             ...(v.text ? { text: v.text } : {}),
             ...(v.highlightedWords ? { highlightedWords: v.highlightedWords } : {}),
             ...(v.number ? { number: v.number } : {}),
@@ -311,7 +315,7 @@ export function directFromStory(input: BrainInput, story: Story): BrainResult {
       s.reasons = { ...s.reasons!, sfx: sfx.why.get(s.id)! };
     }
     if (!input.sfx) decisions.push('no sound library given: no sound effects');
-    for (const category of sfx.missing) visual.requests.push({ unitId: '-', need: 'sfx', description: `sound effects of category "${category}" in the sound library` });
+    for (const category of sfx.missing) visual.requests.push({ unitId: '-', need: 'sfx', description: french ? `des effets sonores de la catégorie « ${category} » dans la sonothèque` : `sound effects of category "${category}" in the sound library` });
   }
 
   // STORY-05: a strong claim needs visual proof soon after it.

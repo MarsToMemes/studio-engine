@@ -1,9 +1,9 @@
 /**
  * The last step: the video and the mix are put together, the mix brought to
  * -14 LUFS / -1 dBTP (bible MUS-09) in two linear loudnorm passes (one gain:
- * silences and dynamics are kept). The video stream is copied, not re-encoded.
+ * silences and dynamics are kept), with a true-peak margin for the AAC encode. The video stream is copied, not re-encoded.
  */
-import { judgeLoudness, LOUDNESS_TARGETS, loudnormSecondPass, parseLoudnorm, type LoudnessMeasure, type LoudnessTarget } from '@studio-engine/scene-engine';
+import { judgeLoudness, LOSSY_TRUE_PEAK_HEADROOM_DB, LOUDNESS_TARGETS, loudnormSecondPass, parseLoudnorm, type LoudnessMeasure, type LoudnessTarget } from '@studio-engine/scene-engine';
 import { runFfmpeg, type FfmpegTools } from './ffmpeg.js';
 
 export function measureLoudness(tools: FfmpegTools, file: string, target: LoudnessTarget = LOUDNESS_TARGETS.master): LoudnessMeasure {
@@ -26,7 +26,7 @@ export function muxAndMaster(tools: FfmpegTools, video: string, mix: string, out
   } catch {
     before = undefined;
   }
-  const filter = options.master === false || !before ? [] : ['-af', loudnormSecondPass(before, target)];
+  const filter = options.master === false || !before ? [] : ['-af', loudnormSecondPass(before, target, LOSSY_TRUE_PEAK_HEADROOM_DB)];
   runFfmpeg(tools, ['-y', '-i', video, '-i', mix, '-map', '0:v:0', '-map', '1:a:0', '-c:v', 'copy', ...filter, '-ar', '48000', '-c:a', 'aac', '-b:a', options.audioBitrate ?? '320k', '-movflags', '+faststart', output]);
   if (!before) return undefined;
   const after = measureLoudness(tools, output, target);

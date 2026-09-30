@@ -63,7 +63,7 @@ export async function directEpisodeWithLlm(input: BrainInput, options: LlmBrainO
       checked = checkStory(response.input, heuristic, catalogIds);
       report.errors = checked.errors;
       if (!checked.errors.length) break;
-      turns.push({ role: 'repair', toolUseId: response.toolUseId, previousInput: response.input, errors: checked.errors });
+      turns.push({ role: 'repair', toolUseId: response.toolUseId, previousInput: response.input, errors: checked.errors, ...(response.assistantContent ? { assistantContent: response.assistantContent } : {}) });
     }
   } catch (e) {
     const result = directFromStory(input, { ...heuristic, decisions: [...heuristic.decisions, `LLM unavailable (${(e as Error).message}): heuristic brain used`] });

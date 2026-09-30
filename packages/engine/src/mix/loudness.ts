@@ -70,10 +70,22 @@ export function judgeLoudness(m: LoudnessMeasure, target: LoudnessTarget, kind: 
   return { pass: issues.length === 0, gainToTargetDb: Number((target.integrated - m.integrated).toFixed(2)), issues };
 }
 
-/** loudnorm filter of the second (linear) pass, from the first pass measure. */
-export function loudnormSecondPass(m: LoudnessMeasure, target: LoudnessTarget): string {
+/**
+ * True-peak headroom kept when the normalised audio is then encoded lossily:
+ * AAC / MP3 reconstruction adds inter-sample peaks (a master normalised to
+ * -1 dBTP measured -0.96 dBTP once in AAC). Lossless outputs need none.
+ */
+export const LOSSY_TRUE_PEAK_HEADROOM_DB = 0.5;
+
+/**
+ * loudnorm filter of the second (linear) pass, from the first pass measure.
+ * `headroomDb` lowers the true-peak ceiling below the target's (see
+ * LOSSY_TRUE_PEAK_HEADROOM_DB); the verdict is still judged against the target.
+ */
+export function loudnormSecondPass(m: LoudnessMeasure, target: LoudnessTarget, headroomDb = 0): string {
+  const tp = Number((target.truePeak - headroomDb).toFixed(2));
   return [
-    `loudnorm=I=${target.integrated}:TP=${target.truePeak}:LRA=${target.lra}`,
+    `loudnorm=I=${target.integrated}:TP=${tp}:LRA=${target.lra}`,
     `measured_I=${m.integrated}:measured_TP=${m.truePeak}:measured_LRA=${m.lra}:measured_thresh=${m.threshold}:offset=${m.offset}`,
     'linear=true:print_format=json',
   ].join(':');

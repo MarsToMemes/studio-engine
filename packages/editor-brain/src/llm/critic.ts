@@ -199,7 +199,7 @@ export async function critiqueEpisode(plan: ShotPlan, options: CriticOptions): P
       checked = checkReview(response.input, plan);
       report.errors = checked.errors;
       if (!checked.errors.length) break;
-      turns.push({ role: 'repair', toolUseId: response.toolUseId, previousInput: response.input, errors: checked.errors });
+      turns.push({ role: 'repair', toolUseId: response.toolUseId, previousInput: response.input, errors: checked.errors, ...(response.assistantContent ? { assistantContent: response.assistantContent } : {}) });
     }
   } catch (e) {
     report.errors.push((e as Error).message);

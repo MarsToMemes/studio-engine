@@ -42,6 +42,8 @@ export interface UnitHints {
   highlightedWords?: string[];
   /** Asset to use for this sentence. */
   media?: string;
+  /** Seconds into the clip where this sentence's footage starts (skips a slate, an intro…). */
+  mediaStart?: number;
   number?: NumberPayload;
   chart?: ChartPayload & { source?: string };
   map?: MapPayload;

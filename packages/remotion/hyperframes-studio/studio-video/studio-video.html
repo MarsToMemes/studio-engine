@@ -3,6 +3,7 @@
   { "id": "duration", "type": "number", "role": "timing", "label": "Duration (s)", "default": 4 },
   { "id": "src", "type": "video", "role": "content", "label": "Video (path from the public root, or URL)", "default": "clip.webm" },
   { "id": "mediaStart", "type": "number", "role": "timing", "label": "Start in the clip (s)", "default": 0 },
+  { "id": "loop", "type": "number", "role": "timing", "label": "Loop a clip shorter than the block (1 = loop, 0 = hold the last frame)", "default": 1 },
   { "id": "revealAt", "type": "number", "role": "timing", "label": "Window opens to full frame at (s)", "default": 0.35 },
   { "id": "window", "type": "number", "role": "style", "label": "Start window width (%), 100 = no window", "default": 58 },
   { "id": "zoom", "type": "number", "role": "style", "label": "Slow zoom gain", "default": 0.06 },
@@ -35,12 +36,12 @@
     <div id="root" class="stage" data-composition-id="studio-video" data-start="0" data-width="1920" data-height="1080" data-duration="4"></div>
     <script>
       (function () {
-        var v = Studio.vars({ duration: 4, src: 'clip.webm', mediaStart: 0, revealAt: 0.35, window: 58, zoom: 0.06, dim: 0.85, blur: 10, sizes: '120', position: 'center' });
+        var v = Studio.vars({ duration: 4, src: 'clip.webm', mediaStart: 0, loop: 1, revealAt: 0.35, window: 58, zoom: 0.06, dim: 0.85, blur: 10, sizes: '120', position: 'center' });
         var d = Studio.num(v.duration, 4);
         var s = Studio.setup('studio-video', d), tl = s.tl;
         var frame = Studio.el('div', 'frame', s.root);
         // Muted footage that follows the timeline (Studio.video: seeked by the host after every seek).
-        var video = Studio.video(Studio.el('video', '', frame), tl, Studio.num(v.mediaStart, 0));
+        var video = Studio.video(Studio.el('video', '', frame), tl, Studio.num(v.mediaStart, 0), Studio.num(v.loop, 1) !== 0);
         video.src = Studio.asset(String(v.src));
         var shade = Studio.el('div', 'shade', s.root);
         var w = Studio.num(v.window, 58);

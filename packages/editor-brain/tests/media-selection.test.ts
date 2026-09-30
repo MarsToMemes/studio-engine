@@ -157,4 +157,27 @@ describe('style apple: real footage becomes a studio-video block', () => {
     expect(String(s.block!.variables!.text)).toContain('line');
     expect(r.decisions.some((d) => d.includes('u2') && d.includes("engine's composition"))).toBe(false);
   });
+
+  it('starts the clip where the author says, and loops a clip shorter than its shot', () => {
+    const short: AssetRegistry = { queue: { id: 'queue', kind: 'video', src: 'clip.webm', durationInSeconds: 1.5, width: 1920, height: 1080, source: own } };
+    const r = directEpisode({ ...episode([{ kind: 'text', text: 'Customers wait in line every morning.' }, { kind: 'text', text: 'Customers wait in line every single morning before work.', hints: { mediaStart: 0.5 } }], short, [{ assetId: 'queue', description: 'customers waiting in line', tags: ['customers', 'queue', 'wait', 'line'] }]), style: 'apple' });
+    const s = r.plan.shots.find((x) => x.block?.item === 'studio-video' && x.mediaStart === 0.5)!;
+    expect(s.block!.variables).toMatchObject({ mediaStart: 0.5, loop: 1 });
+    expect(s.reasons!.media).toContain('it loops');
+    expect(validateShotPlan(r.plan).valid).toBe(true);
+    const past = structuredClone(r.plan);
+    past.shots.find((x) => x.id === s.id)!.mediaStart = 2;
+    expect(validateShotPlan(past).errors.map((i) => i.code)).toContain('shot.mediaStart.outside');
+  });
+});
+
+describe('texts in the language of the script', () => {
+  it('French script: French chapter cards and asset requests', () => {
+    const r = directEpisode({ title: 'Test', script: [
+      { kind: 'chapter', title: 'Le début' }, { kind: 'text', text: 'Voici la promesse de la vidéo.' },
+      { kind: 'chapter', title: 'La suite' }, { kind: 'text', text: 'Le rapport annuel le dit clairement.' },
+    ], assets: {} });
+    expect(r.plan.shots.find((x) => x.type === 'chapter')!.subtext).toBe('CHAPITRE 2');
+    expect(r.assetRequests.every((a) => !/^(an image|footage|a real document|the data|the place)/.test(a.description))).toBe(true);
+  });
 });
