@@ -161,7 +161,8 @@
    * Footage that follows the timeline. HyperFrames leaves media to its own renderer in
    * render-capture mode, so a studio block seeks its videos itself: after every seek the
    * host awaits window.__studioSettle(), which puts each video on the timeline time
-   * (+ mediaStart) and resolves once that frame is decoded.
+   * (+ mediaStart) and resolves once that frame is decoded. A clip shorter than the
+   * block loops from mediaStart when `loop` is set, else holds its last frame.
    */
   var videos = [];
   function once(el, event, ms) {
@@ -171,13 +172,13 @@
       el.addEventListener(event, done);
     });
   }
-  S.video = function (video, tl, mediaStart) {
+  S.video = function (video, tl, mediaStart, loop) {
     video.muted = true;
     video.playsInline = true;
     video.preload = 'auto';
     video.setAttribute('muted', '');
     video.setAttribute('playsinline', '');
-    videos.push({ el: video, tl: tl, start: mediaStart || 0 });
+    videos.push({ el: video, tl: tl, start: mediaStart || 0, loop: !!loop });
     return video;
   };
   window.__studioSettle = function () {
@@ -186,7 +187,9 @@
       var ready = el.readyState >= 1 ? Promise.resolve() : once(el, 'loadedmetadata', 10000);
       return ready.then(function () {
         var end = isFinite(el.duration) && el.duration > 0 ? el.duration - 0.04 : Infinity;
-        var target = Math.max(0, Math.min(end, v.start + v.tl.time()));
+        var start = Math.min(v.start, isFinite(end) ? Math.max(0, end - 0.04) : v.start);
+        var t = v.tl.time(), span = end - start;
+        var target = v.loop && isFinite(span) && span > 0.2 && t > span ? start + (t % span) : Math.max(0, Math.min(end, start + t));
         if (!el.paused) el.pause();
         var seeked = Math.abs(el.currentTime - target) > 0.0005 ? (function () { var p = once(el, 'seeked', 10000); el.currentTime = target; return p; })() : Promise.resolve();
         return seeked.then(function () { return el.readyState >= 2 ? undefined : once(el, 'loadeddata', 10000); });

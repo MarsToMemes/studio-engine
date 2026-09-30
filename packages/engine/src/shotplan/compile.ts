@@ -212,7 +212,7 @@ function composeLayers(shot: Shot, plan: ShotPlan, theme: DocumentaryTheme, canv
     case 'image':
     case 'video': {
       const media = shot.type === 'video'
-        ? createLayer('video', { id: id('media'), assetId: shot.media!, fit: 'cover', muted: true, zIndex: 10 })
+        ? createLayer('video', { id: id('media'), assetId: shot.media!, fit: 'cover', muted: true, zIndex: 10, ...(shot.mediaStart ? { trim: { startFrom: Math.round(shot.mediaStart * plan.fps) } } : {}) })
         : createLayer('image', { id: id('media'), assetId: shot.media!, fit: 'cover', zIndex: 10 });
       add('media', media);
       if (shot.text) {

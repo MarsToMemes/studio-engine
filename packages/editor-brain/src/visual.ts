@@ -335,7 +335,7 @@ export class VisualDirector {
         if (!document.highlights) {
           const highlights = this.regions(u, chunk, entry);
           if (highlights.length) document.highlights = highlights;
-          else this.request(u, 'document-region', `the region of "${doc.description}" that says: “${u.text}”`);
+          else this.request(u, 'document-region', isFrench(u.text) ? `la zone de « ${doc.description} » qui dit : « ${u.text} »` : `the region of "${doc.description}" that says: “${u.text}”`);
         }
         return { type, media: doc.assetId, document, reason: `${capitalize(u.why)}: ${doc.description} proves it.` };
       }
@@ -436,6 +436,21 @@ function toMap(u: EditorialUnit, style?: { url: string; attribution: string }): 
 
 function describeNeed(need: AssetRequest['need'], u: EditorialUnit): string {
   const about = contentWords(u.words).slice(0, 6).join(' ');
+  if (isFrench(u.text)) {
+    const quote = `« ${u.text} »`;
+    switch (need) {
+      case 'document':
+        return `un vrai document qui prouve : ${quote}`;
+      case 'chart-data':
+        return `les données derrière : ${quote} (libellés, valeurs, source)`;
+      case 'map-place':
+        return `le ou les lieux de : ${quote} (noms ou coordonnées)`;
+      case 'video':
+        return `une vidéo de : ${about}`;
+      default:
+        return `une image de : ${about}`;
+    }
+  }
   switch (need) {
     case 'document':
       return `a real document that proves: “${u.text}”`;

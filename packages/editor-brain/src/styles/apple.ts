@@ -314,6 +314,16 @@ function buildBlock(ctx: Ctx, run: Draft[]): HyperFramesUse | undefined {
       if (!asset || asset.kind !== main.kind) return undefined;
       const still = main.kind === 'image';
       const v: JsonObject = { src: asset.src, window: 56, revealAt: shot.camera === 'pull_out' ? 0.1 : 0.15, zoom: shot.camera === 'pull_out' ? -0.08 : still ? 0.12 : 0.05 };
+      if (!still) {
+        const start = shot.mediaStart ?? 0;
+        if (start) v.mediaStart = start;
+        // A clip shorter than its shot loops rather than freezing on its last frame.
+        const left = asset.durationInSeconds !== undefined ? asset.durationInSeconds - start : undefined;
+        if (left !== undefined && left < runSeconds) {
+          v.loop = 1;
+          shot.reasons = { ...shot.reasons!, media: `${shot.reasons?.media ? `${shot.reasons.media} ` : ''}The clip gives ${round3(Math.max(0, left))} s for a ${round3(runSeconds)} s shot: it loops (a longer clip or a later start would avoid the jump).` };
+        }
+      }
       const text = spokenText(ctx, main);
       if (text) {
         const t = titleSpec(text, goldOf(shot, unit));

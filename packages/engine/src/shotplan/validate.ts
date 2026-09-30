@@ -168,6 +168,11 @@ function collectShotPlanIssues(input: unknown, options: ShotPlanValidationOption
 
     const kinds = MEDIA_KINDS[shot.type];
     if ((MEDIA_REQUIRED.includes(shot.type) && !blocked) || shot.media !== undefined) checkAsset(shot.media, `${p}.media`, kinds ?? ['image', 'svg', 'video']);
+    if (shot.mediaStart !== undefined) {
+      const clip = typeof shot.media === 'string' && assets ? (assets[shot.media] as { durationInSeconds?: number } | undefined) : undefined;
+      if (!isFiniteNumber(shot.mediaStart) || shot.mediaStart < 0) issues.error(`${p}.mediaStart`, 'shot.mediaStart', 'mediaStart must be a number of seconds ≥ 0');
+      else if (clip?.durationInSeconds !== undefined && shot.mediaStart >= clip.durationInSeconds) issues.error(`${p}.mediaStart`, 'shot.mediaStart.outside', `mediaStart ${shot.mediaStart} s is past the end of the clip (${clip.durationInSeconds} s)`);
+    }
     if (TEXT_REQUIRED.includes(shot.type) && !blocked && !isNonEmptyString(shot.text)) issues.error(`${p}.text`, 'shot.text.required', `a ${shot.type} shot needs text`);
 
     // Payload checks apply to the default composition only.

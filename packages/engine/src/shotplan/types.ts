@@ -145,6 +145,8 @@ export interface Shot {
   mediaNeed?: MediaNeed;
   /** Level of the authenticity scale this shot uses (bible §27, MED-01). */
   mediaTier?: MediaTier;
+  /** Video shots: seconds into the clip where the shot starts (default 0). */
+  mediaStart?: number;
   decidedBy?: DecidedBy;
 }
 

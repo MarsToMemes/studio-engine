@@ -8,6 +8,7 @@ import {
   judgeLoudness,
   LOUDNESS_TARGETS,
   loudnormSecondPass,
+  LOSSY_TRUE_PEAK_HEADROOM_DB,
   parseLoudnorm,
   ruleForIssue,
   MUSIC_STATE_LEVELS,
@@ -158,6 +159,8 @@ describe('loudness (MUS-01, MUS-09)', () => {
 
   it('builds the linear second pass from the measure', () => {
     expect(loudnormSecondPass(parseLoudnorm(stderr), LOUDNESS_TARGETS.master)).toBe('loudnorm=I=-14:TP=-1:LRA=11:measured_I=-16.71:measured_TP=-7.62:measured_LRA=4.1:measured_thresh=-27.05:offset=0.2:linear=true:print_format=json');
+    // Lossy output: the ceiling is lowered, the target stays -1 dBTP.
+    expect(loudnormSecondPass(parseLoudnorm(stderr), LOUDNESS_TARGETS.master, LOSSY_TRUE_PEAK_HEADROOM_DB)).toContain('loudnorm=I=-14:TP=-1.5:LRA=11:');
   });
 
   it('refuses an output without measure (silent input)', () => {

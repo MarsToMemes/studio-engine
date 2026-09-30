@@ -28109,6 +28109,13 @@
      "default": 0
     },
     {
+     "id": "loop",
+     "type": "number",
+     "role": "timing",
+     "label": "Loop a clip shorter than the block (1 = loop, 0 = hold the last frame)",
+     "default": 1
+    },
+    {
      "id": "revealAt",
      "type": "number",
      "role": "timing",
