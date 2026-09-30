@@ -120,23 +120,23 @@ describe('AnthropicModel (official SDK, injected client)', () => {
     return { calls, client: { messages: { create: async (params: Params) => (calls.push(params), response) } } as never };
   };
   const toolResponse = (input: unknown, stop = 'tool_use') => ({
-    model: 'claude-sonnet-5',
+    model: 'claude-sonnet-5-5',
     stop_reason: stop,
     content: [{ type: 'tool_use', id: 'toolu_1', name: STORY_TOOL.name, input }],
     usage: { input_tokens: 3000, output_tokens: 900, cache_read_input_tokens: 2500, cache_creation_input_tokens: 0 },
   });
 
-  it('forces the story tool, caches the system prompt, reports usage', async () => {
+  it('asks for the story tool (auto: forced tool use is rejected by current models), caches the system prompt, reports usage', async () => {
     const { calls, client } = fakeClient(toolResponse(goodAnswer));
     const model = new AnthropicModel({ client });
     const r = await directEpisodeWithLlm(unhinted(), { model });
-    expect(r.llm).toMatchObject({ model: 'claude-sonnet-5', accepted: 'full', usage: { inputTokens: 3000, outputTokens: 900, cacheReadTokens: 2500 } });
+    expect(r.llm).toMatchObject({ model: 'claude-sonnet-5-5', accepted: 'full', usage: { inputTokens: 3000, outputTokens: 900, cacheReadTokens: 2500 } });
     const p = calls[0]!;
-    expect(p.model).toBe('claude-sonnet-5');
-    expect(p.tool_choice).toEqual({ type: 'tool', name: 'submit_editorial_story' });
-    expect(p.system).toEqual([{ type: 'text', text: buildSystemPrompt(), cache_control: { type: 'ephemeral' } }]);
+    expect(p.model).toBe('claude-sonnet-5-5');
+    expect(p.tool_choice).toEqual({ type: 'auto' });
+    expect(p.system).toEqual([{ type: 'text', text: buildSystemPrompt(), cache_control: { type: 'ephemeral' } }, { type: 'text', text: expect.stringContaining('calling the submit_editorial_story tool') }]);
     expect((p.tools as Array<{ input_schema: unknown }>)[0]!.input_schema).toEqual(STORY_TOOL.inputSchema);
-    expect(p.max_tokens).toBe(2000 + 150 * 9);
+    expect(p.max_tokens).toBe(2000 + 150 * 9 + 8000);
   });
 
   it('a repair turn is a tool_result error on the previous tool call', async () => {
@@ -147,6 +147,7 @@ describe('AnthropicModel (official SDK, injected client)', () => {
     void client;
     const second = calls[1]!.messages;
     expect(second.map((m) => m.role)).toEqual(['user', 'assistant', 'user']);
+    // The previous turn is replayed as returned (append-only history).
     expect(second[1]!.content).toEqual([{ type: 'tool_use', id: 'toolu_1', name: 'submit_editorial_story', input: badAnswer }]);
     expect(second[2]!.content).toEqual([expect.objectContaining({ type: 'tool_result', tool_use_id: 'toolu_1', is_error: true, content: expect.stringContaining('u3: emphasis "pizza"') })]);
   });
@@ -157,5 +158,22 @@ describe('AnthropicModel (official SDK, injected client)', () => {
     expect(truncated.decisions.find((d) => d.startsWith('LLM unavailable'))).toContain('max_tokens');
     const noTool = await directEpisodeWithLlm(unhinted(), { model: new AnthropicModel({ client: fakeClient({ ...toolResponse(goodAnswer, 'end_turn'), content: [{ type: 'text', text: 'Sure!' }] }).client }) });
     expect(noTool.decisions.find((d) => d.startsWith('LLM unavailable'))).toContain('did not call submit_editorial_story');
+    const refused = await directEpisodeWithLlm(unhinted(), { model: new AnthropicModel({ client: fakeClient({ ...toolResponse(goodAnswer, 'refusal'), content: [], stop_details: { type: 'refusal', category: 'general_harms' } }).client }) });
+    expect(refused.decisions.find((d) => d.startsWith('LLM unavailable'))).toContain('declined');
+  });
+
+  it('asks once more when the model answers in text, keeping its thinking blocks', async () => {
+    const calls: Params[] = [];
+    const thinking = { type: 'thinking', thinking: '', signature: 'sig' };
+    let n = 0;
+    const client = { messages: { create: async (params: Params) => (calls.push(structuredClone(params)), n++ === 0
+      ? { ...toolResponse(goodAnswer, 'end_turn'), content: [thinking, { type: 'text', text: 'Here is my analysis.' }] }
+      : { ...toolResponse(goodAnswer), content: [thinking, ...toolResponse(goodAnswer).content] }) } } as never;
+    const r = await directEpisodeWithLlm(unhinted(), { model: new AnthropicModel({ client }) });
+    expect(r.llm.accepted).toBe('full');
+    expect(calls).toHaveLength(2);
+    expect(calls[1]!.messages.map((m) => m.role)).toEqual(['user', 'assistant', 'user']);
+    expect(calls[1]!.messages[1]!.content).toEqual([thinking, { type: 'text', text: 'Here is my analysis.' }]);
+    expect(r.llm.usage.inputTokens).toBe(6000);
   });
 });
